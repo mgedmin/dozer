@@ -45,3 +45,10 @@ h2 {
 .typename {
     font-weight: bold;
 }
+
+.refs {
+    border: 1px solid #CCCCCC;
+    padding: 0.25em;
+    margin: 0;
+}
+
