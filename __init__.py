@@ -45,6 +45,8 @@ class Root:
     def __init__(self):
         self.history = {}
         self.samples = 0
+        if cherrypy.__version__ >= '3.1':
+            cherrypy.engine.subscribe('exit', self.stop)
         self.runthread = threading.Thread(target=self.start)
         self.runthread.start()
     
@@ -117,7 +119,7 @@ class Root:
         data = self.history[typename]
         height = 20.0
         scale = height / max(data)
-        im = Image.new("RGB", (len(data), height), 'white')
+        im = Image.new("RGB", (len(data), int(height)), 'white')
         draw = ImageDraw.Draw(im)
         draw.line([(i, int(height - (v * scale))) for i, v in enumerate(data)],
                   fill="#009900")
