@@ -12,7 +12,6 @@ import Image
 import ImageDraw
 
 import cherrypy
-from cherrypy import tools
 
 import reftree
 
@@ -29,9 +28,16 @@ method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
                 type(cgi.FieldStorage.getfirst),    # 'instancemethod'
                 ]
 
+def url(path):
+    try:
+        return cherrypy.url(path)
+    except AttributeError:
+        return path
+
+
 def template(name, **params):
-    p = {'maincss': cherrypy.url("/main.css"),
-         'home': cherrypy.url("/"),
+    p = {'maincss': url("/main.css"),
+         'home': url("/"),
          }
     p.update(params)
     return open(os.path.join(localDir, name)).read() % p
@@ -91,8 +97,6 @@ class Root:
     def stop(self):
         self.running = False
     
-    main_css = tools.staticfile.handler(filename=os.path.join(localDir, "main.css"))
-    
     def index(self, floor=0):
         rows = []
         typenames = self.history.keys()
@@ -105,9 +109,9 @@ class Root:
                        '<img class="chart" src="%s" /><br />'
                        'Min: %s Cur: %s Max: %s <a href="%s">TRACE</a></div>'
                        % (cgi.escape(typename),
-                          cherrypy.url("chart/%s" % typename),
+                          url("chart/%s" % typename),
                           min(hist), hist[-1], maxhist,
-                          cherrypy.url("trace/%s" % typename),
+                          url("trace/%s" % typename),
                           )
                        )
                 rows.append(row)
@@ -182,8 +186,7 @@ class Root:
                     rows.append('<div class="refs"><h3>Referrers (Parents)</h3>')
                     rows.append('<p class="desc"><a href="%s">Show the '
                                 'entire tree</a> of reachable objects</p>'
-                                % cherrypy.url("/tree/%s/%s" %
-                                               (typename, objid)))
+                                % url("/tree/%s/%s" % (typename, objid)))
                     tree = ReferrerTree(obj)
                     tree.ignore(all_objs)
                     for depth, parentid, parentrepr in tree.walk(maxdepth=1):
@@ -232,6 +235,22 @@ class Root:
                   }
         return template("tree.html", **params)
     tree.exposed = True
+
+
+try:
+    # CherryPy 3
+    from cherrypy import tools
+    Root.main_css = tools.staticfile.handler(root=localDir, filename="main.css")
+except ImportError:
+    # CherryPy 2
+    cherrypy.config.update({
+        '/': {'log_debug_info_filter.on': False},
+        '/main.css': {
+            'static_filter.on': True,
+            'static_filter.file': 'main.css',
+            'static_filter.root': localDir,
+            },
+        })
 
 
 class ReferrerTree(reftree.Tree):
@@ -293,7 +312,7 @@ class ReferrerTree(reftree.Tree):
         return ('<a class="objectid" href="%s">%s</a> '
                 '<span class="typename">%s</span>%s<br />'
                 '<span class="repr">%s</span>'
-                % (cherrypy.url("/trace/%s/%s" % (typename, id(obj))),
+                % (url("/trace/%s/%s" % (typename, id(obj))),
                    id(obj), prettytype, key, get_repr(obj, 100))
                 )
     
@@ -312,4 +331,8 @@ class ReferrerTree(reftree.Tree):
 
 if __name__ == '__main__':
 ##    cherrypy.config.update({"environment": "production"})
-    cherrypy.quickstart(Root())
+    try:
+        cherrypy.quickstart(Root())
+    except AttributeError:
+        cherrypy.root = Root()
+        cherrypy.server.start()
