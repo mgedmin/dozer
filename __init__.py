@@ -1,20 +1,22 @@
 import cgi
 import gc
 import os
-localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
-from StringIO import StringIO
+import reftree
 import sys
 import threading
 import time
+from StringIO import StringIO
 from types import FrameType, ModuleType
 
 import Image
 import ImageDraw
 
-import cherrypy
+from paste import fileapp
+from paste import urlparser
+from webob import Request, Response
+from webob import exc
 
-import reftree
-
+localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
 def get_repr(obj, limit=250):
     return cgi.escape(reftree.get_repr(obj, limit))
@@ -28,34 +30,66 @@ method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
                 type(cgi.FieldStorage.getfirst),    # 'instancemethod'
                 ]
 
-def url(path):
-    try:
-        return cherrypy.url(path)
-    except AttributeError:
-        return path
+def url(req, path):
+    if path.startswith('/'):
+        path = path[1:]
+    base_path = req.base_path
+    if base_path.endswith('/'):
+        return base_path + path
+    else:
+        return base_path + '/' + path
 
 
-def template(name, **params):
-    p = {'maincss': url("/main.css"),
-         'home': url("/"),
+def template(req, name, **params):
+    p = {'maincss': url(req, "/media/main.css"),
+         'home': url(req, "/index"),
          }
     p.update(params)
     return open(os.path.join(localDir, name)).read() % p
 
 
-class Root:
-    
+class Dowser(object):
+    """Sets up a page that displays object information to help
+    troubleshoot memory leaks"""
     period = 5
     maxhistory = 300
     
-    def __init__(self):
+    def __init__(self, app, media_paths=None):
+        self.app = app
+        self.media_paths = media_paths or {}
         self.history = {}
         self.samples = 0
-        if cherrypy.__version__ >= '3.1':
-            cherrypy.engine.subscribe('exit', self.stop)
         self.runthread = threading.Thread(target=self.start)
         self.runthread.start()
     
+    def __call__(self, environ, start_response):
+        assert not environ['wsgi.multiprocess'], (
+            "Dowser middleware is not usable in a "
+            "multi-process environment")
+        req = Request(environ)
+        req.base_path = req.application_url + '/_dowser'
+        if req.path_info_peek() == '_dowser':
+            return self.dowse(req)(environ, start_response)
+        else:
+            return self.app(environ, start_response)
+    
+    def dowse(self, req):
+        assert req.path_info_pop() == '_dowser'
+        next_part = req.path_info_pop()
+        method = getattr(self, next_part, None)
+        if method is None:
+            return exc.HTTPNotFound('Nothing could be found to match %r' % next_part)
+        if not getattr(method, 'exposed', False):
+            return exc.HTTPForbidden('Access to %r is forbidden' % next_part)
+        return method(req)
+    
+    def media(self, req):
+        """Static path where images and other files live"""
+        path = localDir
+        app = urlparser.StaticURLParser(path)
+        return app
+    media.exposed = True
+
     def start(self):
         self.running = True
         while self.running:
@@ -97,7 +131,8 @@ class Root:
     def stop(self):
         self.running = False
     
-    def index(self, floor=0):
+    def index(self, req):
+        floor = req.GET.get('floor', 0)
         rows = []
         typenames = self.history.keys()
         typenames.sort()
@@ -109,17 +144,20 @@ class Root:
                        '<img class="chart" src="%s" /><br />'
                        'Min: %s Cur: %s Max: %s <a href="%s">TRACE</a></div>'
                        % (cgi.escape(typename),
-                          url("chart/%s" % typename),
+                          url(req, "chart/%s" % typename),
                           min(hist), hist[-1], maxhist,
-                          url("trace/%s" % typename),
+                          url(req, "trace/%s" % typename),
                           )
                        )
                 rows.append(row)
-        return template("graphs.html", output="\n".join(rows))
+        res = Response()
+        res.body = template(req, "graphs.html", output="\n".join(rows))
+        return res
     index.exposed = True
     
-    def chart(self, typename):
+    def chart(self, req):
         """Return a sparkline chart of the given type."""
+        typename = req.path_info_pop()
         data = self.history[typename]
         height = 20.0
         scale = height / max(data)
@@ -133,35 +171,41 @@ class Root:
         im.save(f, "PNG")
         result = f.getvalue()
         
-        cherrypy.response.headers["Content-Type"] = "image/png"
-        return result
+        res = Response()
+        res.headers["Content-Type"] = "image/png"
+        res.body = result
+        return res
     chart.exposed = True
     
-    def trace(self, typename, objid=None):
+    def trace(self, req):
+        typename = req.path_info_pop()
+        objid = req.path_info_pop()
         gc.collect()
         
         if objid is None:
-            rows = self.trace_all(typename)
+            rows = self.trace_all(req, typename)
         else:
-            rows = self.trace_one(typename, objid)
-    
-        return template("trace.html", output="\n".join(rows),
+            rows = self.trace_one(req, typename, objid)
+        
+        res = Response()
+        res.body =template(req, "trace.html", output="\n".join(rows),
                         typename=cgi.escape(typename),
                         objid=str(objid or ''))
+        return res
     trace.exposed = True
     
-    def trace_all(self, typename):
+    def trace_all(self, req, typename):
         rows = []
         for obj in gc.get_objects():
             objtype = type(obj)
             if objtype.__module__ + "." + objtype.__name__ == typename:
                 rows.append("<p class='obj'>%s</p>"
-                            % ReferrerTree(obj).get_repr(obj))
+                            % ReferrerTree(obj, req).get_repr(obj))
         if not rows:
             rows = ["<h3>The type you requested was not found.</h3>"]
         return rows
     
-    def trace_one(self, typename, objid):
+    def trace_one(self, req, typename, objid):
         rows = []
         objid = int(objid)
         all_objs = gc.get_objects()
@@ -186,8 +230,8 @@ class Root:
                     rows.append('<div class="refs"><h3>Referrers (Parents)</h3>')
                     rows.append('<p class="desc"><a href="%s">Show the '
                                 'entire tree</a> of reachable objects</p>'
-                                % url("/tree/%s/%s" % (typename, objid)))
-                    tree = ReferrerTree(obj)
+                                % url(req, "/tree/%s/%s" % (typename, objid)))
+                    tree = ReferrerTree(obj, req)
                     tree.ignore(all_objs)
                     for depth, parentid, parentrepr in tree.walk(maxdepth=1):
                         if parentid:
@@ -204,7 +248,9 @@ class Root:
             rows = ["<h3>The object you requested was not found.</h3>"]
         return rows
     
-    def tree(self, typename, objid):
+    def tree(self, req):
+        typename = req.path_info_pop()
+        objid = req.path_info_pop()
         gc.collect()
         
         rows = []
@@ -219,7 +265,7 @@ class Root:
                 else:
                     rows.append('<div class="obj">')
                     
-                    tree = ReferrerTree(obj)
+                    tree = ReferrerTree(obj, req)
                     tree.ignore(all_objs)
                     for depth, parentid, parentrepr in tree.walk(maxresults=1000):
                         rows.append(parentrepr)
@@ -233,24 +279,11 @@ class Root:
                   'typename': cgi.escape(typename),
                   'objid': str(objid),
                   }
-        return template("tree.html", **params)
+        res = Response()
+        res.body = template(req, "tree.html", **params)
+        return res
     tree.exposed = True
 
-
-try:
-    # CherryPy 3
-    from cherrypy import tools
-    Root.main_css = tools.staticfile.handler(root=localDir, filename="main.css")
-except ImportError:
-    # CherryPy 2
-    cherrypy.config.update({
-        '/': {'log_debug_info_filter.on': False},
-        '/main.css': {
-            'static_filter.on': True,
-            'static_filter.file': 'main.css',
-            'static_filter.root': localDir,
-            },
-        })
 
 
 class ReferrerTree(reftree.Tree):
@@ -312,7 +345,7 @@ class ReferrerTree(reftree.Tree):
         return ('<a class="objectid" href="%s">%s</a> '
                 '<span class="typename">%s</span>%s<br />'
                 '<span class="repr">%s</span>'
-                % (url("/trace/%s/%s" % (typename, id(obj))),
+                % (url(self.req, "/trace/%s/%s" % (typename, id(obj))),
                    id(obj), prettytype, key, get_repr(obj, 100))
                 )
     
@@ -327,12 +360,3 @@ class ReferrerTree(reftree.Tree):
             if getattr(obj, k, None) is referent:
                 return " (via its %r attribute)" % k
         return ""
-
-
-if __name__ == '__main__':
-##    cherrypy.config.update({"environment": "production"})
-    try:
-        cherrypy.quickstart(Root())
-    except AttributeError:
-        cherrypy.root = Root()
-        cherrypy.server.start()

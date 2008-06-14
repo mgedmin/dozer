@@ -1,13 +1,13 @@
-
 import gc
 import sys
 
 from types import FrameType
 
 
-class Tree:
+class Tree(object):
     
-    def __init__(self, obj):
+    def __init__(self, obj, req):
+        self.req = req
         self.obj = obj
         self.filename = sys._getframe().f_code.co_filename
         self._ignore = {}
