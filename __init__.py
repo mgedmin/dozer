@@ -13,6 +13,7 @@ import ImageDraw
 
 from paste import fileapp
 from paste import urlparser
+from pkg_resources import resource_filename
 from webob import Request, Response
 from webob import exc
 
@@ -85,7 +86,7 @@ class Dowser(object):
     
     def media(self, req):
         """Static path where images and other files live"""
-        path = localDir
+        path = resource_filename('dowser')
         app = urlparser.StaticURLParser(path)
         return app
     media.exposed = True
