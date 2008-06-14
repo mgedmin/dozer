@@ -1,2 +1,2 @@
-recursive-include dowser/media *
+recursive-include dozer/media *
 include LICENSE

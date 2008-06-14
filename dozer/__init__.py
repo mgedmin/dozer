@@ -16,7 +16,7 @@ from pkg_resources import resource_filename
 from webob import Request, Response
 from webob import exc
 
-import dowser.reftree as reftree
+import dozer.reftree as reftree
 
 localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
@@ -69,14 +69,14 @@ class Dowser(object):
             "Dowser middleware is not usable in a "
             "multi-process environment")
         req = Request(environ)
-        req.base_path = req.application_url + '/_dowser'
-        if req.path_info_peek() == '_dowser':
+        req.base_path = req.application_url + '/_dozer'
+        if req.path_info_peek() == '_dozer':
             return self.dowse(req)(environ, start_response)
         else:
             return self.app(environ, start_response)
     
     def dowse(self, req):
-        assert req.path_info_pop() == '_dowser'
+        assert req.path_info_pop() == '_dozer'
         next_part = req.path_info_pop()
         method = getattr(self, next_part, None)
         if method is None:
@@ -87,7 +87,7 @@ class Dowser(object):
     
     def media(self, req):
         """Static path where images and other files live"""
-        path = resource_filename('dowser', 'media')
+        path = resource_filename('dozer', 'media')
         app = urlparser.StaticURLParser(path)
         return app
     media.exposed = True
@@ -312,7 +312,7 @@ class ReferrerTree(reftree.Tree):
             
             # Exclude all functions and classes from this module or reftree.
             mod = getattr(ref, "__module__", "")
-            if "dowser" in mod or "reftree" in mod or mod == '__main__':
+            if "dozer" in mod or "reftree" in mod or mod == '__main__':
                 continue
             
             # Exclude all parents in our ignore list.
@@ -364,11 +364,11 @@ class ReferrerTree(reftree.Tree):
         return ""
 
 
-def dowser_filter_factory(global_conf, **kwargs):
+def dozer_filter_factory(global_conf, **kwargs):
     def filter(app):
         return Dowser(app, global_conf, **kwargs)
     return filter
 
 
-def dowser_filter_app_factory(app, global_conf, **kwargs):
+def dozer_filter_app_factory(app, global_conf, **kwargs):
     return Dowser(app, global_conf, **kwargs)
