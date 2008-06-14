@@ -8,7 +8,7 @@ except ImportError:
 version = '0.1'
 
 setup(
-    name="Dowser",
+    name="Dozer",
     version=version,
     description='GC WSGI Explorer',
     long_description="",

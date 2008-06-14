@@ -50,7 +50,7 @@ def template(req, name, **params):
     return open(os.path.join(localDir, 'media', name)).read() % p
 
 
-class Dowser(object):
+class Dozer(object):
     """Sets up a page that displays object information to help
     troubleshoot memory leaks"""
     period = 5
@@ -66,7 +66,7 @@ class Dowser(object):
     
     def __call__(self, environ, start_response):
         assert not environ['wsgi.multiprocess'], (
-            "Dowser middleware is not usable in a "
+            "Dozer middleware is not usable in a "
             "multi-process environment")
         req = Request(environ)
         req.base_path = req.application_url + '/_dozer'
@@ -366,9 +366,9 @@ class ReferrerTree(reftree.Tree):
 
 def dozer_filter_factory(global_conf, **kwargs):
     def filter(app):
-        return Dowser(app, global_conf, **kwargs)
+        return Dozer(app, global_conf, **kwargs)
     return filter
 
 
 def dozer_filter_app_factory(app, global_conf, **kwargs):
-    return Dowser(app, global_conf, **kwargs)
+    return Dozer(app, global_conf, **kwargs)
