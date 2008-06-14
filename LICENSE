@@ -1,0 +1,15 @@
+LICENSE
+-------
+This work, including the source code, documentation
+and related data, is placed into the public domain.
+
+The original author is Robert Brewer, with WSGI
+modifications by Ben Bangert.
+fumanchu@aminus.org
+
+THIS SOFTWARE IS PROVIDED AS-IS, WITHOUT WARRANTY
+OF ANY KIND, NOT EVEN THE IMPLIED WARRANTY OF
+MERCHANTABILITY. THE AUTHOR OF THIS SOFTWARE
+ASSUMES _NO_ RESPONSIBILITY FOR ANY CONSEQUENCE
+RESULTING FROM THE USE, MODIFICATION, OR
+REDISTRIBUTION OF THIS SOFTWARE.

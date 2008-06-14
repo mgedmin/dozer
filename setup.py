@@ -36,4 +36,10 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    entry_points="""
+        [paste.filter_factory]
+        dowser = dowser:dowser_filter_factory
+        [paste.filter_app_factory]
+        dowser = dowser:dowser_filter_app_factory
+    """,
 )

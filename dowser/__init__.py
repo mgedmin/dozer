@@ -1,7 +1,6 @@
 import cgi
 import gc
 import os
-import reftree
 import sys
 import threading
 import time
@@ -16,6 +15,8 @@ from paste import urlparser
 from pkg_resources import resource_filename
 from webob import Request, Response
 from webob import exc
+
+import dowser.reftree as reftree
 
 localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
@@ -46,7 +47,7 @@ def template(req, name, **params):
          'home': url(req, "/index"),
          }
     p.update(params)
-    return open(os.path.join(localDir, name)).read() % p
+    return open(os.path.join(localDir, 'media', name)).read() % p
 
 
 class Dowser(object):
@@ -55,7 +56,7 @@ class Dowser(object):
     period = 5
     maxhistory = 300
     
-    def __init__(self, app, media_paths=None):
+    def __init__(self, app, global_conf=None, media_paths=None, **kwargs):
         self.app = app
         self.media_paths = media_paths or {}
         self.history = {}
@@ -86,7 +87,7 @@ class Dowser(object):
     
     def media(self, req):
         """Static path where images and other files live"""
-        path = resource_filename('dowser')
+        path = resource_filename('dowser', 'media')
         app = urlparser.StaticURLParser(path)
         return app
     media.exposed = True
@@ -361,3 +362,13 @@ class ReferrerTree(reftree.Tree):
             if getattr(obj, k, None) is referent:
                 return " (via its %r attribute)" % k
         return ""
+
+
+def dowser_filter_factory(global_conf, **kwargs):
+    def filter(app):
+        return Dowser(app, global_conf, **kwargs)
+    return filter
+
+
+def dowser_filter_app_factory(app, global_conf, **kwargs):
+    return Dowser(app, global_conf, **kwargs)
