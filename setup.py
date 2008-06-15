@@ -11,9 +11,29 @@ setup(
     name="Dozer",
     version=version,
     description='GC WSGI Explorer',
-    long_description="",
+    long_description="""
+Dozer
+=====
+
+Dozer is a WSGI middleware version of Robert Brewer's
+`Dowser CherryPy tool <http://www.aminus.net/wiki/Dowser>`_ that
+displays information as collected by the gc module to assist in
+tracking down memory leaks.
+
+Usage::
+
+    from dozer import Dozer
+
+    # my_wsgi_app is a WSGI application
+    wsgi_app = Dozer(my_wsgi_app)
+
+Assuming you're serving your application on the localhost at port 5000,
+you can then load up ``http://localhost:5000/_dozer/index`` to view the
+gc info.
+
+""",
     keywords='web wsgi memory profiler',
-    license='BSD',
+    license='Public Domain',
     author='Ben Bangert',
     author_email='ben@groovie.org',
     url='http://www.pylonshq.com/',
@@ -29,8 +49,9 @@ setup(
         "http://www.pylonshq.com/download/0.9.7"
     ],
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
+        "License :: Public Domain",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
