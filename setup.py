@@ -10,7 +10,7 @@ version = '0.2'
 setup(
     name="Dozer",
     version=version,
-    description='GC WSGI Explorer',
+    description="WSGI Middleware version of the CherryPy memory leak debugger",
     long_description="""
 Dozer
 =====
