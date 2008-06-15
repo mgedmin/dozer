@@ -1,2 +1,3 @@
 recursive-include dozer/media *
 include LICENSE
+include CHANGELOG
