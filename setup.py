@@ -8,7 +8,7 @@ except ImportError:
 version = '0.2'
 
 setup(
-    name="Dozer ",
+    name="Dozer",
     version=version,
     description="WSGI Middleware version of the CherryPy memory leak debugger",
     long_description="""
