@@ -7,8 +7,8 @@ import time
 from StringIO import StringIO
 from types import FrameType, ModuleType
 
-import Image
-import ImageDraw
+from PIL import Image
+from PIL import ImageDraw
 
 from paste import fileapp
 from paste import urlparser
@@ -221,7 +221,7 @@ class Dozer(object):
                     # Attributes
                     rows.append('<div class="obj"><h3>Attributes</h3>')
                     for k in dir(obj):
-                        v = getattr(obj, k)
+                        v = getattr(obj, k, AttributeError)
                         if type(v) not in method_types:
                             rows.append('<p class="attr"><b>%s:</b> %s</p>' %
                                         (k, get_repr(v)))
@@ -312,6 +312,8 @@ class ReferrerTree(reftree.Tree):
             
             # Exclude all functions and classes from this module or reftree.
             mod = getattr(ref, "__module__", "")
+            if mod is None:
+                continue
             if "dozer" in mod or "reftree" in mod or mod == '__main__':
                 continue
             
@@ -356,11 +358,11 @@ class ReferrerTree(reftree.Tree):
         if isinstance(obj, dict):
             for k, v in obj.iteritems():
                 if v is referent:
-                    return " (via its %r key)" % k
+                    return " (via its %r key)" % repr(k)
         
         for k in dir(obj) + ['__dict__']:
             if getattr(obj, k, None) is referent:
-                return " (via its %r attribute)" % k
+                return " (via its %r attribute)" % repr(k)
         return ""
 
 
