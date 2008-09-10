@@ -76,10 +76,22 @@ class Profiler(object):
     def run_profile(self, environ, start_response):
         """Run the profile over the request and save it"""
         prof = cProfile.Profile()
-        globs = globals()
-        local = {'environ':environ, 'start_response':start_response,
-                 'self':self}
-        prof.runctx('content = self.app(environ, start_response)', globs, local)
+        response_body = []
+
+        def catching_start_response(status, headers, exc_info=None):
+            start_response(status, headers, exc_info)
+            return response_body.append
+
+        def runapp():
+            appiter = self.app(environ, catching_start_response)
+            try:
+                response_body.extend(appiter)
+            finally:
+                if hasattr(appiter, 'close'):
+                    appiter.close()
+
+        prof.runcall(runapp)
+        body = ''.join(response_body)
         results = prof.getstats()
         tree = buildtree(results)
         
@@ -99,7 +111,7 @@ class Profiler(object):
         dir_name = self.profile_path or ''
         cPickle.dump(profile_run, open(os.path.join(dir_name, fname), 'wb'))
         del results, tree, profile_run
-        return local['content']
+        return [body]
 
 
 def label(code):
