@@ -1,0 +1,162 @@
+/* @group Reset */
+/* Reset CSS v1.0 | 20080212 */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, button, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; background: transparent;}
+
+body {line-height: 1;}
+ol, ul {list-style: none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after,q:before, q:after {content: ''; content: none;}
+
+:focus {outline: 0;} /* TODO: define focus styles */
+
+ins {text-decoration: none;} /* TODO: highlight inserts */
+del {text-decoration: line-through;}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {border: 1px solid #cccdcd; border-left: 0; border-bottom: 0; border-collapse: collapse; border-spacing: 0;}
+/* @end */
+
+/* @group Defaults */
+body {background: #0d0d0d url(/images/body.gif) 0 0 repeat-x; color: #fff; font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif; font-size: 12px; text-align: center;}
+h1, h2, h3, h4, h5, h6, p, img, ul, ol, li, dl, dt, dd, blockquote, pre, code, div, table, tr, th, td, tbody, tfoot, fieldset, legend, input, textarea, select, button {line-height: 18px;}
+
+h1, h2, h3, h4, h5, h6, dt, legend {background: transparent; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+h1 {color: #fff; font-size: 18px;}
+h2 {background: #939393 url(/images/controller.gif) 0 -9px repeat-x; border-bottom: 1px solid #666; clear: both; color: #333; font-weight: normal; padding: 3px 18px;}
+h2 span {font-weight: bold;}
+h3 {}
+h4 {background: #e6e6e6 url(/images/section.gif) 0 100% repeat-x; color: #666; font-size: 12px; letter-spacing: 1px; padding: 3px 18px;}
+h4 img {padding-left: 10px; margin-bottom: -4px; padding-top: 0px;}
+h4 span {font-weight: normal; text-transform: uppercase; font-size: 11px;}
+h5 {font-size: 14px;}
+h6 {font-size: 12px;}
+
+samp {color: #545454;}
+cite {font-size: 11px; font-style: normal; font-weight: bold;}
+blockquote, .note {font-family: Georgia, "Times Roman", "Times New Roman", serif;}
+blockquote {font-style: italic;}
+
+p, ul, ol, dl, blockquote, pre, table {margin-bottom: 18px;}
+
+dt {font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 9px; text-transform: uppercase;}
+
+a {border: 0; outline: none;}
+a:link, a:visited {color: #001999; text-decoration: underline;}
+a:hover {color: #001999; text-decoration: none;}
+a:active {color: #343434; text-decoration: none;}
+
+table {empty-cells: show; margin-bottom: 18px;}
+th {background: #eee url(/images/th.gif) 0 100% repeat-x;}
+td {background: transparent url(/images/rows.gif) 0 100% no-repeat;}
+th, td {padding: 3px 9px; vertical-align: middle;}
+img {background: transparent; border: 0;}
+legend {}
+
+label, .bold {color: #535353; display: block; font-weight: bold; line-height: 18px;}
+input, select, textarea {line-height: 18px; margin: 0; margin-bottom: 18px;}
+input, textarea {border: 1px solid #999; outline: none;}
+button {background: none; cursor: pointer; margin-right: 9px; vertical-align: middle;}
+table select, table input, table textarea {margin: 3px 0;}
+/* @end */
+
+
+/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.5.1
+*/
+/* Modified to target #profile div */
+
+/* Styling */
+#profile { margin-top: 10px; color: #ddd; background-color: #000; padding: 9px; font-family: "Helvetica Neue", "Lucida Grande", Calibri, Helvetica, Verdana, sans-serif; font-size: 12px; }
+#profile #profile-content { margin-left: 170px; color: #000; height: 61px; vertical-align: middle; text-align: left; }
+#profile-root-bar { float: right; }
+#profile-root-bar li { float: left; border: 1px solid white; }
+#profile a, #profile a:visited { color: #fff; text-decoration: underline; font-size: 12px; border: 0; }
+#profile #profile-content p.full { height: 61px; line-height: 61px; vertical-align: middle; padding: 0; }
+#profile .small { font-size: 10px; color: #666; padding: 0 8px 0 8px;}
+
+.profile_bar { margin: 0 4px; margin-left: 10px; list-style: none; }
+.profile_bar li { height: 20px; color: #fff; vertical-align: middle; font-size: 11px; padding: 0 4px;
+ background-image: url(/_profiler/media/images/fade.png);
+ background-position: bottom left;
+ background-repeat: repeat-x;
+}
+.layer { background-color: #FF9800; border-right: none; }
+
+#profile ul.step-info { clear: left; margin: 0; padding: 1px 0; height: 20px;}
+#profile ul .title { float: left; overflow: hidden; width: 400px; margin: 0 10px 0 0; padding: 0; color: #ddd; font-size: 12px; text-transform: none; font-weight: inherit; height: 20px;}
+#profile ul .title p { text-align: left;}
+#profile ul .bar {float: left; height: 20px;}
+#profile ul .title strong { color: #fff; font-weight: bold; }
+#profile ul .title span.time { float: right; text-transform: none; font-size: 11px; font-weight: normal; margin-right: 0px; }
+
+#profile ul .title a, ul .title a:active, ul .title a:visited {
+ text-decoration: none;
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+#profile .profile_bar li { text-align: center; }
+
+#profile li.step { float: left; padding-left: 4px; background: url(/images/pip.gif) 4px 0 no-repeat; clear: left; }
+#profile li.with-children { background: url(/images/arrows.gif) 4px 0 no-repeat;}
+#profile li.tuneup-opened { background: url(/images/arrows.gif) 4px -20px no-repeat; }
+
+#profile ul { margin: 0; padding: 0; }
+#profile ul span.time { margin-right: 12px; }
+
+#profile li .children { display: none; }
+
+#profile ul .title { padding-left: 16px;}
+
+#profile ul ul.profile_children { background: #111; }
+#profile ul ul .bar { }
+#profile ul ul .title { width: 496px; }
+
+#profile ul ul ul.profile_children { background: #222;}
+#profile ul ul ul .title { width: 492px; }
+
+
+#profile ul ul ul ul.children { background: #333;}
+#profile ul ul ul ul .title { width: 488px; }
+
+
+#profile ul ul ul ul ul.profile_children { background: #444;}
+#profile ul ul ul ul ul .title { width: 484px; }
+
+
+#profile ul ul ul ul ul ul.profile_children { background: #555;}
+#profile ul ul ul ul ul ul .title { width: 480px; }
+
+#profile ul ul ul ul ul ul ul.profile_children { background: #666;}
+#profile ul ul ul ul ul ul ul .title { width: 476px; }
+
+#profile ul ul ul ul ul ul ul ul .title { width: 472px; }
+
+#profile ul ul ul ul ul ul ul ul ul .title { width: 468px; }
+
+#profile-flash { display: none; text-align: left; font-size: 12px; padding: 5px; color: #000; border-bottom: 1px #000 solid; }
+#profile-flash emph { color: #666; font-style: italic; }
+#profile-flash p { font-family: sans-serif; margin: 0; }
+#profile-flash p { padding: 0; padding-left: 20px; font-family: sans-serif; background: none; color: #000; border: 0; }
+#profile-flash.tuneup-show { display: block; }
+#profile-flash.tuneup-error { background: #FDFCDB; }
+#profile-flash.tuneup-error p { background: url(/images/warning.gif) 0 50% no-repeat; }
+#profile-flash.tuneup-notice { padding-left: 0; background: #E4FFDE; }
+
+#profile .profile_bar { float: left; width: 400px; padding: 0;}
+#profile .profile_bar li { float: left; height: 18px; padding: 0;}
+
+#profile a.tuneup-sql { color: 001999; margin-left: 10px; }
+#profile a img { border: 0; }
+
+#profile .tuneup-halo { display: none; }
+#profile .step-info:hover .tuneup-halo { display: inline; }
+
+#profile textarea { background: none; overflow: hidden; color: #fff; font-size: 12px; font-family: sans-serif; padding: 4px; border: 0; font-family: monospace; }
+#profile table { border: 0; margin-top: 4px; background: #111; } /* sql */
+#profile th { background: #000; padding: 4px; color: #fff; font-size: 12px; text-align: left; border: 0; font-weight: bold; border: 1px #333 solid; border-left: 0; border-top: 0; }
+#profile td { background: #111; padding: 4px; color: #ddd; font-size: 12px; text-align: left; border: 0; }

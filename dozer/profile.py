@@ -6,6 +6,7 @@ from datetime import datetime
 from pkg_resources import resource_filename
 
 from mako.lookup import TemplateLookup
+from paste import urlparser
 from webob import Request, Response
 from webob import exc
 
@@ -149,6 +150,7 @@ def buildtree(data):
         if entry.calls:
             for subentry in entry.calls:
                 subnode = {}
+                subnode['builtin'] = isinstance(subentry.code, str)
                 subnode['cost'] = setup_time(subentry.totaltime)
                 subnode['function'] = label(subentry.code)
                 subnode['callcount'] = subentry.callcount

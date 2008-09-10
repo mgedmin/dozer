@@ -13,6 +13,8 @@
 <%def name="title()">Dozer - Profiler</%def>
 ##
 <%def name="styles()">
+<link href="/_profiler/media/profile.css" media="screen" rel="Stylesheet" type="text/css" />
 </%def>
 <%def name="javascript()">
+<script src="/_profiler/media/jquery-1.2.6.min.js" charset="utf-8"></script>
 </%def>
