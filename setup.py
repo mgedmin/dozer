@@ -60,7 +60,9 @@ gc info.
     entry_points="""
         [paste.filter_factory]
         dozer = dozer:dozer_filter_factory
+        profile = dozer:profile_filter_factory
         [paste.filter_app_factory]
         dozer = dozer:dozer_filter_app_factory
+        profile = dozer:profile_filter_app_factory
     """,
 )

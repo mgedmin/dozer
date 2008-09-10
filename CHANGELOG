@@ -2,7 +2,8 @@ Dozer Changelog
 ===============
 
 0.2 (**tip**)
-
+* Adding profiler for request profiling and call tree viewing.
+* Refactored Dozer into its own leak package.
 
 0.1 (June 14, 2008)
 * Initial public release, port from Dowser, a CherryPy tool.
