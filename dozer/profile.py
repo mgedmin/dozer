@@ -2,6 +2,7 @@ import cProfile
 import cPickle
 import time
 import os
+import re
 from datetime import datetime
 from pkg_resources import resource_filename
 
@@ -12,14 +13,18 @@ from webob import exc
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 
+DEFAULT_IGNORED_PATHS = [r'/favicon\.ico$', r'^/error/document']
+
 class Profiler(object):
-    def __init__(self, app, global_conf=None, profile_path=None, **kwargs):
+    def __init__(self, app, global_conf=None, profile_path=None,
+                 ignored_paths=DEFAULT_IGNORED_PATHS, **kwargs):
         """Profiles an application and saves the pickled version to a
         file
         """
         self.app = app
         self.conf = global_conf
         self.profile_path = profile_path
+        self.ignored_paths = map(re.compile, ignored_paths)
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
     
@@ -31,12 +36,13 @@ class Profiler(object):
         req.base_path = req.application_url + '/_profiler'
         if req.path_info_peek() == '_profiler':
             return self.profiler(req)(environ, start_response)
-        elif not environ['PATH_INFO'].startswith('/error/document') and \
-            not environ['PATH_INFO'].startswith('/favicon.ico'):
-            return self.run_profile(environ, start_response)
+        for regex in self.ignored_paths:
+            if regex.match(environ['PATH_INFO']) is not None:
+                break
         else:
-            return self.app(environ, start_response)
-    
+            return self.run_profile(environ, start_response)
+        return self.app(environ, start_response)
+
     def profiler(self, req):
         assert req.path_info_pop() == '_profiler'
         next_part = req.path_info_pop()
