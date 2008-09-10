@@ -106,10 +106,12 @@ class Profiler(object):
                 safe_environ[k] = v
         profile_run = dict(time=datetime.now(), profile=tree,
                            environ=safe_environ)
-        fname = str(time.time()).replace('.', '_') + '.pkl'
+        fname_base = str(time.time()).replace('.', '_')
+        prof_file = fname_base + '.pkl'
         
         dir_name = self.profile_path or ''
-        cPickle.dump(profile_run, open(os.path.join(dir_name, fname), 'wb'))
+        cPickle.dump(profile_run, open(os.path.join(dir_name, prof_file), 'wb'))
+        write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'))
         del results, tree, profile_run
         return [body]
 
@@ -122,6 +124,11 @@ def label(code):
         return '%s %s:%d' % (code.co_name,
                              code.co_filename,
                              code.co_firstlineno)
+
+
+def graphlabel(code):
+    lb = label(code)
+    return lb.replace('"', "'").strip()
 
 
 def setup_time(t):
@@ -138,6 +145,39 @@ def setup_time(t):
     t = t*1000
     t = '%0.2f' % t
     return t
+
+def write_dot_graph(data, tree, filename):
+    f = open(filename, 'w')
+    f.write('digraph prof {\n')
+    f.write('\tsize="11,9"; ratio = fill;\n')
+    f.write('\tnode [style=filled];\n')
+    
+    # Find the largest time
+    highest = 0.00
+    for entry in tree.values():
+        if float(entry['cost']) > highest:
+            highest = float(entry['cost'])
+    
+    for entry in data:
+        code = entry.code
+        entry_name = graphlabel(code)
+        if isinstance(code, str) or setup_time(entry.totaltime) == '0.00':
+            continue
+            code = code.replace("\n",'').strip()
+            f.write('\t"%s" [label="%s\\n%sms"]\n' % (entry_name, code))
+        else:
+            t = tree[label(code)]['cost']
+            f.write('\t"%s" [label="%s\\n%sms"]\n' % (entry_name, code.co_name, t))
+        if entry.calls:
+            for subentry in entry.calls:
+                subcode = subentry.code
+                if isinstance(subcode, str) or setup_time(subentry.totaltime) == '0.00':
+                    continue
+                sub_name = graphlabel(subcode)
+                f.write('\t"%s" -> "%s"\n' % (entry_name, sub_name))
+    f.write('}\n')
+    f.close()
+
 
 def buildtree(data):
     """Takes a pmstats object as returned by cProfile and constructs
