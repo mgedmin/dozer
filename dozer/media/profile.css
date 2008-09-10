@@ -138,6 +138,11 @@ version: 2.5.1
 
 #profile ul ul ul ul ul ul ul ul ul .title { width: 468px; }
 
+#profile ul ul ul ul ul ul ul ul ul ul .title { width: 464px; }
+
+#profile ul ul ul ul ul ul ul ul ul ul ul .title { width: 460px; }
+
+
 #profile-flash { display: none; text-align: left; font-size: 12px; padding: 5px; color: #000; border-bottom: 1px #000 solid; }
 #profile-flash emph { color: #666; font-style: italic; }
 #profile-flash p { font-family: sans-serif; margin: 0; }

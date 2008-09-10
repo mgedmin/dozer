@@ -44,8 +44,8 @@ sys.setrecursionlimit(450)
 <ul class="step-info">
 <li class="title"><p><span class="time">${node['cost']}ms</span>
 % if has_children:
-<a href="#" onclick="$('#children_step_${parent_id}').toggle();$('#step_${parent_id}').toggleClass('opened');return false;">\
-${node['function']|h}</a>\
+<a href="#" title="${node['filename']}:${node['line_no']}" onclick="$('#children_step_${parent_id}').toggle();$('#step_${parent_id}').toggleClass('opened');return false;">\
+${node['func_name']|h}</a>\
 % else:
 ${node['function']|h}\
 % endif
@@ -56,7 +56,7 @@ ${node['function']|h}\
     </ul>
     <br style="clear: left;" />
 </li>
-<li style="clear: left;">&nbsp;</li>
+<li style="clear: left;"> </li>
 </ul>\
 % if has_children:
 <% depth = depth + 1 %>
@@ -69,7 +69,7 @@ ${node['function']|h}\
 %>
 ${show_node(called, depth, tottime)}\
 % endfor
-<li style="clear: left;">&nbsp;</li>
+<li style="clear: left;"> </li>
 </ul>
 </li>
 % endif

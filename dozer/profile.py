@@ -165,17 +165,17 @@ def write_dot_graph(data, tree, filename):
     for entry in data:
         code = entry.code
         entry_name = graphlabel(code)
-        if isinstance(code, str) or setup_time(entry.totaltime) == '0.00':
+        skip = float(setup_time(entry.totaltime)) < 0.2
+        if isinstance(code, str) or skip:
             continue
-            code = code.replace("\n",'').strip()
-            f.write('\t"%s" [label="%s\\n%sms"]\n' % (entry_name, code))
         else:
             t = tree[label(code)]['cost']
             f.write('\t"%s" [label="%s\\n%sms"]\n' % (entry_name, code.co_name, t))
         if entry.calls:
             for subentry in entry.calls:
                 subcode = subentry.code
-                if isinstance(subcode, str) or setup_time(subentry.totaltime) == '0.00':
+                skip = float(setup_time(subentry.totaltime)) < 0.2
+                if isinstance(subcode, str) or skip:
                     continue
                 sub_name = graphlabel(subcode)
                 f.write('\t"%s" -> "%s"\n' % (entry_name, sub_name))
@@ -201,11 +201,10 @@ def buildtree(data):
             node['source_position'] = code.co_firstlineno
             node['func_name'] = code.co_name
             node['line_no'] = code.co_firstlineno
-        node['cost'] = setup_time(entry.inlinetime)
+        node['cost'] = setup_time(entry.totaltime)
         node['function'] = label(code)
         
         if entry.calls:
-            start = entry.inlinetime
             for subentry in entry.calls:
                 subnode = {}
                 subnode['builtin'] = isinstance(subentry.code, str)
@@ -214,8 +213,6 @@ def buildtree(data):
                 subnode['callcount'] = subentry.callcount
                 node.setdefault('calls', []).append(subnode)
                 callregistry.setdefault(subnode['function'], []).append(node['function'])
-                start += subentry.totaltime
-            node['cost'] = setup_time(start)
         else:
             node['calls'] = []
         functree[node['function']] = node
