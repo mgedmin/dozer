@@ -12,6 +12,12 @@ sys.setrecursionlimit(450)
     <div id="profile">\
         <ul>
         % for node in profile:
+        <%
+            if "disable' of '_lsprof.Profiler" in node['function']:
+                continue
+            if '<module>' in node['function'] and '<string>:1' in node['function']:
+                node = profile_data[node['calls'][0]['function']]
+        %>
         ${show_node(node, 0, node['cost'])}\
         % endfor
         </ul>
@@ -38,7 +44,7 @@ sys.setrecursionlimit(450)
 <ul class="step-info">
 <li class="title"><p><span class="time">${node['cost']}ms</span>
 % if has_children:
-<a href="#" onclick="$('#children_step_${parent_id}').toggle();$('#step_${parent_id}').toggleClassName('opened');return false;">\
+<a href="#" onclick="$('#children_step_${parent_id}').toggle();$('#step_${parent_id}').toggleClass('opened');return false;">\
 ${node['function']|h}</a>\
 % else:
 ${node['function']|h}\
@@ -53,13 +59,13 @@ ${node['function']|h}\
 <li style="clear: left;">&nbsp;</li>
 </ul>\
 % if has_children:
+<% depth = depth + 1 %>
 <ul id="children_step_${parent_id}" class="profile_children" style="display:none;">\
 % for called_node in node['calls']:
 <%
     called = profile_data[called_node['function']]
     if called_node['builtin']: continue
-    depth = depth + 1
-    if depth > 30: continue
+    if depth > 15: continue
 %>
 ${show_node(called, depth, tottime)}\
 % endfor

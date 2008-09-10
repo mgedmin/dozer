@@ -98,6 +98,7 @@ class Profiler(object):
         
         dir_name = self.profile_path or ''
         cPickle.dump(profile_run, open(os.path.join(dir_name, fname), 'wb'))
+        del results, tree, profile_run
         return local['content']
 
 
@@ -144,10 +145,11 @@ def buildtree(data):
             node['source_position'] = code.co_firstlineno
             node['func_name'] = code.co_name
             node['line_no'] = code.co_firstlineno
-        node['cost'] = setup_time(entry.totaltime)
+        node['cost'] = setup_time(entry.inlinetime)
         node['function'] = label(code)
         
         if entry.calls:
+            start = entry.inlinetime
             for subentry in entry.calls:
                 subnode = {}
                 subnode['builtin'] = isinstance(subentry.code, str)
@@ -156,6 +158,8 @@ def buildtree(data):
                 subnode['callcount'] = subentry.callcount
                 node.setdefault('calls', []).append(subnode)
                 callregistry.setdefault(subnode['function'], []).append(node['function'])
+                start += subentry.totaltime
+            node['cost'] = setup_time(start)
         else:
             node['calls'] = []
         functree[node['function']] = node

@@ -101,9 +101,9 @@ version: 2.5.1
 
 #profile .profile_bar li { text-align: center; }
 
-#profile li.step { float: left; padding-left: 4px; background: url(/images/pip.gif) 4px 0 no-repeat; clear: left; }
-#profile li.with-children { background: url(/images/arrows.gif) 4px 0 no-repeat;}
-#profile li.tuneup-opened { background: url(/images/arrows.gif) 4px -20px no-repeat; }
+#profile li.step { float: left; padding-left: 4px; background: url(/_profiler/media/images/pip.gif) 4px 0 no-repeat; clear: left; }
+#profile li.with-children { background: url(/_profiler/media/images/arrows.gif) 4px 0 no-repeat;}
+#profile li.opened { background: url(/_profiler/media/images/arrows.gif) 4px -20px no-repeat; }
 
 #profile ul { margin: 0; padding: 0; }
 #profile ul span.time { margin-right: 12px; }
