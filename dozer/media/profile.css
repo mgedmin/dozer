@@ -17,15 +17,15 @@ table {border: 1px solid #cccdcd; border-left: 0; border-bottom: 0; border-colla
 /* @end */
 
 /* @group Defaults */
-body {background: #0d0d0d url(/images/body.gif) 0 0 repeat-x; color: #fff; font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif; font-size: 12px; text-align: center;}
+body {background: #0d0d0d url(images/body.gif) 0 0 repeat-x; color: #fff; font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif; font-size: 12px; text-align: center;}
 h1, h2, h3, h4, h5, h6, p, img, ul, ol, li, dl, dt, dd, blockquote, pre, code, div, table, tr, th, td, tbody, tfoot, fieldset, legend, input, textarea, select, button {line-height: 18px;}
 
 h1, h2, h3, h4, h5, h6, dt, legend {background: transparent; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
 h1 {color: #fff; font-size: 18px;}
-h2 {background: #939393 url(/images/controller.gif) 0 -9px repeat-x; border-bottom: 1px solid #666; clear: both; color: #333; font-weight: normal; padding: 3px 18px;}
+h2 {background: #939393 url(images/controller.gif) 0 -9px repeat-x; border-bottom: 1px solid #666; clear: both; color: #333; font-weight: normal; padding: 3px 18px;}
 h2 span {font-weight: bold;}
 h3 {}
-h4 {background: #e6e6e6 url(/images/section.gif) 0 100% repeat-x; color: #666; font-size: 12px; letter-spacing: 1px; padding: 3px 18px;}
+h4 {background: #e6e6e6 url(images/section.gif) 0 100% repeat-x; color: #666; font-size: 12px; letter-spacing: 1px; padding: 3px 18px;}
 h4 img {padding-left: 10px; margin-bottom: -4px; padding-top: 0px;}
 h4 span {font-weight: normal; text-transform: uppercase; font-size: 11px;}
 h5 {font-size: 14px;}
@@ -46,8 +46,8 @@ a:hover {color: #001999; text-decoration: none;}
 a:active {color: #343434; text-decoration: none;}
 
 table {empty-cells: show; margin-bottom: 18px;}
-th {background: #eee url(/images/th.gif) 0 100% repeat-x;}
-td {background: transparent url(/images/rows.gif) 0 100% no-repeat;}
+th {background: #eee url(images/th.gif) 0 100% repeat-x;}
+td {background: transparent url(images/rows.gif) 0 100% no-repeat;}
 th, td {padding: 3px 9px; vertical-align: middle;}
 img {background: transparent; border: 0;}
 legend {}
@@ -79,7 +79,7 @@ version: 2.5.1
 
 .profile_bar { margin: 0 4px; margin-left: 10px; list-style: none; }
 .profile_bar li { height: 20px; color: #fff; vertical-align: middle; font-size: 11px; padding: 0 4px;
- background-image: url(/_profiler/media/images/fade.png);
+ background-image: url(images/fade.png);
  background-position: bottom left;
  background-repeat: repeat-x;
 }
@@ -101,9 +101,9 @@ version: 2.5.1
 
 #profile .profile_bar li { text-align: center; }
 
-#profile li.step { float: left; padding-left: 4px; background: url(/_profiler/media/images/pip.gif) 4px 0 no-repeat; clear: left; }
-#profile li.with-children { background: url(/_profiler/media/images/arrows.gif) 4px 0 no-repeat;}
-#profile li.opened { background: url(/_profiler/media/images/arrows.gif) 4px -20px no-repeat; }
+#profile li.step { float: left; padding-left: 4px; background: url(images/pip.gif) 4px 0 no-repeat; clear: left; }
+#profile li.with-children { background: url(images/arrows.gif) 4px 0 no-repeat;}
+#profile li.opened { background: url(images/arrows.gif) 4px -20px no-repeat; }
 
 #profile ul { margin: 0; padding: 0; }
 #profile ul span.time { margin-right: 12px; }
@@ -144,7 +144,7 @@ version: 2.5.1
 #profile-flash p { padding: 0; padding-left: 20px; font-family: sans-serif; background: none; color: #000; border: 0; }
 #profile-flash.tuneup-show { display: block; }
 #profile-flash.tuneup-error { background: #FDFCDB; }
-#profile-flash.tuneup-error p { background: url(/images/warning.gif) 0 50% no-repeat; }
+#profile-flash.tuneup-error p { background: url(images/warning.gif) 0 50% no-repeat; }
 #profile-flash.tuneup-notice { padding-left: 0; background: #E4FFDE; }
 
 #profile .profile_bar { float: left; width: 400px; padding: 0;}

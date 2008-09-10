@@ -27,7 +27,7 @@ class Profiler(object):
         self.ignored_paths = map(re.compile, ignored_paths)
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
-    
+
     def __call__(self, environ, start_response):
         assert not environ['wsgi.multiprocess'], (
             "Dozer middleware is not usable in a "
@@ -38,10 +38,8 @@ class Profiler(object):
             return self.profiler(req)(environ, start_response)
         for regex in self.ignored_paths:
             if regex.match(environ['PATH_INFO']) is not None:
-                break
-        else:
-            return self.run_profile(environ, start_response)
-        return self.app(environ, start_response)
+                return self.app(environ, start_response)
+        return self.run_profile(environ, start_response)
 
     def profiler(self, req):
         assert req.path_info_pop() == '_profiler'
