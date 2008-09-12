@@ -43,7 +43,7 @@ def url(req, path):
 
 
 def template(req, name, **params):
-    p = {'maincss': url(req, "/media/main.css"),
+    p = {'maincss': url(req, "/media/css/main.css"),
          'home': url(req, "/index"),
          }
     p.update(params)
