@@ -95,7 +95,7 @@ class Profiler(object):
 
     def delete(self, req):
         for filename in os.listdir(self.profile_path):
-            if filename.endswith('.pkl') or filename.endswith('.gz'):
+            if filename.endswith('.pkl') or filename.endswith('.gv'):
                 os.unlink(os.path.join(self.profile_path, filename))
         res = Response()
         res.location = '/_profiler/all'
