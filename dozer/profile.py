@@ -101,6 +101,7 @@ class Profiler(object):
         res.location = '/_profiler/all'
         res.status_int = 302
         return res
+    delete.exposed = True
 
 
     def render(self, name, **vars):
