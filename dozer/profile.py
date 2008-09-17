@@ -1,5 +1,6 @@
 import cProfile
 import cPickle
+import errno
 import time
 import os
 import re
@@ -50,14 +51,14 @@ class Profiler(object):
         if not getattr(method, 'exposed', False):
             return exc.HTTPForbidden('Access to %r is forbidden' % next_part)
         return method(req)
-    
+
     def media(self, req):
         """Static path where images and other files live"""
         path = resource_filename('dozer', 'media')
         app = urlparser.StaticURLParser(path)
         return app
     media.exposed = True
-    
+
     def show(self, req):
         profile_id = req.path_info_pop()
         if not profile_id:
@@ -73,10 +74,51 @@ class Profiler(object):
         return res
     show.exposed = True
 
+    def showall(self, req):
+        dir_name = self.profile_path
+        profiles = []
+        for profile_file in os.listdir(dir_name):
+            if profile_file.endswith('.pkl'):
+                path = os.path.join(self.profile_path, profile_file)
+                modified = os.stat(path).st_mtime
+                data = cPickle.load(open(path, 'rb'))
+                environ = data['environ']
+                profiles.append((modified, environ, profile_file[:-4]))
+
+        profiles.sort(reverse=True)
+        res = Response()
+        res.body = self.render('/list_profiles.mako', profiles=profiles,
+                               now=time.time())
+        return res
+    showall.exposed = True
+
+    def delete(self, req):
+        profile_id = req.path_info_pop()
+        if profile_id: # this prob a security risk
+            try:
+                for ext in ('.gv', '.pkl'):
+                    os.unlink(os.path.join(self.profile_path, profile_id + ext))
+            except OSError, e:
+                if e.errno == errno.ENOENT:
+                    pass # allow a file not found exception
+                else:
+                    raise
+            return Response('deleted %s' % profile_id)
+
+        for filename in os.listdir(self.profile_path):
+            if filename.endswith('.pkl') or filename.endswith('.gv'):
+                os.unlink(os.path.join(self.profile_path, filename))
+        res = Response()
+        res.location = '/_profiler/showall'
+        res.status_int = 302
+        return res
+    delete.exposed = True
+
+
     def render(self, name, **vars):
         tmpl = self.mako.get_template(name)
         return tmpl.render(**vars)
-    
+
     def run_profile(self, environ, start_response):
         """Run the profile over the request and save it"""
         prof = cProfile.Profile()
@@ -98,7 +140,7 @@ class Profiler(object):
         body = ''.join(response_body)
         results = prof.getstats()
         tree = buildtree(results)
-        
+
         # Pull out 'safe' bits from environ
         safe_environ = {}
         for k, v in environ.iteritems():
@@ -112,7 +154,7 @@ class Profiler(object):
                            environ=safe_environ)
         fname_base = str(time.time()).replace('.', '_')
         prof_file = fname_base + '.pkl'
-        
+
         dir_name = self.profile_path or ''
         cPickle.dump(profile_run, open(os.path.join(dir_name, prof_file), 'wb'))
         write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'))
@@ -138,13 +180,13 @@ def graphlabel(code):
 def setup_time(t):
     """Takes a time generally assumed to be quite small and blows it
     up into millisecond time.
-    
+
     For example:
         0.004 seconds     -> 4 ms
         0.00025 seconds   -> 0.25 ms
-    
+
     The result is returned as a string.
-    
+
     """
     t = t*1000
     t = '%0.2f' % t
@@ -155,13 +197,13 @@ def write_dot_graph(data, tree, filename):
     f.write('digraph prof {\n')
     f.write('\tsize="11,9"; ratio = fill;\n')
     f.write('\tnode [style=filled];\n')
-    
+
     # Find the largest time
     highest = 0.00
     for entry in tree.values():
         if float(entry['cost']) > highest:
             highest = float(entry['cost'])
-    
+
     for entry in data:
         code = entry.code
         entry_name = graphlabel(code)
@@ -204,7 +246,7 @@ def buildtree(data):
             node['line_no'] = code.co_firstlineno
         node['cost'] = setup_time(entry.totaltime)
         node['function'] = label(code)
-        
+
         if entry.calls:
             for subentry in entry.calls:
                 subnode = {}
