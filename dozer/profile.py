@@ -1,5 +1,6 @@
 import cProfile
 import cPickle
+import errno
 import time
 import os
 import re
@@ -73,32 +74,42 @@ class Profiler(object):
         return res
     show.exposed = True
 
-    def all(self, req):
+    def showall(self, req):
         dir_name = self.profile_path
-        link = '<a href="/_profiler/show/%(pid)s">%(pid)s</a>'
         profiles = []
         for profile_file in os.listdir(dir_name):
             if profile_file.endswith('.pkl'):
-                modified = os.stat(
-                    os.path.join(self.profile_path, profile_file)
-                    ).st_mtime
-                profiles.append((modified, profile_file))
+                path = os.path.join(self.profile_path, profile_file)
+                modified = os.stat(path).st_mtime
+                data = cPickle.load(open(path, 'rb'))
+                environ = data['environ']
+                profiles.append((modified, environ, profile_file[:-4]))
+
         profiles.sort(reverse=True)
         res = Response()
-        if profiles:
-            delete_link = ['<a href="/_profiler/delete">delete all profiles</a>']
-            res.body = '<br>'.join(delete_link + [link % {'pid': name[:-4]} for (m, name) in profiles])
-        else:
-            res.body = 'no profiles'
+        res.body = self.render('/list_profiles.mako', profiles=profiles,
+                               now=time.time())
         return res
-    all.exposed = True
+    showall.exposed = True
 
     def delete(self, req):
+        profile_id = req.path_info_pop()
+        if profile_id: # this prob a security risk
+            try:
+                for ext in ('.gv', '.pkl'):
+                    os.unlink(os.path.join(self.profile_path, profile_id + ext))
+            except OSError, e:
+                if e.errno == errno.ENOENT:
+                    pass # allow a file not found exception
+                else:
+                    raise
+            return Response('deleted %s' % profile_id)
+
         for filename in os.listdir(self.profile_path):
             if filename.endswith('.pkl') or filename.endswith('.gv'):
                 os.unlink(os.path.join(self.profile_path, filename))
         res = Response()
-        res.location = '/_profiler/all'
+        res.location = '/_profiler/showall'
         res.status_int = 302
         return res
     delete.exposed = True
