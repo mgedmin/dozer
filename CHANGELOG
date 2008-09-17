@@ -2,6 +2,8 @@ Dozer Changelog
 ===============
 
 0.2 (**tip**)
+* Adding logview that appends log events for the current request to the bottom
+  of the html output for html requests.
 * Adding profiler for request profiling and call tree viewing.
 * Refactored Dozer into its own leak package.
 

@@ -1,4 +1,5 @@
 from dozer.leak import Dozer
+from dozer.logview import Logview
 from dozer.profile import Profiler
 
 
