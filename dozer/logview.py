@@ -57,9 +57,6 @@ class Logview(object):
             tok = None
         
         req = Request(environ)
-        req.base_path = req.application_url + '/_logview'
-        if req.path_info_peek() == '_logview':
-            return self.logview(req)(environ, start_response)
         start = time.time()
         response = req.get_response(self.app)
         tottime = time.time() - start
@@ -70,23 +67,6 @@ class Logview(object):
             response.body = response.body.replace('<body>',
                                                   '<body>%s' % logbar)
         return response(environ, start_response)
-
-    def logview(self, req):
-        assert req.path_info_pop() == '_logivew'
-        next_part = req.path_info_pop()
-        method = getattr(self, next_part, None)
-        if method is None:
-            return exc.HTTPNotFound('Nothing could be found to match %r' % next_part)
-        if not getattr(method, 'exposed', False):
-            return exc.HTTPForbidden('Access to %r is forbidden' % next_part)
-        return method(req)
-
-    def media(self, req):
-        """Static path where images and other files live"""
-        path = resource_filename('dozer', 'media')
-        app = urlparser.StaticURLParser(path)
-        return app
-    media.exposed = True
 
     def render(self, name, **vars):
         tmpl = self.mako.get_template(name)
