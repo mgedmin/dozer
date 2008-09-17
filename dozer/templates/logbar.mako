@@ -15,9 +15,11 @@ def bg_color(event, log_colors):
             return log_colors[key]
     return '#fff'
 %>
-<div style="width: 100%; border: 1px solid #999; padding: 3px;">
-    <a href="#" onclick="javascript:DLV.show_events();">View log events for this request</a>
-</div>
+
+<div style="width: 100%; position: absolute; top:0; left: 0; z-index: 200000;">
+    <div style="width: 100%; background-color: #fff; border: 1px solid #999; padding: 3px;">
+        <a href="#" onclick="javascript:DLV.show_events();">View log events for this request</a>
+    </div>
 <div id="DLVlogevents" style="display:none;">
     <table style="width: 100%; overflow: auto; background-color: #ddd">
         <thead>
@@ -44,6 +46,7 @@ def bg_color(event, log_colors):
         </tr>
         </tbody>
     </table>
+</div>
 </div>
 <script>
 var DLV = {};

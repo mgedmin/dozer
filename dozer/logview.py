@@ -67,8 +67,8 @@ class Logview(object):
             reqlogs = self.reqhandler.pop_events(tok)
             logbar = self.render('/logbar.mako', events=reqlogs, 
                                  logcolors = self.log_colors, tottime=tottime)
-            response.body = response.body.replace('</body>',
-                                                  '%s</body>' % logbar)
+            response.body = response.body.replace('<body>',
+                                                  '<body>%s' % logbar)
         return response(environ, start_response)
 
     def logview(self, req):
