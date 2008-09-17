@@ -178,7 +178,8 @@ def write_dot_graph(data, tree, filename):
                 if isinstance(subcode, str) or skip:
                     continue
                 sub_name = graphlabel(subcode)
-                f.write('\t"%s" -> "%s"\n' % (entry_name, sub_name))
+                f.write('\t"%s" -> "%s" [label="%s"]\n' % \
+                    (entry_name, sub_name, subentry.callcount))
     f.write('}\n')
     f.close()
 
