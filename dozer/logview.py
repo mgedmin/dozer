@@ -107,8 +107,7 @@ class RequestHandler(logging.Handler):
 
     def flush(self):
         """Kills all data in the buffer"""
-        for key in self.buffer:
-            del self.buffer[key]
+        self.buffer = {}
     
     def close(self):
         """Close the handler.
