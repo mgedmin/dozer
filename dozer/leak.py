@@ -56,9 +56,13 @@ class Dozer(object):
     period = 5
     maxhistory = 300
     
-    def __init__(self, app, global_conf=None, media_paths=None, **kwargs):
+    def __init__(self, app, global_conf=None, media_paths=None, path='/_dozer', 
+                 **kwargs):
         self.app = app
         self.media_paths = media_paths or {}
+        if path.endswith('/'):
+            path = path[:-1]
+        self.path = path
         self.history = {}
         self.samples = 0
         self.runthread = threading.Thread(target=self.start)
@@ -69,14 +73,16 @@ class Dozer(object):
             "Dozer middleware is not usable in a "
             "multi-process environment")
         req = Request(environ)
-        req.base_path = req.application_url + '/_dozer'
-        if req.path_info_peek() == '_dozer':
+        req.base_path = req.application_url + self.path
+        if (req.path_info.startswith(self.path+'/')
+            or req.path_info == self.path):
+            req.script_name += self.path
+            req.path_info = req.path_info[len(self.path):]
             return self.dowse(req)(environ, start_response)
         else:
             return self.app(environ, start_response)
     
     def dowse(self, req):
-        assert req.path_info_pop() == '_dozer'
         next_part = req.path_info_pop()
         method = getattr(self, next_part, None)
         if method is None:
