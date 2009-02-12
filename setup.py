@@ -43,7 +43,7 @@ gc info.
     test_suite='nose.collector',
     tests_require=['nose'],
     install_requires=[
-        "Paste>=1.6", "WebOb>=0.9.2",
+        "Paste>=1.6", "WebOb>=0.9.2", "mako",
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/0.9.7"

@@ -1,4 +1,8 @@
-import cProfile
+try:
+    import cProfile
+except ImportError:
+    # python2.4
+    import profile as cProfile
 import cPickle
 import errno
 import time
