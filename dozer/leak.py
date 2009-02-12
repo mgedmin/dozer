@@ -10,11 +10,19 @@ from types import FrameType, ModuleType
 try:
     from PIL import Image
 except ImportError:
-    import Image
+    try:
+        import Image
+    except ImportError:
+        import warnings
+        warnings.warn('PIL is not installed, cannot show charts in Dozer')
+        Image = None
 try:
     from PIL import ImageDraw
 except ImportError:
-    import ImageDraw
+    try:
+        import ImageDraw
+    except ImportError:
+        ImageDraw = None
 
 from paste import fileapp
 from paste import urlparser
@@ -171,6 +179,9 @@ class Dozer(object):
     
     def chart(self, req):
         """Return a sparkline chart of the given type."""
+        if Image is None:
+            # Cannot render
+            return Response('Cannot render; PIL is not installed', status='404 Not Found')
         typename = req.path_info_pop()
         data = self.history[typename]
         height = 20.0
