@@ -7,8 +7,14 @@ import time
 from StringIO import StringIO
 from types import FrameType, ModuleType
 
-from PIL import Image
-from PIL import ImageDraw
+try:
+    from PIL import Image
+except ImportError:
+    import Image
+try:
+    from PIL import ImageDraw
+except ImportError:
+    import ImageDraw
 
 from paste import fileapp
 from paste import urlparser
