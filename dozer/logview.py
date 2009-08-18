@@ -65,8 +65,7 @@ class Logview(object):
            response.headers['content-type'].startswith('text/html'):
             logbar = self.render('/logbar.mako', events=reqlogs, 
                                  logcolors = self.log_colors, tottime=tottime)
-            response.body = response.body.replace('<body>',
-                                                  '<body>%s' % logbar)
+            response.body = re.sub(r'<body([^>]*)>', r'<body\1>%s' % logbar, response.body)
         return response(environ, start_response)
 
     def render(self, name, **vars):
