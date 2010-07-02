@@ -58,13 +58,16 @@ class Logview(object):
         
         req = Request(environ)
         start = time.time()
+        logging.getLogger(__name__).info('request started')
         response = req.get_response(self.app)
+        logging.getLogger(__name__).info('request finished')
         tottime = time.time() - start
         reqlogs = self.reqhandler.pop_events(tok)
         if 'content-type' in response.headers and \
            response.headers['content-type'].startswith('text/html'):
-            logbar = self.render('/logbar.mako', events=reqlogs, 
-                                 logcolors = self.log_colors, tottime=tottime)
+            logbar = self.render('/logbar.mako', events=reqlogs,
+                                 logcolors=self.log_colors, tottime=tottime,
+                                 start=start)
             response.body = re.sub(r'<body([^>]*)>', r'<body\1>%s' % logbar, response.body)
         return response(environ, start_response)
 

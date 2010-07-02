@@ -1,10 +1,13 @@
 <%!
 import time
 converter = time.localtime
-def format_time(record):
-    ct = converter(record.created)
-    t = time.strftime('%H:%M:%S', ct)
-    return '%s,%03d' % (t, record.msecs)
+def format_time(record, start, prev_record=None):
+    if prev_record:
+        delta_from_prev = (record.created - prev_record.created) * 1000
+        return '%+dms' % delta_from_prev
+    else:
+        time_from_start = (record.created - start) * 1000
+        return '%+dms' % time_from_start
 
 def bg_color(event, log_colors):
     for key in log_colors:
@@ -31,10 +34,11 @@ def bg_color(event, log_colors):
             </tr>
         </thead>
         <tbody>
+        <% prev_event = None %>
         % for event in events:
         <% bgcolor = bg_color(event, logcolors) %>
             <tr style="text-align: left; vertical-align: top; border-bottom: 1px solid #333; background-color: ${bgcolor}; color: #222;">
-                <td style="background-color: ${bgcolor};">${format_time(event)}</td>
+                <td style="background-color: ${bgcolor}; text-align: right;">${format_time(event, start, prev_event)}</td>
                 <td style="background-color: ${bgcolor};">${event.levelname}</td>
                 <td style="background-color: ${bgcolor};">${event.name}</td>
                 <td style="background-color: ${bgcolor};">\
@@ -57,10 +61,11 @@ def bg_color(event, log_colors):
                     % endif
                 </td>
             </tr>
+        <% prev_event = event %>
         % endfor
         <tr style="text-align: left; vertical-align: top; border-bottom: 1px solid #333; background-color: #eee; color: #222;">
             <th colspan="2">Total Time:</th>
-            <td colspan="4">${'%03d' % (1000*tottime)}ms</td>
+            <td colspan="4">${'%d' % (1000*tottime)}ms</td>
         </tr>
         </tbody>
     </table>
