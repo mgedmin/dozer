@@ -202,6 +202,48 @@ def setup_time(t):
     t = '%0.2f' % t
     return t
 
+def color(w):
+    # color scheme borrowed from
+    # http://gprof2dot.jrfonseca.googlecode.com/hg/gprof2dot.py
+    hmin, smin, lmin = 2/3., 0.8, .25
+    hmax, smax, lmax = 0, 1, .5
+    gamma = 2.2
+    h = hmin + w * (hmax - hmin)
+    s = smin + w * (smax - smin)
+    l = lmin + w * (lmax - lmin)
+    # http://www.w3.org/TR/css3-color/#hsl-color
+    if l <= 0.5:
+        m2 = l * (s + 1)
+    else:
+        m2 = l + s - l * s
+    m1 = l * 2 - m2
+    def h2rgb(m1, m2, h):
+        if h < 0:
+            h += 1.0
+        elif h > 1:
+            h -= 1.0
+        if h * 6 < 1.0:
+            return m1 + (m2 - m1) * h * 6
+        elif h * 2 < 1:
+            return m2
+        elif h * 3 < 2:
+            return m1 + (m2 - m1) * (2/3.0 - h) * 6
+        else:
+            return m1
+    r = h2rgb(m1, m2, h + 1/3.0)
+    g = h2rgb(m1, m2, h)
+    b = h2rgb(m1, m2, h - 1/3.0)
+    # gamma correction
+    r **= gamma
+    g **= gamma
+    b **= gamma
+    # graphvizification
+    r = min(max(0, round(r * 0xff)), 0xff)
+    g = min(max(0, round(g * 0xff)), 0xff)
+    b = min(max(0, round(b * 0xff)), 0xff)
+    return "#%02X%02X%02X" % (r, g, b)
+
+
 def write_dot_graph(data, tree, filename):
     f = open(filename, 'w')
     f.write('digraph prof {\n')
@@ -213,6 +255,8 @@ def write_dot_graph(data, tree, filename):
     for entry in tree.values():
         if float(entry['cost']) > highest:
             highest = float(entry['cost'])
+    if highest == 0:
+        highest = 1 # avoid division by zero
 
     for entry in data:
         code = entry.code
@@ -222,7 +266,8 @@ def write_dot_graph(data, tree, filename):
             continue
         else:
             t = tree[label(code)]['cost']
-            f.write('\t"%s" [label="%s\\n%sms"]\n' % (entry_name, code.co_name, t))
+            c = color(float(t) / highest)
+            f.write('\t"%s" [label="%s\\n%sms",color="%s",fontcolor="white"]\n' % (entry_name, code.co_name, t, c))
         if entry.calls:
             for subentry in entry.calls:
                 subcode = subentry.code
