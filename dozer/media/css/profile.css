@@ -17,15 +17,15 @@ table {border: 1px solid #cccdcd; border-left: 0; border-bottom: 0; border-colla
 /* @end */
 
 /* @group Defaults */
-body {background: #0d0d0d url(images/body.gif) 0 0 repeat-x; color: #fff; font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif; font-size: 12px; text-align: center;}
+body {background: #0d0d0d 0 0 repeat-x; color: #fff; font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif; font-size: 12px; text-align: center;}
 h1, h2, h3, h4, h5, h6, p, img, ul, ol, li, dl, dt, dd, blockquote, pre, code, div, table, tr, th, td, tbody, tfoot, fieldset, legend, input, textarea, select, button {line-height: 18px;}
 
 h1, h2, h3, h4, h5, h6, dt, legend {background: transparent; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
 h1 {color: #fff; font-size: 18px;}
-h2 {background: #939393 url(images/controller.gif) 0 -9px repeat-x; border-bottom: 1px solid #666; clear: both; color: #333; font-weight: normal; padding: 3px 18px;}
+h2 {background: #939393  0 -9px repeat-x; border-bottom: 1px solid #666; clear: both; color: #333; font-weight: normal; padding: 3px 18px;}
 h2 span {font-weight: bold;}
 h3 {}
-h4 {background: #e6e6e6 url(images/section.gif) 0 100% repeat-x; color: #666; font-size: 12px; letter-spacing: 1px; padding: 3px 18px;}
+h4 {background: #e6e6e6  0 100% repeat-x; color: #666; font-size: 12px; letter-spacing: 1px; padding: 3px 18px;}
 h4 img {padding-left: 10px; margin-bottom: -4px; padding-top: 0px;}
 h4 span {font-weight: normal; text-transform: uppercase; font-size: 11px;}
 h5 {font-size: 14px;}
@@ -46,8 +46,8 @@ a:hover {color: #001999; text-decoration: none;}
 a:active {color: #343434; text-decoration: none;}
 
 table {empty-cells: show; margin-bottom: 18px;}
-th {background: #eee url(images/th.gif) 0 100% repeat-x;}
-td {background: transparent url(images/rows.gif) 0 100% no-repeat;}
+th {background: #eee 0 100% repeat-x; color: #000;}
+td {background: transparent 0 100% no-repeat; color: #fff;}
 th, td {padding: 3px 9px; vertical-align: middle;}
 img {background: transparent; border: 0;}
 legend {}
@@ -69,7 +69,7 @@ version: 2.5.1
 /* Modified to target #profile div */
 
 /* Styling */
-#profile { margin-top: 10px; color: #ddd; background-color: #000; padding: 9px; font-family: "Helvetica Neue", "Lucida Grande", Calibri, Helvetica, Verdana, sans-serif; font-size: 12px; }
+#profile { margin-top: 10px; color: #ddd; background-color: #000; padding: 9px; font-family: "Helvetica Neue", "Lucida Grande", Calibri, Helvetica, Verdana, sans-serif; font-size: 12px; overflow: hidden; }
 #profile #profile-content { margin-left: 170px; color: #000; height: 61px; vertical-align: middle; text-align: left; }
 #profile-root-bar { float: right; }
 #profile-root-bar li { float: left; border: 1px solid white; }
@@ -166,3 +166,7 @@ version: 2.5.1
 #profile table { border: 0; margin-top: 4px; background: #111; } /* sql */
 #profile th { background: #000; padding: 4px; color: #fff; font-size: 12px; text-align: left; border: 0; font-weight: bold; border: 1px #333 solid; border-left: 0; border-top: 0; }
 #profile td { background: #111; padding: 4px; color: #ddd; font-size: 12px; text-align: left; border: 0; }
+
+#environment th { text-align: right; }
+#environment td { text-align: left; }
+#profile-list td { text-align: left; }

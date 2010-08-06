@@ -5,8 +5,22 @@ sys.setrecursionlimit(450)
 <div id="profiler">
     <h1>Viewing profile ID: ${id}</h1>
 
-    <h2>Environment</h2>
+    <h2>URL</h2>
+
     <div>${environ['SCRIPT_NAME'] + environ['PATH_INFO'] + environ['QUERY_STRING']|h}</div>
+
+    <h2 onclick="$('#environment').toggle()" style="cursor: pointer">Environment</h2>
+
+    <dl id="environment" style="display: none">
+      <table id="environment">
+        % for key, value in sorted(environ.items()):
+        <tr>
+            <th>${key|h}</th>
+            <td>${value|h}</td>
+        </tr>
+        % endfor
+      </table>
+    </dl>
 
     <h2>Profile</h2>
     <div id="profile">\

@@ -1,12 +1,12 @@
 <%inherit file="layout.mako"/>
 <h1>All Profiles</h1>
 <p><a href="/_profiler/delete">Delete all</a></p>
-<table>
+<table id="profile-list">
     <tr>
-        <td>URL</td>
-        <td>Time</td>
-        <td>Profile ID</td>
-        <td></td>
+        <th>URL</th>
+        <th>Time</th>
+        <th>Profile ID</th>
+        <th></th>
     </tr>
     % for created_time, environ, profile_id in profiles:
     <tr pid="${profile_id}">
@@ -18,10 +18,10 @@
     % endfor
     % if errors:
     <tr>
-        <td>Error</td>
-        <td>Time</td>
-        <td>Profile ID</td>
-        <td></td>
+        <th>Error</th>
+        <th>Time</th>
+        <th>Profile ID</th>
+        <th></th>
     </tr>
     % for created_time, error, profile_id in errors:
     <tr pid="${profile_id}">
