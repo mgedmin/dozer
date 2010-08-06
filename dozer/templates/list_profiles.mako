@@ -4,13 +4,15 @@
 <table id="profile-list">
     <tr>
         <th>URL</th>
+        <th>Cost</th>
         <th>Time</th>
         <th>Profile ID</th>
         <th></th>
     </tr>
-    % for created_time, environ, profile_id in profiles:
+    % for created_time, environ, total_cost, profile_id in profiles:
     <tr pid="${profile_id}">
         <td>${environ['SCRIPT_NAME'] + environ['PATH_INFO'] + environ['QUERY_STRING']|h}</td>
+        <td>${total_cost} ms</td>
         <td>${'%i' % int(now-created_time)} seconds ago</td>
         <td><a href="/_profiler/show/${profile_id}">${profile_id}</a></td>
         <td><a href="/_profiler/delete/${profile_id}" class="delete">delete</a></td>
@@ -18,14 +20,14 @@
     % endfor
     % if errors:
     <tr>
-        <th>Error</th>
+        <th colspan="2">Error</th>
         <th>Time</th>
         <th>Profile ID</th>
         <th></th>
     </tr>
     % for created_time, error, profile_id in errors:
     <tr pid="${profile_id}">
-        <td>${error|h}</td>
+        <td colspan="2">${error|h}</td>
         <td>${'%i' % int(now-created_time)} seconds ago</td>
         <td>${profile_id}</td>
         <td><a href="/_profiler/delete/${profile_id}" class="delete">delete</a></td>

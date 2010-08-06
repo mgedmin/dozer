@@ -89,10 +89,15 @@ class Profiler(object):
                 try:
                     data = cPickle.load(open(path, 'rb'))
                 except Exception, e:
-                    errors.append((modified, str(e), profile_file[:-4]))
+                    errors.append((modified, '%s: %s' % (e.__class__.__name__, e), profile_file[:-4]))
                 else:
                     environ = data['environ']
-                    profiles.append((modified, environ, profile_file[:-4]))
+                    top = [x for x in data['profile'].values() if not x.get('callers')]
+                    if top:
+                        total_cost = max(x['cost'] for x in top)
+                    else:
+                        total_cost = 0
+                    profiles.append((modified, environ, total_cost, profile_file[:-4]))
 
         profiles.sort(reverse=True)
         errors.sort(reverse=True)
