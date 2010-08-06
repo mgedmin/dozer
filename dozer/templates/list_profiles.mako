@@ -1,11 +1,12 @@
 <%inherit file="layout.mako"/>
 <h1>All Profiles</h1>
-<a href="/_profiler/delete">Delete all</a>
+<p><a href="/_profiler/delete">Delete all</a></p>
 <table>
     <tr>
         <td>URL</td>
         <td>Time</td>
         <td>Profile ID</td>
+        <td></td>
     </tr>
     % for created_time, environ, profile_id in profiles:
     <tr pid="${profile_id}">
@@ -15,6 +16,22 @@
         <td><a href="/_profiler/delete/${profile_id}" class="delete">delete</a></td>
     </tr>
     % endfor
+    % if errors:
+    <tr>
+        <td>Error</td>
+        <td>Time</td>
+        <td>Profile ID</td>
+        <td></td>
+    </tr>
+    % for created_time, error, profile_id in errors:
+    <tr pid="${profile_id}">
+        <td>${error|h}</td>
+        <td>${'%i' % int(now-created_time)} seconds ago</td>
+        <td>${profile_id}</td>
+        <td><a href="/_profiler/delete/${profile_id}" class="delete">delete</a></td>
+    </tr>
+    % endfor
+    % endif
 </table>
 
 <%def name="javascript()">

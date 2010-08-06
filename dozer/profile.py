@@ -28,7 +28,7 @@ class Profiler(object):
         """
         self.app = app
         self.conf = global_conf
-        self.profile_path = profile_path
+        self.profile_path = profile_path or conf['profile_path']
         self.ignored_paths = map(re.compile, ignored_paths)
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
@@ -48,7 +48,7 @@ class Profiler(object):
 
     def profiler(self, req):
         assert req.path_info_pop() == '_profiler'
-        next_part = req.path_info_pop()
+        next_part = req.path_info_pop() or 'showall'
         method = getattr(self, next_part, None)
         if method is None:
             return exc.HTTPNotFound('Nothing could be found to match %r' % next_part)
@@ -81,18 +81,24 @@ class Profiler(object):
     def showall(self, req):
         dir_name = self.profile_path
         profiles = []
+        errors = []
         for profile_file in os.listdir(dir_name):
             if profile_file.endswith('.pkl'):
                 path = os.path.join(self.profile_path, profile_file)
                 modified = os.stat(path).st_mtime
-                data = cPickle.load(open(path, 'rb'))
-                environ = data['environ']
-                profiles.append((modified, environ, profile_file[:-4]))
+                try:
+                    data = cPickle.load(open(path, 'rb'))
+                except Exception, e:
+                    errors.append((modified, str(e), profile_file[:-4]))
+                else:
+                    environ = data['environ']
+                    profiles.append((modified, environ, profile_file[:-4]))
 
         profiles.sort(reverse=True)
+        errors.sort(reverse=True)
         res = Response()
         res.body = self.render('/list_profiles.mako', profiles=profiles,
-                               now=time.time())
+                               errors=errors, now=time.time())
         return res
     showall.exposed = True
 
