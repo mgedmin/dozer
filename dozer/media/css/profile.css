@@ -90,7 +90,8 @@ version: 2.5.1
 #profile ul .title p { text-align: left;}
 #profile ul .bar {float: left; height: 20px;}
 #profile ul .title strong { color: #fff; font-weight: bold; }
-#profile ul .title span.time { float: right; text-transform: none; font-size: 11px; font-weight: normal; margin-right: 0px; }
+#profile ul .title span.time { float: right; text-transform: none; font-size: 11px; font-weight: normal; margin-right: 0px; min-width: 64px; text-align: right; }
+#profile ul .title span.callcount { float: right; text-transform: none; font-size: 11px; font-weight: normal; margin-right: 24px; }
 
 #profile ul .title a, ul .title a:active, ul .title a:visited {
  text-decoration: none;
@@ -142,6 +143,11 @@ version: 2.5.1
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 452px; }
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 448px; }
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 444px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 440px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 436px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 432px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 428px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 424px; }
 
 
 #profile-flash { display: none; text-align: left; font-size: 12px; padding: 5px; color: #000; border-bottom: 1px #000 solid; }

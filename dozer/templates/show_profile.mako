@@ -38,7 +38,7 @@ sys.setrecursionlimit(450)
     </div>
 </div>
 
-<%def name="show_node(node, depth, tottime)">
+<%def name="show_node(node, depth, tottime, callcount=1)">
 <% 
     import random
     parent_id = ''.join([str(random.randrange(0,10)) for x in range(0,9)])
@@ -57,11 +57,14 @@ sys.setrecursionlimit(450)
 % endif
 <ul class="step-info">
 <li class="title"><p><span class="time">${node['cost']}ms</span>
+% if callcount > 1:
+<span class="callcount">&#x2715;${callcount}</span>
+% endif
 % if has_children:
 <a href="#" title="${node['filename']}:${node['line_no']}" onclick="$('#children_step_${parent_id}').toggle();$('#step_${parent_id}').toggleClass('opened');return false;">\
 ${node['func_name']|h}</a>\
 % else:
-${node['function']|h}\
+<span title="${node['filename']}:${node['line_no']}">${node['func_name']|h}</span>\
 % endif
 </p></li>
 <li class="bar">
@@ -74,14 +77,18 @@ ${node['function']|h}\
 </ul>\
 % if has_children:
 <% depth = depth + 1 %>
-<ul id="children_step_${parent_id}" class="profile_children" style="display:none;">\
-% for called_node in node['calls']:
+<ul id="children_step_${parent_id}" class="profile_children"\
+% if proj_width < 200:
+ style="display:none;"\
+% endif
+>\
+% for called_node in sorted(node['calls'], key=lambda n: float(n['cost']), reverse=True):
 <%
     called = profile_data[called_node['function']]
     if called_node['builtin']: continue
     if depth > 15: continue
 %>
-${show_node(called, depth, tottime)}\
+${show_node(called, depth, tottime, called_node['callcount'])}\
 % endfor
 <li style="clear: left;"> </li>
 </ul>
