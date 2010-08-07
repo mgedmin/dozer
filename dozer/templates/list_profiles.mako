@@ -10,10 +10,20 @@
         <th class="delete"></th>
     </tr>
     % for created_time, environ, total_cost, profile_id in profiles:
+    <%
+        w = (now-created_time) / (now-earliest)  # 0 .. 1
+        w = 1 - w
+        w = round(w * 255)
+        bg = '#%02x%02x%02x' % (w, w, w)
+        if w > 128:
+            fg = 'black'
+        else:
+            fg = 'white'
+    %>
     <tr pid="${profile_id}">
         <td class="url">${environ['SCRIPT_NAME'] + environ['PATH_INFO'] + environ['QUERY_STRING']|h}</td>
         <td class="cost">${total_cost} ms</td>
-        <td class="time">${'%i' % int(now-created_time)} seconds ago</td>
+        <td class="time" style="background: ${bg}; color: ${fg};">${'%i' % int(now-created_time)} seconds ago</td>
         <td class="pid"><a href="/_profiler/show/${profile_id}">${profile_id}</a></td>
         <td class="delete"><a href="/_profiler/delete/${profile_id}" class="delete">delete</a></td>
     </tr>

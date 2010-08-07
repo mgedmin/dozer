@@ -104,8 +104,13 @@ class Profiler(object):
         profiles.sort(reverse=True)
         errors.sort(reverse=True)
         res = Response()
+        if profiles:
+            earliest = profiles[-1][0]
+        else:
+            earliest = None
         res.body = self.render('/list_profiles.mako', profiles=profiles,
-                               errors=errors, now=time.time())
+                               errors=errors, now=time.time(),
+                               earliest=earliest)
         return res
     showall.exposed = True
 
