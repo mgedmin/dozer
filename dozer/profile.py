@@ -26,9 +26,11 @@ class Profiler(object):
         """Profiles an application and saves the pickled version to a
         file
         """
+        assert profile_path, "need profile_path"
+        assert os.path.isdir(profile_path), "%r: no such directory" % profile_path
         self.app = app
         self.conf = global_conf
-        self.profile_path = profile_path or conf['profile_path']
+        self.profile_path = profile_path
         self.ignored_paths = map(re.compile, ignored_paths)
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
