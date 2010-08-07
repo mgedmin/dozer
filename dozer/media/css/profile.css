@@ -13,7 +13,7 @@ ins {text-decoration: none;} /* TODO: highlight inserts */
 del {text-decoration: line-through;}
 
 /* tables still need 'cellspacing="0"' in the markup */
-table {border: 1px solid #cccdcd; border-left: 0; border-bottom: 0; border-collapse: collapse; border-spacing: 0;}
+table {border: 0; border-collapse: collapse; border-spacing: 0;}
 /* @end */
 
 /* @group Defaults */
@@ -175,4 +175,10 @@ version: 2.5.1
 
 #environment th { text-align: right; }
 #environment td { text-align: left; }
+#profile-list { width: 100%; }
+#profile-list td.time, #profile-list td.cost { text-align: right; }
+#profile-list td.cost, #profile-list td.pid { width: 100px; }
+#profile-list td.time { width: 120px; }
+#profile-list td.delete { width: 48px; }
 #profile-list td { text-align: left; }
+#profile-list tr:hover { background: #444; }
