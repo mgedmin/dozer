@@ -86,7 +86,7 @@ ${node['func_name']|h}</a>\
 <%
     called = profile_data[called_node['function']]
     if called_node['builtin']: continue
-    if depth > 15: continue
+    if depth > 20: continue
 %>
 ${show_node(called, depth, tottime, called_node['callcount'])}\
 % endfor
