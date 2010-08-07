@@ -148,6 +148,12 @@ version: 2.5.1
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 432px; }
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 428px; }
 #profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 424px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 420px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 416px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 412px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 408px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 404px; }
+#profile ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul ul .title { width: 400px; }
 
 
 #profile-flash { display: none; text-align: left; font-size: 12px; padding: 5px; color: #000; border-bottom: 1px #000 solid; }
@@ -183,3 +189,5 @@ version: 2.5.1
 #profile-list td { text-align: left; }
 #profile-list tr:hover { background: #444; }
 #profile-list tr:hover td { background: #444 !important; }
+#profile-list div.box { position: relative; }
+#profile-list span.bar { background: #774b00; position: absolute; right: -5px; top: 0; z-index: -1; }

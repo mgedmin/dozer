@@ -84,6 +84,7 @@ class Profiler(object):
         dir_name = self.profile_path
         profiles = []
         errors = []
+        max_cost = 0
         for profile_file in os.listdir(dir_name):
             if profile_file.endswith('.pkl'):
                 path = os.path.join(self.profile_path, profile_file)
@@ -96,9 +97,10 @@ class Profiler(object):
                     environ = data['environ']
                     top = [x for x in data['profile'].values() if not x.get('callers')]
                     if top:
-                        total_cost = max(x['cost'] for x in top)
+                        total_cost = max(float(x['cost']) for x in top)
                     else:
                         total_cost = 0
+                    max_cost = max(max_cost, total_cost)
                     profiles.append((modified, environ, total_cost, profile_file[:-4]))
 
         profiles.sort(reverse=True)
@@ -110,7 +112,7 @@ class Profiler(object):
             earliest = None
         res.body = self.render('/list_profiles.mako', profiles=profiles,
                                errors=errors, now=time.time(),
-                               earliest=earliest)
+                               earliest=earliest, max_cost=max_cost)
         return res
     showall.exposed = True
 
