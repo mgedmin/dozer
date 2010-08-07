@@ -182,3 +182,4 @@ version: 2.5.1
 #profile-list td.delete { width: 48px; }
 #profile-list td { text-align: left; }
 #profile-list tr:hover { background: #444; }
+#profile-list tr:hover td { background: #444 !important; }
