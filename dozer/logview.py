@@ -23,17 +23,21 @@ class Logview(object):
     def __init__(self, app, config=None, loglevel='DEBUG', **kwargs):
         """Stores logging statements per request, and includes a bar on
         the page that shows the logging statements
-        
+
         ''loglevel''
             Default log level for messages that should be caught.
 
+            Note: the root logger's log level also matters!  If you do
+            logging.getLogger('').setLevel(logging.INFO), no DEBUG messages
+            will make it to Logview's handler anyway.
+
         Config can contain optional additional loggers and the colors
         they should be highlighted (in an ini file)::
-            
+
             logview.sqlalchemy = #ff0000
 
         Or if passing a dict::
-            
+
             app = Logview(app, {'logview.sqlalchemy':'#ff0000'})
 
         """
@@ -47,22 +51,26 @@ class Logview(object):
             if key.startswith('logview.'):
                 self.log_colors[key[8:]] = val
 
+        self.logger = logging.getLogger(__name__)
+        self.loglevel = getattr(logging, loglevel)
+
         reqhandler = RequestHandler()
-        reqhandler.setLevel(getattr(logging, loglevel))
+        reqhandler.setLevel(self.loglevel)
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
+
 
     def __call__(self, environ, start_response):
         if thread:
             tok = thread.get_ident()
         else:
             tok = None
-        
+
         req = Request(environ)
         start = time.time()
-        logging.getLogger(__name__).info('request started')
+        self.logger.log(self.loglevel, 'request started')
         response = req.get_response(self.app)
-        logging.getLogger(__name__).info('request finished')
+        self.logger.log(self.loglevel, 'request finished')
         tottime = time.time() - start
         reqlogs = self.reqhandler.pop_events(tok)
         if 'content-type' in response.headers and \
