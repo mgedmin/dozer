@@ -8,6 +8,7 @@ import errno
 import time
 import os
 import re
+import thread
 from datetime import datetime
 from pkg_resources import resource_filename
 
@@ -174,6 +175,7 @@ class Profiler(object):
                        'QUERY_STRING', 'CONTENT_TYPE', 'CONTENT_LENGTH',
                        'SERVER_NAME', 'SERVER_PORT', 'SERVER_PROTOCOL']:
                 safe_environ[k] = v
+        safe_environ['thread_id'] = str(thread.get_ident())
         profile_run = dict(time=datetime.now(), profile=tree,
                            environ=safe_environ)
         fname_base = str(time.time()).replace('.', '_')
