@@ -10,9 +10,8 @@ def format_time(record, start, prev_record=None):
         return '%+dms' % time_from_start
 
 def bg_color(event, log_colors):
-    for key in log_colors:
-        if key == event.name:
-            return log_colors[key]
+    if event.name in log_colors:
+        return log_colors[event.name]
     for key in log_colors:
         if event.name.startswith(key):
             return log_colors[key]
