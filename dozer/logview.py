@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import time
+import itertools
 
 from mako.lookup import TemplateLookup
 from paste import urlparser
@@ -39,12 +40,13 @@ class Logview(object):
         self.app = app
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
-        
+
         self.log_colors = {}
-        for key, val in config.iteritems():
+        for key, val in itertools.chain(config.iteritems(),
+                                        kwargs.iteritems()):
             if key.startswith('logview.'):
                 self.log_colors[key[8:]] = val
-        
+
         reqhandler = RequestHandler()
         reqhandler.setLevel(getattr(logging, loglevel))
         logging.getLogger('').addHandler(reqhandler)
