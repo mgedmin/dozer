@@ -3,9 +3,12 @@ import os
 import re
 import time
 import itertools
+import traceback
+import sys
 
 from mako.lookup import TemplateLookup
 from paste import urlparser
+from paste.util.converters import asbool
 from webob import Request, Response
 from webob import exc
 
@@ -54,8 +57,13 @@ class Logview(object):
         self.logger = logging.getLogger(__name__)
         self.loglevel = getattr(logging, loglevel)
 
+        self.keep_tracebacks = asbool(kwargs.get('keep_tracebacks',
+                                                 config.get('keep_tracebacks',
+                                                            False)))
+
         reqhandler = RequestHandler()
         reqhandler.setLevel(self.loglevel)
+        reqhandler.keep_tracebacks = self.keep_tracebacks
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
 
@@ -102,6 +110,7 @@ class RequestHandler(logging.Handler):
         """Initialize the handler."""
         logging.Handler.__init__(self)
         self.buffer = {}
+        self.keep_tracebacks = False
 
     def emit(self, record):
         """Emit a record.
@@ -110,6 +119,8 @@ class RequestHandler(logging.Handler):
         the buffer.
         """ 
         self.buffer.setdefault(record.thread, []).append(record)
+        if self.keep_tracebacks:
+            record.traceback = ''.join(traceback.format_stack(sys._getframe(6)))
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""

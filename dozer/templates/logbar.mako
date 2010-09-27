@@ -59,6 +59,12 @@ def bg_color(event, log_colors):
                     % else:
                         ${msg | h}\
                     % endif
+                    % if hasattr(event, 'traceback'):
+                    <span style="float: right; cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_block('${'tb%s' % id(event)}')">TB</span>
+                    <pre id="${'tb%s' % id(event)}" style="display: none; padding-top: 1em">
+${event.traceback}
+</pre>
+                    % endif
                 </td>
             </tr>
         <% prev_event = event %>
@@ -97,6 +103,15 @@ DLV.show_span = function(name) {
         elem.style.display = 'none';
     } else {
         elem.style.display = 'inline';
+    }
+    return false;
+};
+DLV.show_block = function(name) {
+    var elem = DLV.getEBI(name);
+    if (elem.style.display == 'block') {
+        elem.style.display = 'none';
+    } else {
+        elem.style.display = 'block';
     }
     return false;
 };
