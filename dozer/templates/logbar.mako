@@ -44,17 +44,18 @@ def bg_color(event, log_colors):
                     <% 
                         msg = event.getMessage()
                         length_limit = 130
+                        keep_last = 70
                         if len(msg) > length_limit:
                             use_split = True
-                            first = msg[:length_limit]
-                            last = msg[length_limit:]
+                            first = msg[:length_limit - keep_last]
+                            middle = msg[length_limit - keep_last:-keep_last]
+                            last = msg[-keep_last:]
                         else:
                             use_split = False
-                            parts = None
                     %>
                     % if use_split:
                         <span style="cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_span(${id(event)})">${first}</span>\
-<span style="display:inline;" id="${id(event)}_extra">...</span><span id="${id(event)}" style="display:none">${last}</span>
+<span style="display:inline;" id="${id(event)}_extra"> ... </span><span id="${id(event)}" style="display:none">${middle}</span>${last}
                     % else:
                         ${msg | h}\
                     % endif
