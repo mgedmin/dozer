@@ -16,6 +16,12 @@ def bg_color(event, log_colors):
         if event.name.startswith(key):
             return log_colors[key]
     return '#fff'
+
+def fg_color(frame, traceback_colors):
+    for key in traceback_colors:
+        if key in frame:
+            return traceback_colors[key]
+    return None
 %>
 
 <div style="width: 100%; position: absolute; top:0; left: 0; z-index: 200000; font-size:11px;">
@@ -62,7 +68,14 @@ def bg_color(event, log_colors):
                     % if hasattr(event, 'traceback'):
                     <span style="float: right; cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_block('${'tb%s' % id(event)}')">TB</span>
                     <pre id="${'tb%s' % id(event)}" style="display: none; padding-top: 1em">
-${event.traceback}
+                        % for frame in event.traceback:
+<% fgcolor = fg_color(frame, traceback_colors) %>\
+                            % if fgcolor:
+<span style="color: ${fgcolor}">${frame}</span>\
+                            % else:
+${frame}\
+                            % endif
+                        % endfor
 </pre>
                     % endif
                 </td>

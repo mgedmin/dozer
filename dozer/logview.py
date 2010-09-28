@@ -52,7 +52,13 @@ class Logview(object):
         for key, val in itertools.chain(config.iteritems(),
                                         kwargs.iteritems()):
             if key.startswith('logview.'):
-                self.log_colors[key[8:]] = val
+                self.log_colors[key[len('logview.'):]] = val
+
+        self.traceback_colors = {}
+        for key, val in itertools.chain(config.iteritems(),
+                                        kwargs.iteritems()):
+            if key.startswith('traceback.'):
+                self.traceback_colors[key[len('traceback.'):]] = val
 
         self.logger = logging.getLogger(__name__)
         self.loglevel = getattr(logging, loglevel)
@@ -63,6 +69,9 @@ class Logview(object):
         self.keep_tracebacks_limit = int(kwargs.get(
             'keep_tracebacks_limit', config.get(
                 'keep_tracebacks_limit', RequestHandler.keep_tracebacks_limit)))
+        self.skip_first_n_frames = int(kwargs.get(
+            'skip_first_n_frames', config.get(
+                'skip_first_n_frames', RequestHandler.skip_first_n_frames)))
         self.skip_last_n_frames = int(kwargs.get(
             'skip_last_n_frames', config.get(
                 'skip_last_n_frames', RequestHandler.skip_last_n_frames)))
@@ -71,10 +80,10 @@ class Logview(object):
         reqhandler.setLevel(self.loglevel)
         reqhandler.keep_tracebacks = self.keep_tracebacks
         reqhandler.keep_tracebacks_limit = self.keep_tracebacks_limit
+        reqhandler.skip_first_n_frames = self.skip_first_n_frames
         reqhandler.skip_last_n_frames = self.skip_last_n_frames
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
-
 
     def __call__(self, environ, start_response):
         if thread:
@@ -92,8 +101,9 @@ class Logview(object):
         if 'content-type' in response.headers and \
            response.headers['content-type'].startswith('text/html'):
             logbar = self.render('/logbar.mako', events=reqlogs,
-                                 logcolors=self.log_colors, tottime=tottime,
-                                 start=start)
+                                 logcolors=self.log_colors,
+                                 traceback_colors=self.traceback_colors,
+                                 tottime=tottime, start=start)
             response.body = re.sub(r'<body([^>]*)>', r'<body\1>%s' % logbar, response.body)
         return response(environ, start_response)
 
@@ -117,6 +127,7 @@ class RequestHandler(logging.Handler):
 
     keep_tracebacks = False
     keep_tracebacks_limit = 20 # too many of these make things very very slow
+    skip_first_n_frames = 0
     skip_last_n_frames = 6 # number of frames beween logger.log() and our emit()
                            # determined empirically on Python 2.6
 
@@ -130,13 +141,13 @@ class RequestHandler(logging.Handler):
 
         Append the record. If shouldFlush() tells us to, call flush() to process
         the buffer.
-        """ 
+        """
         self.buffer.setdefault(record.thread, []).append(record)
-        if self.keep_tracebacks:
-            if (not self.keep_tracebacks_limit or
+        if self.keep_tracebacks and (not self.keep_tracebacks_limit or
                 len(self.buffer[record.thread]) < self.keep_tracebacks_limit):
-                f = sys._getframe(self.skip_last_n_frames)
-                record.traceback = ''.join(traceback.format_stack(f))
+            f = sys._getframe(self.skip_last_n_frames)
+            record.traceback = traceback.format_list(
+                traceback.extract_stack(f)[self.skip_first_n_frames:])
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""
