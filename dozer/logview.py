@@ -57,13 +57,21 @@ class Logview(object):
         self.logger = logging.getLogger(__name__)
         self.loglevel = getattr(logging, loglevel)
 
-        self.keep_tracebacks = asbool(kwargs.get('keep_tracebacks',
-                                                 config.get('keep_tracebacks',
-                                                            False)))
+        self.keep_tracebacks = asbool(kwargs.get(
+            'keep_tracebacks', config.get(
+                'keep_tracebacks', RequestHandler.keep_tracebacks)))
+        self.keep_tracebacks_limit = int(kwargs.get(
+            'keep_tracebacks_limit', config.get(
+                'keep_tracebacks_limit', RequestHandler.keep_tracebacks_limit)))
+        self.skip_last_n_frames = int(kwargs.get(
+            'skip_last_n_frames', config.get(
+                'skip_last_n_frames', RequestHandler.skip_last_n_frames)))
 
         reqhandler = RequestHandler()
         reqhandler.setLevel(self.loglevel)
         reqhandler.keep_tracebacks = self.keep_tracebacks
+        reqhandler.keep_tracebacks_limit = self.keep_tracebacks_limit
+        reqhandler.skip_last_n_frames = self.skip_last_n_frames
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
 
@@ -106,11 +114,16 @@ class RequestHandler(logging.Handler):
     thread id when available.
 
     """
+
+    keep_tracebacks = False
+    keep_tracebacks_limit = 20 # too many of these make things very very slow
+    skip_last_n_frames = 6 # number of frames beween logger.log() and our emit()
+                           # determined empirically on Python 2.6
+
     def __init__(self):
         """Initialize the handler."""
         logging.Handler.__init__(self)
         self.buffer = {}
-        self.keep_tracebacks = False
 
     def emit(self, record):
         """Emit a record.
@@ -120,7 +133,10 @@ class RequestHandler(logging.Handler):
         """ 
         self.buffer.setdefault(record.thread, []).append(record)
         if self.keep_tracebacks:
-            record.traceback = ''.join(traceback.format_stack(sys._getframe(6)))
+            if (not self.keep_tracebacks_limit or
+                len(self.buffer[record.thread]) < self.keep_tracebacks_limit):
+                f = sys._getframe(self.skip_last_n_frames)
+                record.traceback = ''.join(traceback.format_stack(f))
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""
