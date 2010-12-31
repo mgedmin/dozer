@@ -79,7 +79,7 @@ version: 2.5.1
 
 .profile_bar { margin: 0 4px; margin-left: 10px; list-style: none; }
 .profile_bar li { height: 20px; color: #fff; vertical-align: middle; font-size: 11px; padding: 0 4px;
- background-image: url(images/fade.png);
+ background-image: url(../images/fade.png);
  background-position: bottom left;
  background-repeat: repeat-x;
 }
@@ -102,9 +102,9 @@ version: 2.5.1
 
 #profile .profile_bar li { text-align: center; }
 
-#profile li.step { float: left; padding-left: 4px; background: url(images/pip.gif) 4px 0 no-repeat; clear: left; }
-#profile li.with-children { background: url(images/arrows.gif) 4px 0 no-repeat;}
-#profile li.opened { background: url(images/arrows.gif) 4px -20px no-repeat; }
+#profile li.step { float: left; padding-left: 4px; background: url(../images/pip.gif) 4px 0 no-repeat; clear: left; }
+#profile li.with-children { background: url(../images/arrows.gif) 4px 0 no-repeat;}
+#profile li.opened { background: url(../images/arrows.gif) 4px -20px no-repeat; }
 
 #profile ul { margin: 0; padding: 0; }
 #profile ul span.time { margin-right: 12px; }
@@ -162,7 +162,7 @@ version: 2.5.1
 #profile-flash p { padding: 0; padding-left: 20px; font-family: sans-serif; background: none; color: #000; border: 0; }
 #profile-flash.tuneup-show { display: block; }
 #profile-flash.tuneup-error { background: #FDFCDB; }
-#profile-flash.tuneup-error p { background: url(images/warning.gif) 0 50% no-repeat; }
+#profile-flash.tuneup-error p { background: url(../images/warning.gif) 0 50% no-repeat; }
 #profile-flash.tuneup-notice { padding-left: 0; background: #E4FFDE; }
 
 #profile .profile_bar { float: left; width: 400px; padding: 0;}
