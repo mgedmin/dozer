@@ -23,7 +23,8 @@ DEFAULT_IGNORED_PATHS = [r'/favicon\.ico$', r'^/error/document']
 
 class Profiler(object):
     def __init__(self, app, global_conf=None, profile_path=None,
-                 ignored_paths=DEFAULT_IGNORED_PATHS, **kwargs):
+                 ignored_paths=DEFAULT_IGNORED_PATHS,
+                 dot_graph_cutoff=0.2, **kwargs):
         """Profiles an application and saves the pickled version to a
         file
         """
@@ -31,6 +32,7 @@ class Profiler(object):
         assert os.path.isdir(profile_path), "%r: no such directory" % profile_path
         self.app = app
         self.conf = global_conf
+        self.dot_graph_cutoff = float(dot_graph_cutoff)
         self.profile_path = profile_path
         self.ignored_paths = map(re.compile, ignored_paths)
         tmpl_dir = os.path.join(here_dir, 'templates')
@@ -183,7 +185,8 @@ class Profiler(object):
 
         dir_name = self.profile_path or ''
         cPickle.dump(profile_run, open(os.path.join(dir_name, prof_file), 'wb'))
-        write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'))
+        write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'),
+                        cutoff=self.dot_graph_cutoff)
         del results, tree, profile_run
         return [body]
 
@@ -260,7 +263,7 @@ def color(w):
     return "#%02X%02X%02X" % (r, g, b)
 
 
-def write_dot_graph(data, tree, filename):
+def write_dot_graph(data, tree, filename, cutoff=0.2):
     f = open(filename, 'w')
     f.write('digraph prof {\n')
     f.write('\tsize="11,9"; ratio = fill;\n')
@@ -277,7 +280,7 @@ def write_dot_graph(data, tree, filename):
     for entry in data:
         code = entry.code
         entry_name = graphlabel(code)
-        skip = float(setup_time(entry.totaltime)) < 0.2
+        skip = float(setup_time(entry.totaltime)) < cutoff
         if isinstance(code, str) or skip:
             continue
         else:
@@ -287,7 +290,7 @@ def write_dot_graph(data, tree, filename):
         if entry.calls:
             for subentry in entry.calls:
                 subcode = subentry.code
-                skip = float(setup_time(subentry.totaltime)) < 0.2
+                skip = float(setup_time(subentry.totaltime)) < cutoff
                 if isinstance(subcode, str) or skip:
                     continue
                 sub_name = graphlabel(subcode)
