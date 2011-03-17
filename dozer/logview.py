@@ -104,7 +104,12 @@ class Logview(object):
                                  logcolors=self.log_colors,
                                  traceback_colors=self.traceback_colors,
                                  tottime=tottime, start=start)
-            response.body = re.sub(r'<body([^>]*)>', r'<body\1>%s' % logbar, response.body)
+            logbar = logbar.encode('ascii', 'xmlcharrefreplace')
+            parts = re.split(r'(<body[^>]*>)', response.body)
+            # parts = ['preamble', '<body ...>', 'text'] or just ['text']
+            # we want to insert our logbar after <body> (if it exists) and
+            # in front of text
+            response.body = ''.join(parts[:-1] + [logbar] + parts[-1:])
         return response(environ, start_response)
 
     def render(self, name, **vars):
