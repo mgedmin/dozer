@@ -144,7 +144,7 @@ class Profiler(object):
 
     def render(self, name, **vars):
         tmpl = self.mako.get_template(name)
-        return tmpl.render(**vars)
+        return tmpl.render(**vars).encode('ascii', 'xmlcharrefreplace')
 
     def run_profile(self, environ, start_response):
         """Run the profile over the request and save it"""
