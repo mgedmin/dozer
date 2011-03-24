@@ -75,6 +75,9 @@ class Logview(object):
         self.skip_last_n_frames = int(kwargs.get(
             'skip_last_n_frames', config.get(
                 'skip_last_n_frames', RequestHandler.skip_last_n_frames)))
+        self.stack_formatter = kwargs.get(
+            'stack_formatter', config.get(
+                'stack_formatter', RequestHandler.stack_formatter))
 
         reqhandler = RequestHandler()
         reqhandler.setLevel(self.loglevel)
@@ -82,6 +85,10 @@ class Logview(object):
         reqhandler.keep_tracebacks_limit = self.keep_tracebacks_limit
         reqhandler.skip_first_n_frames = self.skip_first_n_frames
         reqhandler.skip_last_n_frames = self.skip_last_n_frames
+        if self.stack_formatter:
+            modname, fn = self.stack_formatter.rsplit('.', 1)
+            mod = __import__(modname, {}, {}, ['*'])
+            reqhandler.stack_formatter = getattr(mod, fn)
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
 
@@ -131,10 +138,13 @@ class RequestHandler(logging.Handler):
     """
 
     keep_tracebacks = False
-    keep_tracebacks_limit = 20 # too many of these make things very very slow
+    keep_tracebacks_limit = 0
     skip_first_n_frames = 0
     skip_last_n_frames = 6 # number of frames beween logger.log() and our emit()
                            # determined empirically on Python 2.6
+    stack_formatter = None # 'package.module.function'
+                           # e.g. 'traceback.format_stack'
+                           # note: disables skip_first_n_frames
 
     def __init__(self):
         """Initialize the handler."""
@@ -151,8 +161,11 @@ class RequestHandler(logging.Handler):
         if self.keep_tracebacks and (not self.keep_tracebacks_limit or
                 len(self.buffer[record.thread]) < self.keep_tracebacks_limit):
             f = sys._getframe(self.skip_last_n_frames)
-            record.traceback = traceback.format_list(
-                traceback.extract_stack(f)[self.skip_first_n_frames:])
+            if self.stack_formatter:
+                record.traceback = self.stack_formatter(f)
+            else:
+                record.traceback = traceback.format_list(
+                    traceback.extract_stack(f)[self.skip_first_n_frames:])
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""
