@@ -32,7 +32,7 @@ def fg_color(frame, traceback_colors):
     <table style="width: 100%; overflow: auto; background-color: #ddd;padding:2px;">
         <thead>
             <tr>
-                <th>Time</th>
+                <th colspan="2">Time</th>
                 <th>Level</th>
                 <th>Module</th>
                 <th>Message</th>
@@ -44,6 +44,7 @@ def fg_color(frame, traceback_colors):
         <% bgcolor = bg_color(event, logcolors) %>
             <tr style="text-align: left; vertical-align: top; border-bottom: 1px solid #333; background-color: ${bgcolor}; color: #222;">
                 <td style="background-color: ${bgcolor}; text-align: right;">${format_time(event, start, prev_event)}</td>
+                <td style="background-color: ${bgcolor}; text-align: right;">${format_time(event, start)}</td>
                 <td style="background-color: ${bgcolor};">${event.levelname}</td>
                 <td style="background-color: ${bgcolor};">${event.name}</td>
                 <td style="background-color: ${bgcolor};">\
