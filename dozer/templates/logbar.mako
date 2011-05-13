@@ -27,6 +27,7 @@ def fg_color(frame, traceback_colors):
 <div style="width: 100%; position: absolute; top:0; left: 0; z-index: 200000; font-size:11px;">
     <div style="width: 100%; background-color: #fff; border: 1px solid #999; padding: 3px; cursor: pointer;" onclick="javascript:DLV.show_events('DLVlogevents');">\
         View log events for this request
+        <span style="position: absolute; top: 4px; right: 4px">${'%d' % (1000*tottime)}ms</span>
     </div>
 <div id="DLVlogevents" style="display:none;">
     <table style="width: 100%; overflow: auto; background-color: #ddd;padding:2px;">
