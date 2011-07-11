@@ -166,6 +166,10 @@ class RequestHandler(logging.Handler):
             else:
                 record.traceback = traceback.format_list(
                     traceback.extract_stack(f)[self.skip_first_n_frames:])
+        if record.exc_info:
+            exc_type, exc_value, exc_tb = record.exc_info
+            record.exc_traceback = traceback.format_list(
+                traceback.extract_tb(exc_tb))
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""

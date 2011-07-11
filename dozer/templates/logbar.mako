@@ -68,7 +68,7 @@ def fg_color(frame, traceback_colors):
                         ${msg | h}\
                     % endif
                     % if hasattr(event, 'traceback'):
-                    <span style="float: right; cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_block('${'tb%s' % id(event)}')">TB</span>
+                    <span style="float: right; cursor: pointer; text-decoration: underline; margin-left: 6px;" onclick="javascript:DLV.show_block('${'tb%s' % id(event)}')">TB</span>
                     <pre id="${'tb%s' % id(event)}" style="display: none; padding-top: 1em">
                         % for frame in event.traceback:
 <% fgcolor = fg_color(frame, traceback_colors) %>\
@@ -78,6 +78,20 @@ def fg_color(frame, traceback_colors):
 ${frame}\
                             % endif
                         % endfor
+</pre>
+                    % endif
+                    % if hasattr(event, 'exc_traceback'):
+                    <span style="float: right; cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_block('${'exc%s' % id(event)}')">Exception</span>
+                    <pre id="${'exc%s' % id(event)}" style="display: none; padding-top: 1em">
+                        % for frame in event.exc_traceback:
+<% fgcolor = fg_color(frame, traceback_colors) %>\
+                            % if fgcolor:
+<span style="color: ${fgcolor}">${frame}</span>\
+                            % else:
+${frame}\
+                            % endif
+                        % endfor
+${event.exc_info[0].__name__}: ${event.exc_info[1]}
 </pre>
                     % endif
                 </td>
