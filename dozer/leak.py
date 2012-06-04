@@ -80,6 +80,7 @@ class Dozer(object):
         self.history = {}
         self.samples = 0
         self.runthread = threading.Thread(target=self.start)
+        self.runthread.setDaemon(True)
         self.runthread.start()
     
     def __call__(self, environ, start_response):
