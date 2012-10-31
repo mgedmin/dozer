@@ -168,6 +168,14 @@ class RequestHandler(logging.Handler):
             exc_type, exc_value, exc_tb = record.exc_info
             record.exc_traceback = traceback.format_list(
                 traceback.extract_tb(exc_tb))
+        # Make sure we interpolate the message early.  Consider this code:
+        #    a_list = [1, 2, 3]
+        #    log.debug('a_list = %r', a_list)
+        #    del a_list[:]
+        # if we call getMessage() only when we're rendering all the messages
+        # at the end of request processing, we will see `a_list = []` instead
+        # of `a_list = [1, 2, 3]`
+        record.full_message = record.getMessage()
 
     def pop_events(self, thread_id):
         """Return all the events logged for particular thread"""

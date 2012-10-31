@@ -50,12 +50,7 @@ def fg_color(frame, traceback_colors):
                 <td style="background-color: ${bgcolor};">${event.name}</td>
                 <td style="background-color: ${bgcolor};">\
                     <%
-                        # XXX this is too late to call getMessage.  Example:
-                        #    a_list = [1, 2, 3]
-                        #    log.debug('a_list = %r', a_list)
-                        #    del a_list[:]
-                        # we will see `a_list = []` instead of `a_list = [1, 2, 3]`
-                        msg = event.getMessage()
+                        msg = event.full_message
                         length_limit = 130
                         keep_last = 70
                         if len(msg) > length_limit:
