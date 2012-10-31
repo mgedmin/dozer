@@ -7,14 +7,11 @@ import traceback
 import sys
 
 from mako.lookup import TemplateLookup
-from paste import urlparser
 from paste.util.converters import asbool
-from webob import Request, Response
-from webob import exc
+from webob import Request
 
 try:
     import thread
-    import threading
 except ImportError:
     thread = None
 
