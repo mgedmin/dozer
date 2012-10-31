@@ -70,7 +70,7 @@ def fg_color(frame, traceback_colors):
                         <span style="cursor: pointer; text-decoration: underline;" onclick="javascript:DLV.show_span(${id(event)})">${first}</span>\
 <span style="display:inline;" id="${id(event)}_extra"> ... </span><span id="${id(event)}" style="display:none">${middle}</span>${last}
                     % else:
-                        ${msg | h}\
+                        ${msg}\
                     % endif
                     % if hasattr(event, 'traceback'):
                     <span style="float: right; cursor: pointer; text-decoration: underline; margin-left: 6px;" onclick="javascript:DLV.show_block('${'tb%s' % id(event)}')">TB</span>

@@ -43,7 +43,8 @@ class Logview(object):
         """
         self.app = app
         tmpl_dir = os.path.join(here_dir, 'templates')
-        self.mako = TemplateLookup(directories=[tmpl_dir])
+        self.mako = TemplateLookup(directories=[tmpl_dir],
+                                   default_filters=['h'])
 
         self.log_colors = {}
         for key, val in itertools.chain(config.iteritems(),
