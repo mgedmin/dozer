@@ -164,7 +164,9 @@ class RequestHandler(logging.Handler):
             else:
                 record.traceback = traceback.format_list(
                     traceback.extract_stack(f)[self.skip_first_n_frames:])
-        if record.exc_info:
+        if record.exc_info and record.exc_info != (None, None, None):
+            # When you do log.exception() when there's no exception, you get
+            # record.exc_info == (None, None, None)
             exc_type, exc_value, exc_tb = record.exc_info
             record.exc_traceback = traceback.format_list(
                 traceback.extract_tb(exc_tb))

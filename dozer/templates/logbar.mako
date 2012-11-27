@@ -84,7 +84,7 @@ Traceback (most recent call last):
 ${frame}\
                             % endif
                         % endfor
-${event.exc_info[0].__name__}: ${event.exc_info[1]}
+${getattr(event.exc_info[0], '__name__', '???')}: ${event.exc_info[1]}
 </pre>
                     % endif
                     % if hasattr(event, 'traceback'):
