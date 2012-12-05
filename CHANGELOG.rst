@@ -1,6 +1,9 @@
 Dozer Changelog
 ===============
 
+0.3 (unreleased)
+----------------
+
 0.2 (December 5, 2012)
 ----------------------
 * Adding logview that appends log events for the current request to the bottom
