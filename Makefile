@@ -28,7 +28,7 @@ distcheck:
 	  hg archive $(TMPDIR)/tree/ && \
 	  cd $(TMPDIR) && \
 	  tar xvzf ../dist/$$pkg_and_version.tar.gz && \
-	  diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' && \
+	  diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' -x '.hg*' && \
 	  cd $$pkg_and_version && \
 	  $(MAKE) dist test && \
 	  cd .. && \
