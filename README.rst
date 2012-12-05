@@ -44,7 +44,7 @@ of Dozer's profiler <http://mg.pov.lt/blog/profiling-with-dozer.html>`_.
 Inspecting log messages
 -----------------------
 
-Usage:
+Usage::
 
     from dozer import Logview
 
