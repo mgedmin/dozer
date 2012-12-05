@@ -1,3 +1,4 @@
+import os
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -5,37 +6,22 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+def read(filename):
+    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+
 version = '0.2'
 
 setup(
     name="Dozer",
     version=version,
     description="WSGI Middleware version of the CherryPy memory leak debugger",
-    long_description="""
-Dozer
-=====
-
-Dozer is a WSGI middleware version of Robert Brewer's
-`Dowser CherryPy tool <http://www.aminus.net/wiki/Dowser>`_ that
-displays information as collected by the gc module to assist in
-tracking down memory leaks.
-
-Usage::
-
-    from dozer import Dozer
-
-    # my_wsgi_app is a WSGI application
-    wsgi_app = Dozer(my_wsgi_app)
-
-Assuming you're serving your application on the localhost at port 5000,
-you can then load up ``http://localhost:5000/_dozer/index`` to view the
-gc info.
-
-""",
+    long_description=read('README.rst') + '\n\n' + read('CHANGELOG.rst'),
     keywords='web wsgi memory profiler',
     license='Public Domain',
     author='Ben Bangert',
     author_email='ben@groovie.org',
+    maintainer='Marius Gedminas',
+    maintainer_email='marius@gedmin.as',
     url='http://www.pylonshq.com/',
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
