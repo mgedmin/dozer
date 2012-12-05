@@ -22,7 +22,7 @@ setup(
     author_email='ben@groovie.org',
     maintainer='Marius Gedminas',
     maintainer_email='marius@gedmin.as',
-    url='http://www.pylonshq.com/',
+    url='https://bitbucket.org/bbangert/dozer',
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
@@ -31,14 +31,11 @@ setup(
     install_requires=[
         "Paste>=1.6", "WebOb>=0.9.2", "mako",
     ],
-    dependency_links=[
-        "http://www.pylonshq.com/download/0.9.7"
-    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: Public Domain",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Software Development :: Libraries :: Python Modules",
