@@ -5,6 +5,7 @@ Dozer Changelog
 ----------------
 * Emit the "PIL is not installed" only if the Dozer middleware is
   actually used.
+* Give a name to the Dozer memleak thread.
 
 0.2 (December 5, 2012)
 ----------------------

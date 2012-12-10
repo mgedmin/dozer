@@ -78,7 +78,7 @@ class Dozer(object):
         self.path = path
         self.history = {}
         self.samples = 0
-        self.runthread = threading.Thread(target=self.start)
+        self.runthread = threading.Thread(name='Dozer', target=self.start)
         self.runthread.setDaemon(True)
         self.runthread.start()
         if Image is None or ImageDraw is None:
