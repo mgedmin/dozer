@@ -76,6 +76,9 @@ class Logview(object):
         self.stack_formatter = kwargs.get(
             'stack_formatter', config.get(
                 'stack_formatter', RequestHandler.stack_formatter))
+        self.tb_formatter = kwargs.get(
+            'tb_formatter', config.get(
+                'tb_formatter', RequestHandler.tb_formatter))
 
         reqhandler = RequestHandler()
         reqhandler.setLevel(self.loglevel)
@@ -84,11 +87,19 @@ class Logview(object):
         reqhandler.skip_first_n_frames = self.skip_first_n_frames
         reqhandler.skip_last_n_frames = self.skip_last_n_frames
         if self.stack_formatter:
-            modname, fn = self.stack_formatter.rsplit('.', 1)
-            mod = __import__(modname, {}, {}, ['*'])
-            reqhandler.stack_formatter = getattr(mod, fn)
+            reqhandler.stack_formatter = self._resolve(self.stack_formatter)
+        if self.tb_formatter:
+            reqhandler.tb_formatter = self._resolve(self.tb_formatter)
         logging.getLogger('').addHandler(reqhandler)
         self.reqhandler = reqhandler
+
+    def _resolve(self, dotted_name):
+        if callable(dotted_name):
+            # let's let people supply the function directly
+            return dotted_name
+        modname, fn = dotted_name.rsplit('.', 1)
+        mod = __import__(modname, {}, {}, ['*'])
+        return getattr(mod, fn)
 
     def __call__(self, environ, start_response):
         if thread:
@@ -143,6 +154,8 @@ class RequestHandler(logging.Handler):
     stack_formatter = None # 'package.module.function'
                            # e.g. 'traceback.format_stack'
                            # note: disables skip_first_n_frames
+    tb_formatter = None    # 'package.module.function'
+                           # e.g. 'traceback.format_tb'
 
     def __init__(self):
         """Initialize the handler."""
@@ -168,8 +181,10 @@ class RequestHandler(logging.Handler):
             # When you do log.exception() when there's no exception, you get
             # record.exc_info == (None, None, None)
             exc_type, exc_value, exc_tb = record.exc_info
-            record.exc_traceback = traceback.format_list(
-                traceback.extract_tb(exc_tb))
+            if self.tb_formatter:
+                record.exc_traceback = self.tb_formatter(exc_tb)
+            else:
+                record.exc_traceback = traceback.format_tb(exc_tb)
         # Make sure we interpolate the message early.  Consider this code:
         #    a_list = [1, 2, 3]
         #    log.debug('a_list = %r', a_list)
@@ -189,7 +204,7 @@ class RequestHandler(logging.Handler):
     def flush(self):
         """Kills all data in the buffer"""
         self.buffer = {}
-    
+
     def close(self):
         """Close the handler.
 

@@ -6,6 +6,9 @@ Dozer Changelog
 * Emit the "PIL is not installed" only if the Dozer middleware is
   actually used.
 * Give a name to the Dozer memleak thread.
+* You can now supply a function directly to Logview(stack_formatter=fn) 
+* New configuration option for Logview middleware: tb_formatter, similar
+  to stack_formatter, but for exception tracebacks.
 
 0.2 (December 5, 2012)
 ----------------------
