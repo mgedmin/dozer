@@ -4,6 +4,7 @@ import os
 import sys
 import threading
 import time
+import warnings
 from StringIO import StringIO
 from types import FrameType, ModuleType
 
@@ -13,8 +14,6 @@ except ImportError:
     try:
         import Image
     except ImportError:
-        import warnings
-        warnings.warn('PIL is not installed, cannot show charts in Dozer')
         Image = None
 try:
     from PIL import ImageDraw
@@ -82,6 +81,8 @@ class Dozer(object):
         self.runthread = threading.Thread(target=self.start)
         self.runthread.setDaemon(True)
         self.runthread.start()
+        if Image is None or ImageDraw is None:
+            warnings.warn('PIL is not installed, cannot show charts in Dozer')
     
     def __call__(self, environ, start_response):
         assert not environ['wsgi.multiprocess'], (
