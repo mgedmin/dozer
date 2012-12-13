@@ -1,6 +1,10 @@
 Dozer Changelog
 ===============
 
+0.4 (unreleased)
+----------------
+
+
 0.3 (December 13, 2012)
 -----------------------
 * Emit the "PIL is not installed" only if the Dozer middleware is
