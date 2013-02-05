@@ -215,7 +215,7 @@ class Dozer(object):
             rows = self.trace_one(req, typename, objid)
         
         res = Response()
-        res.body =template(req, "trace.html", output="\n".join(rows),
+        res.text =template(req, "trace.html", output="\n".join(rows),
                         typename=cgi.escape(typename),
                         objid=str(objid or ''))
         return res
