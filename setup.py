@@ -9,7 +9,7 @@ except ImportError:
 def read(filename):
     return open(os.path.join(os.path.dirname(__file__), filename)).read()
 
-version = '0.3.1'
+version = '0.3.2.dev'
 
 setup(
     name="Dozer",
