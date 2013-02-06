@@ -1,9 +1,10 @@
 Dozer Changelog
 ===============
 
-0.4 (unreleased)
-----------------
-
+0.3.1 (February 6, 2013)
+------------------------
+* Fix TypeError: You cannot set Response.body to a text object
+  (https://bitbucket.org/bbangert/dozer/issue/5).  Patch by Mitchell Peabody.
 
 0.3 (December 13, 2012)
 -----------------------
