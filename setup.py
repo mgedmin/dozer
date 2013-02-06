@@ -29,7 +29,7 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose'],
     install_requires=[
-        "Paste>=1.6", "WebOb>=0.9.2", "mako",
+        "Paste>=1.6", "WebOb>=1.1", "mako",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
