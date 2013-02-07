@@ -9,11 +9,16 @@ FILE_WITH_VERSION = setup.py
 FILE_WITH_CHANGELOG = CHANGELOG.rst
 
 
-all:
-	# There's nothing that needs building in Dozer.
+all: bin/nosetests bin/detox bin/tox bin/coverage lib/python*/site-packages/Dozer.egg-link
 
-test:
-	# No tests yet :(
+test: bin/nosetests lib/python*/site-packages/Dozer.egg-link
+	bin/nosetests
+
+coverage: bin/nosetests bin/coverage lib/python*/site-packages/Dozer.egg-link
+	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer
+
+clean:
+	rm -rf bin include lib local man
 
 dist:
 	$(PYTHON) setup.py sdist
@@ -66,3 +71,21 @@ release: releasechecklist
 
 
 .PHONY: all test dist distcheck releasechecklist release
+
+bin/nosetests: bin/pip
+	bin/pip install -M nose
+
+bin/tox: bin/pip
+	bin/pip install -M tox
+
+bin/detox: bin/pip
+	bin/pip install -M detox
+
+bin/coverage: bin/pip
+	bin/pip install -M coverage
+
+lib/python*/site-packages/Dozer.egg-link:
+	bin/pip install -M -e .
+
+bin/pip:
+	virtualenv .

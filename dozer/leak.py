@@ -23,7 +23,6 @@ except ImportError:
     except ImportError:
         ImageDraw = None
 
-from paste import fileapp
 from paste import urlparser
 from pkg_resources import resource_filename
 from webob import Request, Response
@@ -78,9 +77,15 @@ class Dozer(object):
         self.path = path
         self.history = {}
         self.samples = 0
+        self._start_thread()
+        self._maybe_warn_about_PIL()
+
+    def _start_thread(self):
         self.runthread = threading.Thread(name='Dozer', target=self.start)
         self.runthread.setDaemon(True)
         self.runthread.start()
+
+    def _maybe_warn_about_PIL(self):
         if Image is None or ImageDraw is None:
             warnings.warn('PIL is not installed, cannot show charts in Dozer')
 
@@ -132,7 +137,7 @@ class Dozer(object):
                 typecounts[objtype] = 1
 
         for objtype, count in typecounts.iteritems():
-            typename = objtype.__module__ + "." + objtype.__name__
+            typename = "%s.%s" % (objtype.__module__, objtype.__name__)
             if typename not in self.history:
                 self.history[typename] = [0] * self.samples
             self.history[typename].append(count)
