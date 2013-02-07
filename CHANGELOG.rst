@@ -3,6 +3,10 @@ Dozer Changelog
 
 0.3.2 (unreleased)
 ------------------
+* More comprehensive fixes for issue #5 by Mitchell Peabody.
+* Fix TypeError: unsupported operand type(s) for +: 'property' and 'str'
+  (https://bitbucket.org/bbangert/dozer/issue/3).
+* Add a small test suite.
 
 0.3.1 (February 6, 2013)
 ------------------------
