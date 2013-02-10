@@ -1,6 +1,9 @@
 Dozer Changelog
 ===============
 
+0.3.3 (unreleased)
+------------------
+
 0.3.2 (February 10, 2013)
 --------------------------
 * More comprehensive fixes for issue #5 by Mitchell Peabody.
