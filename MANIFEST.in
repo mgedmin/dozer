@@ -4,3 +4,4 @@ include README.rst
 include CHANGELOG.rst
 include LICENSE
 include Makefile
+include tox.ini
