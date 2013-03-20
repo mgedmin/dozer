@@ -11,6 +11,8 @@ def read(filename):
 
 version = '0.3.3.dev'
 
+tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
+
 setup(
     name="Dozer",
     version=version,
@@ -27,10 +29,13 @@ setup(
     zip_safe=False,
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=tests_require,
     install_requires=[
         "Paste>=1.6", "WebOb>=1.1", "mako",
     ],
+    extras_require={
+        'test': tests_require,
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

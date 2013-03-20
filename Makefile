@@ -84,8 +84,9 @@ bin/detox: bin/pip
 bin/coverage: bin/pip
 	bin/pip install -M coverage
 
-lib/python*/site-packages/Dozer.egg-link:
+lib/python*/site-packages/Dozer.egg-link: setup.py
 	bin/pip install -M -e .
+	bin/pip install -M 'Dozer[test]'
 
 bin/pip:
 	virtualenv .

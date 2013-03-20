@@ -1,6 +1,7 @@
 import unittest
 
 from webob import Request
+from webtest import TestApp
 
 from dozer.leak import Dozer
 from dozer.leak import ReferrerTree
@@ -87,4 +88,73 @@ class TestReferrerTree(unittest.TestCase):
         tree.maxdepth = 10
         tree.seen = {}
         list(tree._gen(EvilProxyClass.some_constant))
+
+
+def hello_world(environ, start_response):
+    body = 'hello, world!'
+    headers = [('Content-Type', 'text/html; charset=utf8'),
+               ('Content-Length', str(len(body)))]
+    start_response('200 Ok', headers)
+    return [body]
+
+
+class TestEntireStack(unittest.TestCase):
+
+    def make_wsgi_app(self):
+        app = DozerForTests(hello_world)
+        app.history['mymodule.MyType'] = [1, 2, 3, 4, 5]
+        return app
+
+    def make_test_app(self):
+        return TestApp(self.make_wsgi_app())
+
+    def test_application_pass_through(self):
+        app = self.make_test_app()
+        resp = app.get('/')
+        self.assertTrue('hello, world!' in resp)
+
+    def test_dozer_index(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/index')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_chart(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/chart/mymodule.MyType')
+        self.assertEqual(resp.status_int, 200)
+        self.assertEqual(resp.content_type, 'image/png')
+
+    def test_dozer_trace_all(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/trace/mymodule.MyType')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_trace_one(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/trace/mymodule.MyType/1234')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_tree(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/tree/mymodule.MyType/1234')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_media(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/media/css/main.css')
+        self.assertEqual(resp.status_int, 200)
+        self.assertEqual(resp.content_type, 'text/css')
+        self.assertTrue('.typename {' in resp)
+
+    def test_dozer_not_found(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/nosuchpage', status=404)
+
+    def test_dozer_forbidden(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/dowse', status=403)
 
