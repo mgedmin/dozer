@@ -342,8 +342,6 @@ class ReferrerTree(reftree.Tree):
 
             # Exclude all functions and classes from this module or reftree.
             mod = str(getattr(ref, "__module__", ""))
-            if mod is None:
-                continue
             if "dozer" in mod or "reftree" in mod or mod == '__main__':
                 continue # pragma: nocover -- avoid bug in coverage due to Python's peephole optimizer
 
