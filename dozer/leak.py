@@ -10,14 +10,14 @@ from types import FrameType, ModuleType
 
 try:
     from PIL import Image
-except ImportError:
+except ImportError: # pragma: nocover
     try:
         import Image
     except ImportError:
         Image = None
 try:
     from PIL import ImageDraw
-except ImportError:
+except ImportError: # pragma: nocover
     try:
         import ImageDraw
     except ImportError:
@@ -345,7 +345,7 @@ class ReferrerTree(reftree.Tree):
             if mod is None:
                 continue
             if "dozer" in mod or "reftree" in mod or mod == '__main__':
-                continue
+                continue # pragma: nocover -- avoid bug in coverage due to Python's peephole optimizer
 
             # Exclude all parents in our ignore list.
             if id(ref) in self._ignore:

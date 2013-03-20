@@ -1,5 +1,7 @@
+import gc
 import unittest
 
+from mock import patch
 from webob import Request
 from webtest import TestApp
 
@@ -48,6 +50,46 @@ class TestDozer(unittest.TestCase):
         self.assertEqual(url(req, 'bar'), '/_dozer/bar')
         self.assertEqual(url(req, '/bar'), '/_dozer/bar')
 
+    def test_path_normalization(self):
+        dozer = DozerForTests(path='/altpath/')
+        self.assertEqual(dozer.path, '/altpath')
+
+    def test_start_thread(self):
+        with patch('threading.Thread.start'):
+            dozer = Dozer(None)
+            self.assertEqual(dozer.runthread.name, 'Dozer')
+            self.assertTrue(dozer.runthread.daemon)
+            self.assertEqual(dozer.runthread._Thread__target, dozer.start)
+            dozer.runthread.start.assert_called_once()
+
+    def test_maybe_warn_about_PIL(self):
+        with patch('dozer.leak.Dozer._start_thread'):
+            with patch('dozer.leak.Image', None):
+                with patch('warnings.warn') as warn:
+                    dozer = Dozer(None)
+                    warn.assert_called_once_with('PIL is not installed, cannot show charts in Dozer')
+
+    def test_start(self):
+        with patch('time.sleep') as sleep:
+            dozer = DozerForTests()
+            dozer.tick = dozer.stop
+            dozer.start()
+            sleep.assert_called_once_with(dozer.period)
+
+    def test_tick(self):
+        dozer = DozerForTests()
+        dozer.maxhistory = 10
+        for n in range(dozer.maxhistory * 2):
+            dozer.tick()
+
+    def test_tick_handles_disappearing_types(self):
+        dozer = DozerForTests()
+        obj = MyType()
+        dozer.tick()
+        del obj
+        dozer.tick()
+        self.assertEqual(dozer.history['mymodule.MyType'], [1, 0])
+
     def test_tick_handles_types_with_broken_module(self):
         # https://bitbucket.org/bbangert/dozer/issue/3/cannot-user-operator-between-property-and
         dozer = DozerForTests()
@@ -73,21 +115,31 @@ class TestDozer(unittest.TestCase):
 
 class TestReferrerTree(unittest.TestCase):
 
-    def test_get_repr_handles_types_with_broken_module(self):
-        req = Request(dict(PATH_INFO='/whatevs'))
+    def make_request(self):
+        req = Request({'PATH_INFO': '/whatevs', 'wsgi.url_scheme': 'http',
+                       'HTTP_HOST': 'localhost'})
         req.base_path = '/_dozer'
+        return req
+
+    def make_tree(self):
+        req = self.make_request()
         tree = ReferrerTree(None, req)
+        tree.maxdepth = 10
+        tree.seen = {}
+        return tree
+
+    def test_get_repr_handles_types_with_broken_module(self):
+        tree = self.make_tree()
         evil_proxy = EvilProxyClass(object)
         tree.get_repr(evil_proxy)
 
     def test_gen_handles_types_with_broken_module(self):
-        req = Request({'PATH_INFO': '/whatevs', 'wsgi.url_scheme': 'http',
-                       'HTTP_HOST': 'localhost'})
-        req.base_path = '/_dozer'
-        tree = ReferrerTree(None, req)
-        tree.maxdepth = 10
-        tree.seen = {}
+        tree = self.make_tree()
         list(tree._gen(EvilProxyClass.some_constant))
+
+    def test_gen_skips_itself(self):
+        tree = self.make_tree()
+        list(tree._gen(ReferrerTree))
 
 
 def hello_world(environ, start_response):
@@ -98,12 +150,16 @@ def hello_world(environ, start_response):
     return [body]
 
 
+class MyType(object):
+    __module__ = 'mymodule'
+
+
 class TestEntireStack(unittest.TestCase):
 
     def make_wsgi_app(self):
-        app = DozerForTests(hello_world)
-        app.history['mymodule.MyType'] = [1, 2, 3, 4, 5]
-        return app
+        dozer = DozerForTests(hello_world)
+        dozer.history['mymodule.MyType'] = [1, 2, 3, 4, 5]
+        return dozer
 
     def make_test_app(self):
         return TestApp(self.make_wsgi_app())
@@ -125,11 +181,24 @@ class TestEntireStack(unittest.TestCase):
         self.assertEqual(resp.status_int, 200)
         self.assertEqual(resp.content_type, 'image/png')
 
+    def test_dozer_chart_no_PIL(self):
+        app = self.make_test_app()
+        with patch('dozer.leak.Image', None):
+            resp = app.get('/_dozer/chart/mymodule.MyType', status=404)
+
     def test_dozer_trace_all(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/trace/mymodule.MyType')
         self.assertEqual(resp.status_int, 200)
         self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_trace_all_not_empty(self):
+        app = self.make_test_app()
+        obj = MyType() # keep a reference so it's not gc'ed
+        resp = app.get('/_dozer/trace/mymodule.MyType')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+        self.assertTrue("<p class='obj'>" in resp)
 
     def test_dozer_trace_one(self):
         app = self.make_test_app()
@@ -137,11 +206,29 @@ class TestEntireStack(unittest.TestCase):
         self.assertEqual(resp.status_int, 200)
         self.assertTrue('<div id="output">' in resp)
 
+    def test_dozer_trace_one_not_empty(self):
+        app = self.make_test_app()
+        obj = MyType()
+        resp = app.get('/_dozer/trace/mymodule.MyType/%d' % id(obj))
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+        self.assertTrue('<div class="obj">' in resp)
+
     def test_dozer_tree(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/tree/mymodule.MyType/1234')
         self.assertEqual(resp.status_int, 200)
         self.assertTrue('<div id="output">' in resp)
+
+    def test_dozer_tree_not_empty(self):
+        app = self.make_test_app()
+        obj = MyType()
+        resp = app.get('/_dozer/tree/mymodule.MyType/%d' % id(obj))
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+        self.assertTrue('<div class="obj">' in resp)
+        # this removes a 3-second pause in the next test
+        gc.collect()
 
     def test_dozer_media(self):
         app = self.make_test_app()
