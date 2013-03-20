@@ -4,6 +4,7 @@ from webob import Request
 
 from dozer.leak import Dozer
 from dozer.leak import ReferrerTree
+from dozer.leak import url
 
 
 class DozerForTests(Dozer):
@@ -33,6 +34,19 @@ class EvilProxyClass(object):
 
 class TestDozer(unittest.TestCase):
 
+    def make_request(self, subpath='/', base_path='/_dozer'):
+        req = Request(dict(PATH_INFO=subpath))
+        req.base_path = base_path
+        return req
+
+    def test_url(self):
+        req = self.make_request('/somewhere')
+        self.assertEqual(url(req, 'foo'), '/_dozer/foo')
+        self.assertEqual(url(req, '/foo'), '/_dozer/foo')
+        req = self.make_request('/somewhere', base_path='/_dozer/')
+        self.assertEqual(url(req, 'bar'), '/_dozer/bar')
+        self.assertEqual(url(req, '/bar'), '/_dozer/bar')
+
     def test_tick_handles_types_with_broken_module(self):
         # https://bitbucket.org/bbangert/dozer/issue/3/cannot-user-operator-between-property-and
         dozer = DozerForTests()
@@ -52,10 +66,7 @@ class TestDozer(unittest.TestCase):
     def test_tree_handles_types_with_broken_module(self):
         dozer = DozerForTests()
         evil_proxy = EvilProxyClass(object) # keep a reference to it
-        req = Request(dict(
-                PATH_INFO='/nosuchtype/%d' % id(evil_proxy),
-        ))
-        req.base_path = '/_dozer'
+        req = self.make_request('/nosuchtype/%d' % id(evil_proxy))
         dozer.tree(req)
 
 
