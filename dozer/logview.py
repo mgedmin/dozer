@@ -12,7 +12,7 @@ from webob import Request
 
 try:
     import thread
-except ImportError:
+except ImportError: # pragma: nocover
     thread = None
 
 
@@ -41,6 +41,8 @@ class Logview(object):
             app = Logview(app, {'logview.sqlalchemy':'#ff0000'})
 
         """
+        if config is None:
+            config = {}
         self.app = app
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir],
