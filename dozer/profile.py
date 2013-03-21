@@ -1,6 +1,6 @@
 try:
     import cProfile
-except ImportError:
+except ImportError: # pragma: nocover
     # python2.4
     import profile as cProfile
 import cPickle
@@ -104,6 +104,8 @@ class Profiler(object):
                     else:
                         total_cost = 0
                     max_cost = max(max_cost, total_cost)
+                    if max_cost == 0:
+                        max_cost = 1 # avoid division by zero
                     profiles.append((modified, environ, total_cost, profile_file[:-4]))
 
         profiles.sort(reverse=True)
@@ -180,10 +182,23 @@ class Profiler(object):
         safe_environ['thread_id'] = str(thread.get_ident())
         profile_run = dict(time=datetime.now(), profile=tree,
                            environ=safe_environ)
-        fname_base = str(time.time()).replace('.', '_')
-        prof_file = fname_base + '.pkl'
-
         dir_name = self.profile_path or ''
+
+        while True:
+            fname_base = str(time.time()).replace('.', '_')
+            prof_file = fname_base + '.pkl'
+            try:
+                os.open(os.path.join(dir_name, prof_file), os.O_CREAT | os.O_EXCL)
+            except OSError as e:
+                if e.errno == errno.EEXIST:
+                    # file already exists, try again with a slightly different
+                    # timestamp hopefully
+                    pass
+                else:
+                    raise
+            else:
+                break
+
         cPickle.dump(profile_run, open(os.path.join(dir_name, prof_file), 'wb'))
         write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'),
                         cutoff=self.dot_graph_cutoff)
@@ -233,13 +248,13 @@ def color(w):
     # http://www.w3.org/TR/css3-color/#hsl-color
     if l <= 0.5:
         m2 = l * (s + 1)
-    else:
+    else: # pragma: nocover -- because our lmax is <= .5!
         m2 = l + s - l * s
     m1 = l * 2 - m2
     def h2rgb(m1, m2, h):
         if h < 0:
             h += 1.0
-        elif h > 1:
+        elif h > 1: # pragma: nocover -- our hmax is 2/3, and we add 1/3 to that
             h -= 1.0
         if h * 6 < 1.0:
             return m1 + (m2 - m1) * h * 6
