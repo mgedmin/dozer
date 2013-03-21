@@ -12,6 +12,12 @@ except ImportError:
     # Python 3.x
     from io import StringIO
 
+try:
+    import __builtin__ as builtins
+except ImportError:
+    # Python 3.x
+    import builtins
+
 from mock import patch
 from webtest import TestApp
 
@@ -57,7 +63,7 @@ class TestGlobals(unittest.TestCase):
     def test_write_dot_graph_very_very_fast_function(self):
         code = self.make_code_object()
         profile_entry = namedtuple('profile_entry', 'code totaltime calls')
-        with patch(open.__module__ + '.open', lambda *a: StringIO()) as output:
+        with patch.object(builtins, 'open', lambda *a: StringIO()) as output:
             data = [profile_entry(code=code, totaltime=1, calls=[])]
             tree = {'somefunc sourcefile.py:2': dict(cost=0)}
             write_dot_graph(data, tree, 'filename.gv')
