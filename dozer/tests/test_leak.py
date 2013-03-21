@@ -59,7 +59,10 @@ class TestDozer(unittest.TestCase):
             dozer = Dozer(None)
             self.assertEqual(dozer.runthread.name, 'Dozer')
             self.assertTrue(dozer.runthread.daemon)
-            self.assertEqual(dozer.runthread._Thread__target, dozer.start)
+            # Python 2.x has __target (mangled), Python 3.x has _target
+            target = getattr(dozer.runthread, '_Thread__target',
+                             getattr(dozer.runthread, '_target', '???'))
+            self.assertEqual(target, dozer.start)
             dozer.runthread.start.assert_called_once()
 
     def test_maybe_warn_about_PIL(self):
@@ -143,7 +146,7 @@ class TestReferrerTree(unittest.TestCase):
 
 
 def hello_world(environ, start_response):
-    body = 'hello, world!'
+    body = b'hello, world!'
     headers = [('Content-Type', 'text/html; charset=utf8'),
                ('Content-Length', str(len(body)))]
     start_response('200 Ok', headers)

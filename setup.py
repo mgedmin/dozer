@@ -7,9 +7,10 @@ except ImportError:
     from setuptools import setup, find_packages
 
 def read(filename):
-    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+    with open(os.path.join(os.path.dirname(__file__), filename)) as f:
+        return f.read()
 
-version = '0.3.3.dev'
+version = '0.4.dev0'
 
 tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
 
@@ -31,7 +32,7 @@ setup(
     test_suite='nose.collector',
     tests_require=tests_require,
     install_requires=[
-        "Paste>=1.6", "WebOb>=1.1", "mako",
+        "WebOb>=1.1", "Mako",
     ],
     extras_require={
         'test': tests_require,
@@ -40,7 +41,10 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: Public Domain",
+        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Software Development :: Libraries :: Python Modules",

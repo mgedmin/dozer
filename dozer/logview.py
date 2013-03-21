@@ -1,19 +1,32 @@
+import collections
+import itertools
 import logging
 import os
 import re
-import time
-import itertools
-import traceback
 import sys
+import time
+import traceback
 
 from mako.lookup import TemplateLookup
-from paste.util.converters import asbool
 from webob import Request
+
+from dozer.util import asbool
 
 try:
     import thread
-except ImportError: # pragma: nocover
-    thread = None
+except ImportError:
+    # Python 3.x
+    try:
+        import _thread as thread
+    except ImportError:
+        # I've no idea.  Maybe Jython?
+        thread = None
+
+try:
+    unicode
+except NameError:
+    # Python 3.x
+    unicode = str
 
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,14 +62,14 @@ class Logview(object):
                                    default_filters=['h'])
 
         self.log_colors = {}
-        for key, val in itertools.chain(config.iteritems(),
-                                        kwargs.iteritems()):
+        for key, val in itertools.chain(iter(config.items()),
+                                        iter(kwargs.items())):
             if key.startswith('logview.'):
                 self.log_colors[key[len('logview.'):]] = val
 
         self.traceback_colors = {}
-        for key, val in itertools.chain(config.iteritems(),
-                                        kwargs.iteritems()):
+        for key, val in itertools.chain(iter(config.items()),
+                                        iter(kwargs.items())):
             if key.startswith('traceback.'):
                 self.traceback_colors[key[len('traceback.'):]] = val
 
@@ -96,7 +109,7 @@ class Logview(object):
         self.reqhandler = reqhandler
 
     def _resolve(self, dotted_name):
-        if callable(dotted_name):
+        if isinstance(dotted_name, collections.Callable):
             # let's let people supply the function directly
             return dotted_name
         modname, fn = dotted_name.rsplit('.', 1)
@@ -123,12 +136,17 @@ class Logview(object):
                                  traceback_colors=self.traceback_colors,
                                  tottime=tottime, start=start)
             logbar = logbar.encode('ascii', 'xmlcharrefreplace')
-            parts = re.split(r'(<body[^>]*>)', response.body)
-            # parts = ['preamble', '<body ...>', 'text'] or just ['text']
-            # we want to insert our logbar after <body> (if it exists) and
-            # in front of text
-            response.body = ''.join(parts[:-1] + [logbar] + parts[-1:])
+            response.body = self.splice(response.body, logbar)
         return response(environ, start_response)
+
+    def splice(self, body, logbar):
+        assert isinstance(body, bytes)
+        assert isinstance(logbar, bytes)
+        parts = re.split(b'(<body[^>]*>)', body, 1)
+        # parts = ['preamble', '<body ...>', 'text'] or just ['text']
+        # we want to insert our logbar after <body> (if it exists) and
+        # in front of text
+        return b''.join(parts[:-1] + [logbar] + parts[-1:])
 
     def render(self, name, **vars):
         tmpl = self.mako.get_template(name)

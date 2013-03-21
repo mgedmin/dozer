@@ -1,5 +1,6 @@
 import gc
 import sys
+from operator import itemgetter
 
 from types import FrameType
 
@@ -44,13 +45,19 @@ class Tree(object):
         """Walk the object tree, pretty-printing each branch."""
         self.ignore_caller()
         for depth, refid, rep in self.walk(maxresults, maxdepth):
-            print ("%9d" % refid), (" " * depth * 2), rep
+            print("%9d %s %s" % (refid, " " * (depth * 2), rep))
 
+
+def repr_dict(obj):
+    return "dict of len %s: {%s}" % (len(obj), ", ".join(
+        "%s: %s" % (repr(k), repr(v)) for k, v in sorted(obj.items())))
+
+def repr_set(obj):
+    return "set of len %s: set([%s])" % (len(obj), ", ".join(
+        map(repr, sorted(obj))))
 
 def _repr_container(obj):
     return "%s of len %s: %r" % (type(obj).__name__, len(obj), obj)
-repr_dict = _repr_container
-repr_set = _repr_container
 repr_list = _repr_container
 repr_tuple = _repr_container
 
@@ -174,9 +181,9 @@ class CircularReferents(Tree):
         """Walk the object tree, pretty-printing each branch."""
         self.ignore_caller()
         for trail in self.walk(maxresults, maxdepth):
-            print trail
+            print(trail)
         if self.stops:
-            print "%s paths stopped because max depth reached" % self.stops
+            print("%s paths stopped because max depth reached" % self.stops)
 
 
 def count_objects():
@@ -184,7 +191,7 @@ def count_objects():
     for obj in gc.get_objects():
         objtype = type(obj)
         d[objtype] = d.get(objtype, 0) + 1
-    d = [(v, k) for k, v in d.iteritems()]
-    d.sort()
+    d = [(v, k) for k, v in d.items()]
+    d.sort(key=itemgetter(0))
     return d
 

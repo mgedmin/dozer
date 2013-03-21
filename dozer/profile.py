@@ -1,25 +1,37 @@
-try:
-    import cProfile
-except ImportError: # pragma: nocover
-    # python2.4
-    import profile as cProfile
-import cPickle
 import errno
-import time
 import os
 import re
-import thread
+import time
 from datetime import datetime
-from pkg_resources import resource_filename
 
+try:
+    import cPickle
+except ImportError:
+    # Python 3.x
+    import pickle as cPickle
+
+try:
+    import cProfile
+except ImportError:
+    # Python 3.x
+    import profile as cProfile
+
+try:
+    import thread
+except ImportError:
+    # Python 3.x
+    import _thread as thread
+
+from pkg_resources import resource_filename
 from mako.lookup import TemplateLookup
-from paste import urlparser
 from webob import Request, Response
-from webob import exc
+from webob import exc, static
+
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 
 DEFAULT_IGNORED_PATHS = [r'/favicon\.ico$', r'^/error/document']
+
 
 class Profiler(object):
     def __init__(self, app, global_conf=None, profile_path=None,
@@ -34,7 +46,7 @@ class Profiler(object):
         self.conf = global_conf
         self.dot_graph_cutoff = float(dot_graph_cutoff)
         self.profile_path = profile_path
-        self.ignored_paths = map(re.compile, ignored_paths)
+        self.ignored_paths = list(map(re.compile, ignored_paths))
         tmpl_dir = os.path.join(here_dir, 'templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
 
@@ -64,7 +76,7 @@ class Profiler(object):
     def media(self, req):
         """Static path where images and other files live"""
         path = resource_filename('dozer', 'media')
-        app = urlparser.StaticURLParser(path)
+        app = static.DirectoryApp(path)
         return app
     media.exposed = True
 
@@ -94,7 +106,7 @@ class Profiler(object):
                 modified = os.stat(path).st_mtime
                 try:
                     data = cPickle.load(open(path, 'rb'))
-                except Exception, e:
+                except Exception as e:
                     errors.append((modified, '%s: %s' % (e.__class__.__name__, e), profile_file[:-4]))
                 else:
                     environ = data['environ']
@@ -127,7 +139,7 @@ class Profiler(object):
             try:
                 for ext in ('.gv', '.pkl'):
                     os.unlink(os.path.join(self.profile_path, profile_id + ext))
-            except OSError, e:
+            except OSError as e:
                 if e.errno == errno.ENOENT:
                     pass # allow a file not found exception
                 else:
@@ -166,13 +178,13 @@ class Profiler(object):
                     appiter.close()
 
         prof.runcall(runapp)
-        body = ''.join(response_body)
+        body = b''.join(response_body)
         results = prof.getstats()
         tree = buildtree(results)
 
         # Pull out 'safe' bits from environ
         safe_environ = {}
-        for k, v in environ.iteritems():
+        for k, v in environ.items():
             if k.startswith('HTTP_'):
                 safe_environ[k] = v
             elif k in ['REQUEST_METHOD', 'SCRIPT_NAME', 'PATH_INFO',
@@ -199,7 +211,8 @@ class Profiler(object):
             else:
                 break
 
-        cPickle.dump(profile_run, open(os.path.join(dir_name, prof_file), 'wb'))
+        with open(os.path.join(dir_name, prof_file), 'wb') as f:
+            cPickle.dump(profile_run, f)
         write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'),
                         cutoff=self.dot_graph_cutoff)
         del results, tree, profile_run

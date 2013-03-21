@@ -1,6 +1,11 @@
 import gc
 import unittest
-from cStringIO import StringIO
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    # Python 3.x
+    from io import StringIO
 
 from mock import patch
 
@@ -12,7 +17,7 @@ class TestTree(unittest.TestCase):
 
     def test_walk_max_results(self):
         tree = Tree(None, None)
-        tree._gen = lambda x: range(20)
+        tree._gen = lambda x: list(range(20))
         res = list(tree.walk(maxresults=3))
         self.assertEqual(res,
                          [0, 1, 2, (0, 0, "==== Max results reached ====")])
@@ -133,10 +138,10 @@ class TestCircularReferents(unittest.TestCase):
         obj = self.make_cycle()
         tree = self.make_tree(obj)
         with patch('sys.stdout', StringIO()) as stdout:
-            tree.print_tree(maxdepth=4)
+            tree.print_tree(maxdepth=5)
             self.assertEqual(
                 stdout.getvalue(),
                 '''["dict of len 3: {'a': a, 'b': b, 'name': 'obj'}", 'b','''
-                ''' "dict of len 2: {'obj': obj, 'name': 'b'}", 'obj']\n'''
-                '''9 paths stopped because max depth reached\n''')
+                ''' "dict of len 2: {'name': 'b', 'obj': obj}", 'obj']\n'''
+                '''2 paths stopped because max depth reached\n''')
 

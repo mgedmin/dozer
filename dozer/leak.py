@@ -5,30 +5,36 @@ import sys
 import threading
 import time
 import warnings
-from StringIO import StringIO
+from io import BytesIO
 from types import FrameType, ModuleType
 
 try:
     from PIL import Image
-except ImportError: # pragma: nocover
+except ImportError:
     try:
         import Image
     except ImportError:
         Image = None
 try:
     from PIL import ImageDraw
-except ImportError: # pragma: nocover
+except ImportError:
     try:
         import ImageDraw
     except ImportError:
         ImageDraw = None
 
-from paste import urlparser
 from pkg_resources import resource_filename
 from webob import Request, Response
-from webob import exc
+from webob import exc, static
 
-import dozer.reftree as reftree
+from dozer import reftree
+
+try:
+    unicode
+except NameError: # pragma: nocover
+    # Python 3.x
+    unicode = str
+
 
 localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
@@ -59,7 +65,8 @@ def template(req, name, **params):
          'home': url(req, "/index"),
          }
     p.update(params)
-    return unicode(open(os.path.join(localDir, 'media', name)).read() % p)
+    with open(os.path.join(localDir, 'media', name)) as f:
+        return unicode(f.read() % p)
 
 
 class Dozer(object):
@@ -115,8 +122,7 @@ class Dozer(object):
     def media(self, req):
         """Static path where images and other files live"""
         path = resource_filename('dozer', 'media')
-        app = urlparser.StaticURLParser(path)
-        return app
+        return static.DirectoryApp(path)
     media.exposed = True
 
     def start(self):
@@ -136,7 +142,7 @@ class Dozer(object):
             else:
                 typecounts[objtype] = 1
 
-        for objtype, count in typecounts.iteritems():
+        for objtype, count in typecounts.items():
             typename = "%s.%s" % (objtype.__module__, objtype.__name__)
             if typename not in self.history:
                 self.history[typename] = [0] * self.samples
@@ -145,14 +151,14 @@ class Dozer(object):
         samples = self.samples + 1
 
         # Add dummy entries for any types which no longer exist
-        for typename, hist in self.history.iteritems():
+        for typename, hist in self.history.items():
             diff = samples - len(hist)
             if diff > 0:
                 hist.extend([0] * diff)
 
         # Truncate history to self.maxhistory
         if samples > self.maxhistory:
-            for typename, hist in self.history.iteritems():
+            for typename, hist in self.history.items():
                 hist.pop(0)
         else:
             self.samples = samples
@@ -163,8 +169,7 @@ class Dozer(object):
     def index(self, req):
         floor = req.GET.get('floor', 0)
         rows = []
-        typenames = self.history.keys()
-        typenames.sort()
+        typenames = sorted(self.history)
         for typename in typenames:
             hist = self.history[typename]
             maxhist = max(hist)
@@ -186,9 +191,9 @@ class Dozer(object):
 
     def chart(self, req):
         """Return a sparkline chart of the given type."""
-        if Image is None:
+        if Image is None or ImageDraw is None:
             # Cannot render
-            return Response('Cannot render; PIL is not installed', status='404 Not Found')
+            return Response('Cannot render; PIL/Pillow is not installed', status='404 Not Found')
         typename = req.path_info_pop()
         data = self.history[typename]
         height = 20.0
@@ -199,7 +204,7 @@ class Dozer(object):
                   fill="#009900")
         del draw
 
-        f = StringIO()
+        f = BytesIO()
         im.save(f, "PNG")
         result = f.getvalue()
 
@@ -384,7 +389,7 @@ class ReferrerTree(reftree.Tree):
     def get_refkey(self, obj, referent):
         """Return the dict key or attribute name of obj which refers to referent."""
         if isinstance(obj, dict):
-            for k, v in obj.iteritems():
+            for k, v in obj.items():
                 if v is referent:
                     return " (via its %r key)" % repr(k)
 

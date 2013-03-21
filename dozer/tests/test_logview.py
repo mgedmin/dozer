@@ -21,6 +21,18 @@ class TestLogview(unittest.TestCase):
                          traceback.format_stack)
         self.assertEqual(logview.reqhandler.tb_formatter, traceback.format_tb)
 
+    def test_splice(self):
+        logview = Logview(None)
+        testcases = [
+            b'[logbar]no body tag',
+            b'<html><body>[logbar]text</body></html>',
+            b'<html><body class="c">[logbar]text</body></html>',
+            b'<html><body>[logbar]text</body><body>haha invalid markup',
+        ]
+        for expected in testcases:
+            orig_body = expected.replace(b'[logbar]', b'')
+            self.assertEqual(logview.splice(orig_body, b'[logbar]'), expected)
+
 
 class TestRequestHandler(unittest.TestCase):
 
@@ -41,10 +53,10 @@ def hello_world(environ, start_response):
     path_info = environ['PATH_INFO']
     if path_info == '/image.png':
         content_type = 'image/png'
-        body = '[image data]'
+        body = b'[image data]'
     else:
         content_type = 'text/html; charset=utf-8'
-        body = 'hello, world!'
+        body = b'hello, world!'
     if path_info == '/error':
         try:
             raise Exception('just testing')
@@ -75,7 +87,7 @@ class TestEntireStack(unittest.TestCase):
     def test_call_non_html(self):
         app = self.make_test_app()
         resp = app.get('/image.png')
-        self.assertEqual(resp.body, '[image data]')
+        self.assertEqual(resp.body, b'[image data]')
 
     def test_call_without_threading(self):
         app = self.make_test_app()

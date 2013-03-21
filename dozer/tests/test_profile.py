@@ -5,7 +5,12 @@ import textwrap
 import unittest
 import pickle
 from collections import namedtuple
-from cStringIO import StringIO
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    # Python 3.x
+    from io import StringIO
 
 from mock import patch
 from webtest import TestApp
@@ -52,7 +57,7 @@ class TestGlobals(unittest.TestCase):
     def test_write_dot_graph_very_very_fast_function(self):
         code = self.make_code_object()
         profile_entry = namedtuple('profile_entry', 'code totaltime calls')
-        with patch('__builtin__.open', lambda *a: StringIO()) as output:
+        with patch(open.__module__ + '.open', lambda *a: StringIO()) as output:
             data = [profile_entry(code=code, totaltime=1, calls=[])]
             tree = {'somefunc sourcefile.py:2': dict(cost=0)}
             write_dot_graph(data, tree, 'filename.gv')
@@ -64,7 +69,7 @@ class AppIter(list):
 
 
 def hello_world(environ, start_response):
-    body = 'hello, world!'
+    body = b'hello, world!'
     headers = [('Content-Type', 'text/html; charset=utf8'),
                ('Content-Length', str(len(body)))]
     start_response('200 Ok', headers)
@@ -142,7 +147,7 @@ class TestEntireStack(unittest.TestCase):
 
     def test_profiler_broken_pickle(self):
         app = self.make_test_app()
-        self.save_fake_profile(42, 'not a pickle at all')
+        self.save_fake_profile(42, b'not a pickle at all')
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
         self.assertTrue('<table id="profile-list">' in resp)
