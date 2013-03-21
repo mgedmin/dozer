@@ -1,6 +1,10 @@
 Dozer Changelog
 ===============
 
+0.4.1 (unreleased)
+------------------
+* No changes yet.
+
 0.4 (March 21, 2013)
 --------------------
 * 100% test coverage.
