@@ -1,8 +1,8 @@
 Dozer Changelog
 ===============
 
-0.4 (unreleased)
-----------------
+0.4 (March 21, 2013)
+--------------------
 * 100% test coverage.
 * Add support for Python 3.2 or newer.
 * Drop dependency on Paste.
