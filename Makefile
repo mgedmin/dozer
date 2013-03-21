@@ -12,10 +12,10 @@ FILE_WITH_CHANGELOG = CHANGELOG.rst
 all: bin/nosetests bin/detox bin/tox bin/coverage lib/python*/site-packages/Dozer.egg-link
 
 test: bin/nosetests lib/python*/site-packages/Dozer.egg-link
-	bin/nosetests
+	bin/nosetests --with-id
 
 coverage: bin/nosetests bin/coverage lib/python*/site-packages/Dozer.egg-link
-	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer
+	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer --with-id
 
 clean:
 	rm -rf bin include lib local man
