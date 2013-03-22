@@ -111,7 +111,7 @@ class Dozer(object):
             return self.app(environ, start_response)
 
     def dowse(self, req):
-        next_part = req.path_info_pop()
+        next_part = req.path_info_pop() or 'index'
         method = getattr(self, next_part, None)
         if method is None:
             return exc.HTTPNotFound('Nothing could be found to match %r' % next_part)

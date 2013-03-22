@@ -172,6 +172,12 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/')
         self.assertTrue('hello, world!' in resp)
 
+    def test_dozer(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer')
+        self.assertEqual(resp.status_int, 200)
+        self.assertTrue('<div id="output">' in resp)
+
     def test_dozer_index(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/index')

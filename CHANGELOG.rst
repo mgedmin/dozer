@@ -3,7 +3,8 @@ Dozer Changelog
 
 0.4.1 (unreleased)
 ------------------
-* No changes yet.
+* Make /_dozer work show the index page (instead of an internal server
+  error).
 
 0.4 (March 21, 2013)
 --------------------
