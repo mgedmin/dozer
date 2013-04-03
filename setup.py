@@ -32,7 +32,7 @@ setup(
     test_suite='nose.collector',
     tests_require=tests_require,
     install_requires=[
-        "WebOb>=1.1", "Mako",
+        "WebOb>=1.2", "Mako",
     ],
     extras_require={
         'test': tests_require,
