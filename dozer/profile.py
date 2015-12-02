@@ -106,7 +106,8 @@ class Profiler(object):
                 path = os.path.join(self.profile_path, profile_file)
                 modified = os.stat(path).st_mtime
                 try:
-                    data = cPickle.load(open(path, 'rb'))
+                    with open(path, 'rb') as f:
+                        data = cPickle.load(f)
                 except Exception as e:
                     errors.append((modified, '%s: %s' % (e.__class__.__name__, e), profile_file[:-4]))
                 else:
