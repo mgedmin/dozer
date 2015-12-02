@@ -197,11 +197,12 @@ class Profiler(object):
                            environ=safe_environ)
         dir_name = self.profile_path or ''
 
+        openflags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_BINARY', 0)
         while True:
             fname_base = str(time.time()).replace('.', '_')
             prof_file = fname_base + '.pkl'
             try:
-                fd = os.open(os.path.join(dir_name, prof_file), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+                fd = os.open(os.path.join(dir_name, prof_file), openflags)
             except OSError as e:
                 if e.errno == errno.EEXIST:
                     # file already exists, try again with a slightly different
