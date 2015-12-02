@@ -63,7 +63,7 @@ class TestDozer(unittest.TestCase):
             target = getattr(dozer.runthread, '_Thread__target',
                              getattr(dozer.runthread, '_target', '???'))
             self.assertEqual(target, dozer.start)
-            dozer.runthread.start.assert_called_once()
+            self.assertEqual(dozer.runthread.start.call_count, 1)
 
     def test_maybe_warn_about_PIL(self):
         with patch('dozer.leak.Dozer._start_thread'):

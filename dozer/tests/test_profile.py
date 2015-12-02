@@ -130,7 +130,7 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         with patch.object(AppIter, 'close') as close:
             app.get('/')
-            close.assert_called_once()
+            self.assertEqual(close.call_count, 1)
 
     def test_application_ignore_some_paths(self):
         app = self.make_test_app()
