@@ -86,7 +86,8 @@ class Profiler(object):
             return exc.HTTPNotFound('Missing profile id to view')
         dir_name = self.profile_path or ''
         fname = os.path.join(dir_name, profile_id) + '.pkl'
-        data = cPickle.load(open(fname, 'rb'))
+        with open(fname, 'rb') as f:
+            data = cPickle.load(f)
         top = [x for x in data['profile'].values() if not x.get('callers')]
         res = Response()
         res.body = self.render('/show_profile.mako', time=data['time'],
@@ -200,7 +201,7 @@ class Profiler(object):
             fname_base = str(time.time()).replace('.', '_')
             prof_file = fname_base + '.pkl'
             try:
-                os.open(os.path.join(dir_name, prof_file), os.O_CREAT | os.O_EXCL)
+                fd = os.open(os.path.join(dir_name, prof_file), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
             except OSError as e:
                 if e.errno == errno.EEXIST:
                     # file already exists, try again with a slightly different
@@ -211,7 +212,7 @@ class Profiler(object):
             else:
                 break
 
-        with open(os.path.join(dir_name, prof_file), 'wb') as f:
+        with os.fdopen(fd, 'wb') as f:
             cPickle.dump(profile_run, f)
         write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'),
                         cutoff=self.dot_graph_cutoff)
