@@ -6,3 +6,6 @@ dist/
 .tox/
 .venv/
 bin/
+.noseids
+.coverage
+tmp/
