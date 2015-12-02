@@ -8,11 +8,19 @@ TMPDIR = tmp
 FILE_WITH_VERSION = setup.py
 FILE_WITH_CHANGELOG = CHANGELOG.rst
 
+VCS_STATUS = git status --porcelain
+VCS_EXPORT = git archive --format=tar --prefix=$(TMPDIR)/tree/ HEAD | tar -xf -
+VCS_TAG = git tag
+VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push && git push --tags
+
 
 all: bin/nosetests bin/detox bin/tox bin/coverage local-install
 
 test: bin/nosetests local-install
 	bin/nosetests --with-id
+
+check: bin/detox local-install
+	bin/detox
 
 coverage: bin/nosetests bin/coverage local-install
 	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer --with-id
@@ -22,21 +30,20 @@ clean:
 	find -name '*.pyc' -delete
 
 dist:
-	$(PYTHON) setup.py sdist
+	$(PYTHON) setup.py -q sdist
 
 distcheck:
-	@test -z "`hg status 2>&1`" || \
-	  { echo; echo "Your working tree is not clean" 1>&2; hg status; exit 1; }
+	@test -z "`$(VCS_STATUS) 2>&1`" || { echo; echo "Your working tree is not clean" 1>&2; $(VCS_STATUS); exit 1; }
 	$(MAKE) dist
 	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
 	  rm -rf $(TMPDIR) && \
 	  mkdir $(TMPDIR) && \
-	  hg archive $(TMPDIR)/tree/ && \
+	  $(VCS_EXPORT) && \
 	  cd $(TMPDIR) && \
 	  tar xvzf ../dist/$$pkg_and_version.tar.gz && \
-	  diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' -x '.hg*' && \
+	  diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' && \
 	  cd $$pkg_and_version && \
-	  $(MAKE) dist test && \
+	  $(MAKE) dist check && \
 	  cd .. && \
 	  mkdir one two && \
 	  cd one && \
@@ -62,16 +69,16 @@ release: releasechecklist
 	# I'm chicken so I won't actually do these things yet
 	@echo "Please run"
 	@echo
-	@echo "  $(PYTHON) setup.py sdist register upload && hg tag v`$(PYTHON) setup.py --version`"
+	@echo "  rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
-	@echo '  hg commit -m "Post-release version bump" && hg push'
+	@echo '  $(VCS_COMMIT_AND_PUSH)'
 	@echo
 
 
-.PHONY: all test dist distcheck releasechecklist release
+.PHONY: all test check dist distcheck releasechecklist release
 
 bin/nosetests: | bin/pip
 	bin/pip install nose
