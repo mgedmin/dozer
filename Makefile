@@ -9,16 +9,17 @@ FILE_WITH_VERSION = setup.py
 FILE_WITH_CHANGELOG = CHANGELOG.rst
 
 
-all: bin/nosetests bin/detox bin/tox bin/coverage lib/python*/site-packages/Dozer.egg-link
+all: bin/nosetests bin/detox bin/tox bin/coverage local-install
 
-test: bin/nosetests lib/python*/site-packages/Dozer.egg-link
+test: bin/nosetests local-install
 	bin/nosetests --with-id
 
-coverage: bin/nosetests bin/coverage lib/python*/site-packages/Dozer.egg-link
+coverage: bin/nosetests bin/coverage local-install
 	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer --with-id
 
 clean:
-	rm -rf bin include lib local man
+	rm -rf .venv bin
+	find -name '*.pyc' -delete
 
 dist:
 	$(PYTHON) setup.py sdist
@@ -72,21 +73,34 @@ release: releasechecklist
 
 .PHONY: all test dist distcheck releasechecklist release
 
-bin/nosetests: bin/pip
-	bin/pip install -M nose
+bin/nosetests: | bin/pip
+	bin/pip install nose
+	ln -srf .venv/$@ bin/
 
-bin/tox: bin/pip
-	bin/pip install -M tox
+bin/tox: | bin/pip
+	bin/pip install tox
+	ln -srf .venv/$@ bin/
 
-bin/detox: bin/pip
-	bin/pip install -M detox
+bin/detox: | bin/pip
+	bin/pip install detox
+	ln -srf .venv/$@ bin/
 
-bin/coverage: bin/pip
-	bin/pip install -M coverage
+bin/coverage: | bin/pip
+	bin/pip install coverage
+	ln -srf .venv/$@ bin/
 
-lib/python*/site-packages/Dozer.egg-link: setup.py
-	bin/pip install -M -e .
-	bin/pip install -M 'Dozer[test]'
+local-install: .venv/lib/python*/site-packages/Dozer.egg-link
+.venv/lib/python*/site-packages/Dozer.egg-link: setup.py
+	bin/pip install -e '.[test]'
 
-bin/pip:
-	virtualenv .
+bin/pip: | .venv/bin/pip bin
+	ln -srf .venv/bin/pip bin/
+
+bin/python: | .venv/bin/python bin
+	ln -srf .venv/$@ bin/
+
+.venv/bin/python .venv/bin/pip:
+	virtualenv -p $(PYTHON) .venv
+
+bin:
+	mkdir $@
