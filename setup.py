@@ -25,7 +25,7 @@ setup(
     author_email='ben@groovie.org',
     maintainer='Marius Gedminas',
     maintainer_email='marius@gedmin.as',
-    url='https://bitbucket.org/bbangert/dozer',
+    url='https://github.com/mgedmin/dozer',
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
