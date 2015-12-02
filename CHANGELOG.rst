@@ -1,8 +1,8 @@
 Dozer Changelog
 ===============
 
-0.5 (unreleased)
-----------------
+0.5 (December 2, 2015)
+----------------------
 * Make /_dozer show the index page (instead of an internal server
   error).
 * Add support for Python 3.4 and 3.5.
