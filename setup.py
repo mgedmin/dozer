@@ -6,11 +6,13 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+
 def read(filename):
     with open(os.path.join(os.path.dirname(__file__), filename)) as f:
         return f.read()
 
-version = '0.4.1.dev0'
+
+version = '0.5.dev0'
 
 tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
 

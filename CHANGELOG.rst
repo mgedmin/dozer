@@ -1,10 +1,13 @@
 Dozer Changelog
 ===============
 
-0.4.1 (unreleased)
-------------------
-* Make /_dozer work show the index page (instead of an internal server
+0.5 (unreleased)
+----------------
+* Make /_dozer show the index page (instead of an internal server
   error).
+* Add support for Python 3.4 and 3.5.
+* Drop support for Python 3.5.
+* Move to GitHub.
 
 0.4 (March 21, 2013)
 --------------------
