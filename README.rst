@@ -1,6 +1,9 @@
 Dozer
 =====
 
+.. image:: https://travis-ci.org/mgedmin/dozer.svg?branch=master
+    :target: https://travis-ci.org/mgedmin/dozer
+
 Dozer was originally a WSGI middleware version of Robert Brewer's
 `Dowser CherryPy tool <http://www.aminus.net/wiki/Dowser>`_ that
 displays information as collected by the gc module to assist in
