@@ -27,7 +27,7 @@ class EvilProxyClass(object):
         self.obj = obj
 
     @property
-    def __module__(self):
+    def __module__(self):  # pragma: nocover
         return self.obj.__module__
 
     @property

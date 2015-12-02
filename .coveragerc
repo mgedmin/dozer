@@ -1,3 +1,6 @@
+[run]
+source = dozer
+
 [report]
 exclude_lines =
     pragma: nocover
