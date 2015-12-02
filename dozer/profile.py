@@ -100,7 +100,7 @@ class Profiler(object):
         dir_name = self.profile_path
         profiles = []
         errors = []
-        max_cost = 0
+        max_cost = 1 # avoid division by zero
         for profile_file in os.listdir(dir_name):
             if profile_file.endswith('.pkl'):
                 path = os.path.join(self.profile_path, profile_file)
@@ -118,8 +118,6 @@ class Profiler(object):
                     else:
                         total_cost = 0
                     max_cost = max(max_cost, total_cost)
-                    if max_cost == 0:
-                        max_cost = 1 # avoid division by zero
                     profiles.append((modified, environ, total_cost, profile_file[:-4]))
 
         profiles.sort(reverse=True)

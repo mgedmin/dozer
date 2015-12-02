@@ -12,7 +12,10 @@
     % for created_time, environ, total_cost, profile_id in profiles:
     <%
         width = round(400.0 * total_cost / max_cost)
-        w = 1 - (now-created_time) / (now-earliest)  # 0 .. 1
+        if now == earliest:  # I've seen this happen in tests
+            w = 1
+        else:
+            w = 1 - (now-created_time) / (now-earliest)  # 0 .. 1
         w = round(w * 255)
         bg = '#%02x%02x%02x' % (w, w, w)
         if w > 128:
