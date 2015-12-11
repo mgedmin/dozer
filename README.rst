@@ -5,7 +5,7 @@ Dozer
     :target: https://travis-ci.org/mgedmin/dozer
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/dozer?branch=master&svg=true
-    :target: https://ci.appveyor.com/project/mgedmin/dozer/branch/master
+    :target: https://ci.appveyor.com/project/mgedmin/dozer
 
 .. image:: https://coveralls.io/repos/mgedmin/dozer/badge.svg?branch=master
     :target: https://coveralls.io/r/mgedmin/dozer
