@@ -12,7 +12,7 @@ def read(filename):
         return f.read()
 
 
-version = '0.5.1.dev0'
+version = '0.6.dev0'
 
 tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
 
@@ -43,7 +43,6 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: Public Domain",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
