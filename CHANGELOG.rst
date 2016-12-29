@@ -4,6 +4,7 @@ Dozer Changelog
 0.6.0 (unreleased)
 ------------------
 
+* Add support for Python 3.6.
 * Drop support for Python 2.6.
 
 0.5 (December 2, 2015)
