@@ -159,6 +159,7 @@ class TestEntireStack(unittest.TestCase):
     def test_profiler_index(self):
         app = self.make_test_app()
         self.record_profile(app) # so the list is not empty
+        self.record_profile(app) # twice so we have someting to sort
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
         self.assertTrue('<table id="profile-list">' in resp)

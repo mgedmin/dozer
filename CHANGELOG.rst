@@ -6,6 +6,8 @@ Dozer Changelog
 
 * Add support for Python 3.6.
 * Drop support for Python 2.6.
+* Fix rare TypeError when listing profiles, if two profiles happen to have
+  the exact same timestamp (https://github.com/mgedmin/dozer/pull/4).
 
 0.5 (December 2, 2015)
 ----------------------

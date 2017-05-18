@@ -3,6 +3,7 @@ import os
 import re
 import time
 from datetime import datetime
+from operator import itemgetter
 
 try:
     import cPickle
@@ -120,7 +121,7 @@ class Profiler(object):
                     max_cost = max(max_cost, total_cost)
                     profiles.append((modified, environ, total_cost, profile_file[:-4]))
 
-        profiles.sort(reverse=True)
+        profiles.sort(reverse=True, key=itemgetter(0))
         errors.sort(reverse=True)
         res = Response()
         if profiles:
