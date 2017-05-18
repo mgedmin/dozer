@@ -8,3 +8,6 @@ include tox.ini
 include .coveragerc
 include .travis.yml
 include .gitignore
+
+# added by check_manifest.py
+include *.yml

@@ -12,7 +12,7 @@ def read(filename):
         return f.read()
 
 
-version = '0.6.dev0'
+version = '0.6'
 
 tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
 

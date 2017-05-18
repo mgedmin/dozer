@@ -1,7 +1,7 @@
 Dozer Changelog
 ===============
 
-0.6.0 (unreleased)
+0.6 (May 18, 2017)
 ------------------
 
 * Add support for Python 3.6.
