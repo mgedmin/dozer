@@ -253,14 +253,14 @@ def setup_time(t):
 
 def color(w):
     # color scheme borrowed from
-    # http://gprof2dot.jrfonseca.googlecode.com/hg/gprof2dot.py
+    # https://github.com/jrfonseca/gprof2dot
     hmin, smin, lmin = 2/3., 0.8, .25
     hmax, smax, lmax = 0, 1, .5
     gamma = 2.2
     h = hmin + w * (hmax - hmin)
     s = smin + w * (smax - smin)
     l = lmin + w * (lmax - lmin)
-    # http://www.w3.org/TR/css3-color/#hsl-color
+    # https://www.w3.org/TR/css3-color/#hsl-color
     if l <= 0.5:
         m2 = l * (s + 1)
     else: # pragma: nocover -- because our lmax is <= .5!

@@ -47,7 +47,7 @@ you can then load up ``http://localhost:5000/_profiler`` to view the
 list of recorded request profiles.
 
 Here's a blog post by Marius Gedminas that contains `a longer description
-of Dozer's profiler <http://mg.pov.lt/blog/profiling-with-dozer.html>`_.
+of Dozer's profiler <https://mg.pov.lt/blog/profiling-with-dozer.html>`_.
 
 
 Inspecting log messages
@@ -65,4 +65,4 @@ Javascript injected into the response body listing all logging messages
 produced by the thread that generated this response.
 
 Here's a blog post by Marius Gedminas that contains `a longer description
-of Dozer's logview <http://mg.pov.lt/blog/capturing-logs-with-dozer.html>`_.
+of Dozer's logview <https://mg.pov.lt/blog/capturing-logs-with-dozer.html>`_.
