@@ -11,3 +11,6 @@ include .gitignore
 
 # added by check_manifest.py
 include *.yml
+
+# added by check_manifest.py
+include *.mk
