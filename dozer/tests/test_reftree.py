@@ -50,9 +50,11 @@ class Unrepresentable(object):
 class TestGlobals(unittest.TestCase):
 
     def test_get_repr_unrepresentable(self):
+        # repr(Exception('foo')) is "Exception('foo',)" on Python < 3.7
+        # repr(Exception('foo')) is "Exception('foo')" on Python >= 3.7
         self.assertEqual(
-            get_repr(Unrepresentable()),
-            "unrepresentable object: Exception('haha you cannot represent me',)")
+            get_repr(Unrepresentable()).replace(',)', ')'),
+            "unrepresentable object: Exception('haha you cannot represent me')")
 
     def test_count_objects(self):
         gc.collect()
