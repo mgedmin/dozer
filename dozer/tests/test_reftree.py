@@ -100,8 +100,11 @@ class TestReferrerTree(unittest.TestCase):
     def test_gen_maxdepth(self):
         tree = self.make_tree(maxdepth=1)
         obj = MyObj()
+        # On Python 3.7 the local code frame is somehow not counted
+        # as a referer!  So we need to create at least one more reference.
+        ref = MyObj(name='a', obj=obj)  # noqa
         res = list(tree._gen(obj))
-        self.assertTrue((1, 0, "---- Max depth reached ----") in res)
+        self.assertIn((1, 0, "---- Max depth reached ----"), res)
 
 
 class TestCircularReferents(unittest.TestCase):
