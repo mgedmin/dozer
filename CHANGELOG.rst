@@ -4,7 +4,8 @@ Dozer Changelog
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+* Add support for Python 3.7.
+* Drop support for Python 3.3.
 
 
 0.6 (May 18, 2017)
