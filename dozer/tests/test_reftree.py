@@ -60,7 +60,7 @@ class TestGlobals(unittest.TestCase):
         gc.collect()
         obj = MyObj()
         res = count_objects()
-        self.assertTrue((1, MyObj) in res)
+        self.assertIn((1, MyObj), res)
 
 
 class TestReferentTree(unittest.TestCase):
@@ -78,8 +78,8 @@ class TestReferentTree(unittest.TestCase):
         obj = MyObj(name='a', ref=ref, other=other, again=other)
         tree.ignore(ref)
         res = list(tree._gen(obj))
-        self.assertTrue((1, id(other), 'c') in res)
-        self.assertTrue((1, id(other), '!c') in res)
+        self.assertIn((1, id(other), 'c'), res)
+        self.assertIn((1, id(other), '!c'), res)
 
 
 class TestReferrerTree(unittest.TestCase):
@@ -95,7 +95,7 @@ class TestReferrerTree(unittest.TestCase):
         obj = MyObj()
         ref = MyObj(name='a', obj=obj)
         res = list(tree._gen(obj))
-        self.assertTrue((1, id(ref), 'a') in res)
+        self.assertIn((1, id(ref), 'a'), res)
 
     def test_gen_maxdepth(self):
         tree = self.make_tree(maxdepth=1)
@@ -131,13 +131,13 @@ class TestCircularReferents(unittest.TestCase):
         obj = self.make_cycle()
         tree = self.make_tree(obj)
         res = list(tree.walk(maxresults=1))
-        self.assertTrue((0, 0, "==== Max results reached ====") in res, res)
+        self.assertIn((0, 0, "==== Max results reached ===="), res)
 
     def test_walk_maxdepth(self):
         obj = self.make_cycle()
         tree = self.make_tree(obj)
         res = list(tree.walk(maxdepth=2))
-        self.assertTrue(tree.stops > 0)
+        self.assertGreater(tree.stops, 0)
 
     def test_print_tree(self):
         obj = self.make_cycle()

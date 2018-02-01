@@ -134,7 +134,7 @@ class TestEntireStack(unittest.TestCase):
     def test_application_pass_through(self):
         app = self.make_test_app()
         resp = app.get('/')
-        self.assertTrue('hello, world!' in resp)
+        self.assertIn('hello, world!', resp)
         # a profile is created
         self.assertNotEqual(os.listdir(self.tmpdir), [])
 
@@ -153,7 +153,7 @@ class TestEntireStack(unittest.TestCase):
     def test_application_ignore_some_paths(self):
         app = self.make_test_app()
         resp = app.get('/favicon.ico')
-        self.assertTrue('hello, world!' in resp)
+        self.assertIn('hello, world!', resp)
         self.assertEqual(os.listdir(self.tmpdir), [])
 
     def test_profiler_index(self):
@@ -162,20 +162,20 @@ class TestEntireStack(unittest.TestCase):
         self.record_profile(app) # twice so we have someting to sort
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<table id="profile-list">' in resp)
+        self.assertIn('<table id="profile-list">', resp)
 
     def test_profiler_index_empty(self):
         app = self.make_test_app()
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<table id="profile-list">' in resp)
+        self.assertIn('<table id="profile-list">', resp)
 
     def test_profiler_broken_pickle(self):
         app = self.make_test_app()
         self.save_fake_profile(42, b'not a pickle at all')
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<table id="profile-list">' in resp)
+        self.assertIn('<table id="profile-list">', resp)
 
     def test_profiler_empty_profile(self):
         app = self.make_test_app()
@@ -185,7 +185,7 @@ class TestEntireStack(unittest.TestCase):
         )))
         resp = app.get('/_profiler')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<table id="profile-list">' in resp)
+        self.assertIn('<table id="profile-list">', resp)
 
     def test_profiler_not_found(self):
         app = self.make_test_app()
@@ -200,7 +200,7 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/_profiler/media/css/profile.css')
         self.assertEqual(resp.status_int, 200)
         self.assertEqual(resp.content_type, 'text/css')
-        self.assertTrue('#profile {' in resp)
+        self.assertIn('#profile {', resp)
 
     def test_profiler_show_no_id(self):
         app = self.make_test_app()
@@ -210,19 +210,19 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         prof_id = self.record_profile(app)
         resp = app.get('/_profiler/show/%s' % prof_id)
-        self.assertTrue('<div id="profiler">' in resp)
+        self.assertIn('<div id="profiler">', resp)
 
     def test_profiler_delete(self):
         app = self.make_test_app()
         prof_id = self.record_profile(app)
         resp = app.get('/_profiler/delete/%s' % prof_id)
         self.assertEqual(os.listdir(self.tmpdir), [])
-        self.assertTrue('deleted' in resp)
+        self.assertIn('deleted', resp)
 
     def test_profiler_delete_nonexistent(self):
         app = self.make_test_app()
         resp = app.get('/_profiler/delete/42')
-        self.assertTrue('deleted' in resp)
+        self.assertIn('deleted', resp)
 
     @skipIf(sys.platform == 'win32', 'Windows has a different permissions model')
     def test_profiler_delete_fails(self):

@@ -37,7 +37,7 @@ class TestFactories(unittest.TestCase):
         app = object()
         filter = factory(global_conf, **kwargs)
         wrapped_app = filter(app)
-        self.assertTrue(isinstance(wrapped_app, expect))
+        self.assertIsInstance(wrapped_app, expect)
 
     def test_profile_filter_app_factory(self):
         self._test_filter_app_factory(profile_filter_app_factory, Profiler,
@@ -53,5 +53,5 @@ class TestFactories(unittest.TestCase):
                                  **kwargs):
         app = object()
         wrapped_app = factory(app, global_conf, **kwargs)
-        self.assertTrue(isinstance(wrapped_app, expect))
+        self.assertIsInstance(wrapped_app, expect)
 

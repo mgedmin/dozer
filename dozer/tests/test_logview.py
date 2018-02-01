@@ -81,8 +81,8 @@ class TestEntireStack(unittest.TestCase):
     def test_call(self):
         app = self.make_test_app()
         resp = app.get('/')
-        self.assertTrue('hello, world!' in resp)
-        self.assertTrue('<div id="DLVlogevents"' in resp)
+        self.assertIn('hello, world!', resp)
+        self.assertIn('<div id="DLVlogevents"', resp)
 
     def test_call_non_html(self):
         app = self.make_test_app()
@@ -98,21 +98,21 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         resp = app.get('/error')
         print(resp) # for debugging
-        self.assertTrue('hello, world!' in resp)
-        self.assertTrue('<div id="DLVlogevents"' in resp)
-        self.assertTrue('caught exception' in resp)
+        self.assertIn('hello, world!', resp)
+        self.assertIn('<div id="DLVlogevents"', resp)
+        self.assertIn('caught exception', resp)
         # we see an exception traceback
-        self.assertTrue("raise Exception(&#39;just testing&#39;)" in resp)
+        self.assertIn("raise Exception(&#39;just testing&#39;)", resp)
         # we see the stack trace that points to the Logger.exception call
-        self.assertTrue("test_log.exception(&#39;caught exception&#39;)" in resp)
+        self.assertIn("test_log.exception(&#39;caught exception&#39;)", resp)
 
     def test_custom_formatters(self):
         app = self.make_test_app(stack_formatter=lambda f: '<custom stack>',
                                  tb_formatter=lambda tb: '<custom tb>')
         resp = app.get('/error')
         print(resp) # for debugging
-        self.assertTrue('hello, world!' in resp)
-        self.assertTrue('<div id="DLVlogevents"' in resp)
-        self.assertTrue('caught exception' in resp)
-        self.assertTrue("&lt;custom stack&gt;" in resp)
-        self.assertTrue("&lt;custom tb&gt;" in resp)
+        self.assertIn('hello, world!', resp)
+        self.assertIn('<div id="DLVlogevents"', resp)
+        self.assertIn('caught exception', resp)
+        self.assertIn("&lt;custom stack&gt;", resp)
+        self.assertIn("&lt;custom tb&gt;", resp)

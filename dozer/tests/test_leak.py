@@ -170,19 +170,19 @@ class TestEntireStack(unittest.TestCase):
     def test_application_pass_through(self):
         app = self.make_test_app()
         resp = app.get('/')
-        self.assertTrue('hello, world!' in resp)
+        self.assertIn('hello, world!', resp)
 
     def test_dozer(self):
         app = self.make_test_app()
         resp = app.get('/_dozer')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
+        self.assertIn('<div id="output">', resp)
 
     def test_dozer_index(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/index')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
+        self.assertIn('<div id="output">', resp)
 
     def test_dozer_chart(self):
         app = self.make_test_app()
@@ -199,43 +199,43 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         resp = app.get('/_dozer/trace/mymodule.MyType')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
+        self.assertIn('<div id="output">', resp)
 
     def test_dozer_trace_all_not_empty(self):
         app = self.make_test_app()
         obj = MyType() # keep a reference so it's not gc'ed
         resp = app.get('/_dozer/trace/mymodule.MyType')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
-        self.assertTrue("<p class='obj'>" in resp)
+        self.assertIn('<div id="output">', resp)
+        self.assertIn("<p class='obj'>", resp)
 
     def test_dozer_trace_one(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/trace/mymodule.MyType/1234')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
+        self.assertIn('<div id="output">', resp)
 
     def test_dozer_trace_one_not_empty(self):
         app = self.make_test_app()
         obj = MyType()
         resp = app.get('/_dozer/trace/mymodule.MyType/%d' % id(obj))
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
-        self.assertTrue('<div class="obj">' in resp)
+        self.assertIn('<div id="output">', resp)
+        self.assertIn('<div class="obj">', resp)
 
     def test_dozer_tree(self):
         app = self.make_test_app()
         resp = app.get('/_dozer/tree/mymodule.MyType/1234')
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
+        self.assertIn('<div id="output">', resp)
 
     def test_dozer_tree_not_empty(self):
         app = self.make_test_app()
         obj = MyType()
         resp = app.get('/_dozer/tree/mymodule.MyType/%d' % id(obj))
         self.assertEqual(resp.status_int, 200)
-        self.assertTrue('<div id="output">' in resp)
-        self.assertTrue('<div class="obj">' in resp)
+        self.assertIn('<div id="output">', resp)
+        self.assertIn('<div class="obj">', resp)
         # this removes a 3-second pause in the next test
         gc.collect()
 
@@ -244,7 +244,7 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/_dozer/media/css/main.css')
         self.assertEqual(resp.status_int, 200)
         self.assertEqual(resp.content_type, 'text/css')
-        self.assertTrue('.typename {' in resp)
+        self.assertIn('.typename {', resp)
 
     def test_dozer_not_found(self):
         app = self.make_test_app()
