@@ -330,10 +330,10 @@ class ReferrerTree(reftree.Tree):
     def _gen(self, obj, depth=0):
         if self.maxdepth and depth >= self.maxdepth:
             yield depth, 0, "---- Max depth reached ----"
-            raise StopIteration
+            return
 
         if isinstance(obj, ModuleType) and self.ignore_modules:
-            raise StopIteration
+            return
 
         refs = gc.get_referrers(obj)
         refiter = iter(refs)
