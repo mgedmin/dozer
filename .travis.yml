@@ -25,4 +25,4 @@ notifications:
     on_failure: always
     template:
       # ping my nick so I get a pushbullet notification on my phone
-      - "mgedmin: %{repository_slug}: %{message}: %{build_url}"
+      - "mgedmin: %{repository_name} (%{branch}) build %{result}: %{build_url}"
