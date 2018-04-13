@@ -60,7 +60,7 @@ class TestGlobals(unittest.TestCase):
         gc.collect()
         obj = MyObj()
         res = count_objects()
-        self.assertIn((1, MyObj), res)
+        self.assertIn((1, MyObj), [(n, c) for (n, c) in res if c is MyObj])
 
 
 class TestReferentTree(unittest.TestCase):
