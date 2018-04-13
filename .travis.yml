@@ -1,16 +1,28 @@
 language: python
 sudo: false
 python:
-    - 2.7
-    - 3.4
-    - 3.5
-    - 3.6
-    - 3.7-dev
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+  - 3.7-dev
 install:
-    - pip install coverage coveralls -e .[test]
+  - pip install coverage coveralls -e .[test]
 script:
-    - coverage run -m nose
+  - coverage run -m nose
 after_success:
-    - coveralls
+  - coveralls
 notifications:
-    email: false
+  email:
+    recipients:
+      - marius@gedmin.as
+    on_success: change
+    on_failure: always
+  irc:
+    channels:
+      - "chat.freenode.net##mgedmin"
+    on_success: change
+    on_failure: always
+    template:
+      # ping my nick so I get a pushbullet notification on my phone
+      - "mgedmin: %{repository_slug}: %{message}: %{build_url}"
