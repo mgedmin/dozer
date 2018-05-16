@@ -41,9 +41,9 @@ p, ul, ol, dl, blockquote, pre, table {margin-bottom: 18px;}
 dt {font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 9px; text-transform: uppercase;}
 
 a {border: 0; outline: none;}
-a:link, a:visited {color: #001999; text-decoration: underline;}
-a:hover {color: #001999; text-decoration: none;}
-a:active {color: #343434; text-decoration: none;}
+a:link, a:visited {background-color: black; color: orange; text-decoration: underline;}
+a:hover { text-decoration: none;}
+a:active { text-decoration: none;}
 
 table {empty-cells: show; margin-bottom: 18px;}
 th {background: #eee 0 100% repeat-x; color: #000;}
