@@ -9,6 +9,13 @@ from io import BytesIO
 from types import FrameType, ModuleType
 
 try:
+    # Python 3.x
+    from html import escape
+except ImportError:
+    # Python 2.x
+    from cgi import escape
+
+try:
     from PIL import Image
 except ImportError:
     try:
@@ -39,7 +46,7 @@ except NameError: # pragma: nocover
 localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
 def get_repr(obj, limit=250):
-    return cgi.escape(reftree.get_repr(obj, limit))
+    return escape(reftree.get_repr(obj, limit))
 
 class _(object): pass
 dictproxy = type(_.__dict__)
@@ -177,7 +184,7 @@ class Dozer(object):
                 row = ('<div class="typecount">%s<br />'
                        '<img class="chart" src="%s" /><br />'
                        'Min: %s Cur: %s Max: %s <a href="%s">TRACE</a></div>'
-                       % (cgi.escape(typename),
+                       % (escape(typename),
                           url(req, "chart/%s" % typename),
                           min(hist), hist[-1], maxhist,
                           url(req, "trace/%s" % typename),
@@ -226,7 +233,7 @@ class Dozer(object):
 
         res = Response()
         res.text =template(req, "trace.html", output="\n".join(rows),
-                        typename=cgi.escape(typename),
+                        typename=escape(typename),
                         objid=str(objid or ''))
         return res
     trace.exposed = True
@@ -313,7 +320,7 @@ class Dozer(object):
             rows = ["<h3>The object you requested was not found.</h3>"]
 
         params = {'output': "\n".join(rows),
-                  'typename': cgi.escape(typename),
+                  'typename': escape(typename),
                   'objid': str(objid),
                   }
         res = Response()
