@@ -8,19 +8,20 @@ CHANGELOG_DATE_FORMAT = %B %e, %Y
 
 
 .PHONY: all
-all: bin/nosetests bin/detox bin/tox bin/coverage local-install
+all: bin/pytest bin/tox bin/coverage local-install
 
 .PHONY: test
-test: bin/nosetests local-install
-	bin/nosetests --with-id
+test: bin/pytest local-install
+	bin/pytest
 
 .PHONY: check
-check: bin/detox local-install
-	bin/detox
+check: bin/tox local-install
+	bin/tox -p auto
 
 .PHONY: coverage
-coverage: bin/nosetests bin/coverage local-install
-	bin/nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dozer --with-id
+coverage: bin/pytest bin/coverage local-install
+	bin/coverage run -m pytest
+	bin/coverage report -m --fail-under=100
 
 .PHONY: clean
 clean:
@@ -31,16 +32,12 @@ clean:
 include release.mk
 
 
-bin/nosetests: | bin/pip
-	bin/pip install nose
+bin/pytest: | bin/pip
+	bin/pip install pytest
 	ln -srf .venv/$@ bin/
 
 bin/tox: | bin/pip
 	bin/pip install tox
-	ln -srf .venv/$@ bin/
-
-bin/detox: | bin/pip
-	bin/pip install detox
 	ln -srf .venv/$@ bin/
 
 bin/coverage: | bin/pip
@@ -59,6 +56,7 @@ bin/python: | .venv/bin/python bin
 
 .venv/bin/python .venv/bin/pip:
 	virtualenv -p $(PYTHON) .venv
+	.venv/bin/pip install -U pip setuptools wheel
 
 bin:
 	mkdir $@

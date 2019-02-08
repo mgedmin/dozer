@@ -1,9 +1,9 @@
 import gc
 import unittest
 
+import webtest
 from mock import patch
 from webob import Request
-from webtest import TestApp
 
 from dozer.leak import Dozer
 from dozer.leak import ReferrerTree
@@ -165,7 +165,7 @@ class TestEntireStack(unittest.TestCase):
         return dozer
 
     def make_test_app(self):
-        return TestApp(self.make_wsgi_app())
+        return webtest.TestApp(self.make_wsgi_app())
 
     def test_application_pass_through(self):
         app = self.make_test_app()
