@@ -1,4 +1,3 @@
-import collections
 import itertools
 import logging
 import os
@@ -109,7 +108,7 @@ class Logview(object):
         self.reqhandler = reqhandler
 
     def _resolve(self, dotted_name):
-        if isinstance(dotted_name, collections.Callable):
+        if callable(dotted_name):
             # let's let people supply the function directly
             return dotted_name
         modname, fn = dotted_name.rsplit('.', 1)
