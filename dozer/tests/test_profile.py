@@ -19,27 +19,15 @@ except ImportError:
     # Python 3.x
     import builtins
 
-try:
-    from unittest import skipIf
-except ImportError:
-    # Python 2.6
-    def skipIf(condition, reason):
-        def wrapper(fn):
-            if condition:
-                def empty_test(case):
-                    pass
-                empty_test.__doc__ = '%s skipped because %s' % (
-                    fn.__name__, reason)
-                return empty_test
-            return fn
-        return wrapper
-
-
 import webtest
 from mock import patch
 
 from dozer.profile import Profiler, label, graphlabel, setup_time, color
 from dozer.profile import write_dot_graph
+
+
+skip_on_windows = unittest.skipIf(sys.platform == 'win32',
+                                  'Windows has a different permissions model')
 
 
 class TestGlobals(unittest.TestCase):
@@ -138,7 +126,7 @@ class TestEntireStack(unittest.TestCase):
         # a profile is created
         self.assertNotEqual(os.listdir(self.tmpdir), [])
 
-    @skipIf(sys.platform == 'win32', 'Windows has a different permissions model')
+    @skip_on_windows
     def test_cannot_save_profile(self):
         app = self.make_test_app()
         os.chmod(self.tmpdir, 0o500)
@@ -224,7 +212,7 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/_profiler/delete/42')
         self.assertIn('deleted', resp)
 
-    @skipIf(sys.platform == 'win32', 'Windows has a different permissions model')
+    @skip_on_windows
     def test_profiler_delete_fails(self):
         app = self.make_test_app()
         prof_id = self.record_profile(app)
