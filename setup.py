@@ -1,10 +1,6 @@
 import os
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup, find_packages
+
+from setuptools import setup, find_packages
 
 
 def read(filename):
@@ -14,7 +10,7 @@ def read(filename):
 
 version = '0.7.dev0'
 
-tests_require = ['nose', 'mock', 'WebTest', 'Pillow']
+tests_require = ['pytest', 'mock', 'WebTest', 'Pillow']
 
 setup(
     name="Dozer",
@@ -31,8 +27,6 @@ setup(
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
-    test_suite='nose.collector',
-    tests_require=tests_require,
     install_requires=[
         "WebOb>=1.2", "Mako",
     ],

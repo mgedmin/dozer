@@ -2,8 +2,8 @@ import unittest
 import traceback
 import logging
 
+import webtest
 from mock import patch
-from webtest import TestApp
 
 from dozer.logview import Logview, RequestHandler
 
@@ -49,6 +49,7 @@ class TestRequestHandler(unittest.TestCase):
 
 test_log = logging.getLogger(__name__)
 
+
 def hello_world(environ, start_response):
     path_info = environ['PATH_INFO']
     if path_info == '/image.png':
@@ -68,7 +69,6 @@ def hello_world(environ, start_response):
     return [body]
 
 
-
 class TestEntireStack(unittest.TestCase):
 
     def make_wsgi_app(self, **kw):
@@ -76,7 +76,7 @@ class TestEntireStack(unittest.TestCase):
         return logview
 
     def make_test_app(self, **kw):
-        return TestApp(self.make_wsgi_app(**kw))
+        return webtest.TestApp(self.make_wsgi_app(**kw))
 
     def test_call(self):
         app = self.make_test_app()
@@ -97,7 +97,7 @@ class TestEntireStack(unittest.TestCase):
     def test_call_shows_exception_tracebacks(self):
         app = self.make_test_app()
         resp = app.get('/error')
-        print(resp) # for debugging
+        print(resp)  # for debugging
         self.assertIn('hello, world!', resp)
         self.assertIn('<div id="DLVlogevents"', resp)
         self.assertIn('caught exception', resp)
@@ -110,7 +110,7 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app(stack_formatter=lambda f: '<custom stack>',
                                  tb_formatter=lambda tb: '<custom tb>')
         resp = app.get('/error')
-        print(resp) # for debugging
+        print(resp)  # for debugging
         self.assertIn('hello, world!', resp)
         self.assertIn('<div id="DLVlogevents"', resp)
         self.assertIn('caught exception', resp)
