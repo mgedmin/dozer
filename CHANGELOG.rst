@@ -5,7 +5,7 @@ Dozer Changelog
 ----------------
 
 * Add support for Python 3.7.
-* Drop support for Python 3.3.
+* Drop support for Python 3.3 and 3.4.
 * Stop using cgi.escape on Python 3, which is especially important now that
   it's been removed from Python 3.8.
 
