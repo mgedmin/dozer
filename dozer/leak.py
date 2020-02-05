@@ -53,7 +53,7 @@ dictproxy = type(_.__dict__)
 
 method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
                 type([1].__le__),                   # 'method-wrapper'
-                type(sys.getcheckinterval),         # 'builtin_function_or_method'
+                type(sys.getsizeof),                # 'builtin_function_or_method'
                 type(cgi.FieldStorage.getfirst),    # 'instancemethod'
                 ]
 
