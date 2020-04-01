@@ -1,6 +1,7 @@
 import cgi
 import gc
 import os
+import re
 import sys
 import threading
 import time
@@ -174,13 +175,18 @@ class Dozer(object):
         self.running = False
 
     def index(self, req):
-        floor = req.GET.get('floor', 0)
+        floor = req.GET.get('floor', 0) or 0
+        filtertext = req.GET.get('filter', '')
+        filterre = re.compile(filtertext, re.IGNORECASE) if filtertext else None
         rows = []
         typenames = sorted(self.history)
         for typename in typenames:
             hist = self.history[typename]
             maxhist = max(hist)
-            if maxhist > int(floor):
+            if (
+                maxhist > int(floor)
+                and (not filterre or filterre.search(typename))
+            ):
                 row = ('<div class="typecount">%s<br />'
                        '<img class="chart" src="%s" /><br />'
                        'Min: %s Cur: %s Max: %s <a href="%s">TRACE</a></div>'
@@ -192,7 +198,9 @@ class Dozer(object):
                        )
                 rows.append(row)
         res = Response()
-        res.text = template(req, "graphs.html", output="\n".join(rows))
+        res.text = template(
+            req, "graphs.html", output="\n".join(rows), floor=floor, filter=filtertext
+        )
         return res
     index.exposed = True
 
