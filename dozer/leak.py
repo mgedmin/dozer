@@ -199,7 +199,11 @@ class Dozer(object):
                 rows.append(row)
         res = Response()
         res.text = template(
-            req, "graphs.html", output="\n".join(rows), floor=floor, filter=filtertext
+            req,
+            "graphs.html",
+            output="\n".join(rows),
+            floor=floor,
+            filter=escape(filtertext),
         )
         return res
     index.exposed = True
