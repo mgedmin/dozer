@@ -5,6 +5,7 @@ import re
 import sys
 import threading
 import time
+import traceback
 import warnings
 from io import BytesIO
 from types import FrameType, ModuleType
@@ -114,7 +115,23 @@ class Dozer(object):
             or req.path_info == self.path):
             req.script_name += self.path
             req.path_info = req.path_info[len(self.path):]
-            return self.dowse(req)(environ, start_response)
+            try:
+                return self.dowse(req)(environ, start_response)
+            except Exception as ex:
+                error_text = traceback.format_exc()
+
+                acceptable_offers = req.accept.acceptable_offers(
+                    offers=['text/html', 'application/json']
+                )
+                match = acceptable_offers[0][0] if acceptable_offers else None
+                if match != 'application/json':
+                    # Strangely, webob.exc.WSGIHTTPException.plain_body replaces newlines
+                    # to spaces for plain/text, but replaces "<br/>" tags to newlines.
+                    error_text = error_text.replace('\n', '<br/>')
+
+                return exc.HTTPInternalServerError(
+                    str(ex), body_template=error_text
+                )(environ, start_response)
         else:
             return self.app(environ, start_response)
 
