@@ -1,4 +1,5 @@
 import cgi
+import collections
 import gc
 import os
 import re
@@ -159,16 +160,13 @@ class Dozer(object):
     def tick(self):
         gc.collect()
 
-        typecounts = {}
+        typenamecounts = collections.defaultdict(int)
         for obj in gc.get_objects():
             objtype = type(obj)
-            if objtype in typecounts:
-                typecounts[objtype] += 1
-            else:
-                typecounts[objtype] = 1
-
-        for objtype, count in typecounts.items():
             typename = "%s.%s" % (objtype.__module__, objtype.__name__)
+            typenamecounts[typename] += 1
+
+        for typename, count in typenamecounts.items():
             if typename not in self.history:
                 self.history[typename] = [0] * self.samples
             self.history[typename].append(count)
