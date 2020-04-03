@@ -254,3 +254,32 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         resp = app.get('/_dozer/dowse', status=403)
 
+    def test_dozer_floor(self):
+        app = self.make_test_app()
+        app.app.history['mymodule.AnotherType'] = [10, 20, 30, 40, 50]
+        resp = app.get('/_dozer/?floor=4')
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<input name="floor" value="4"/>', resp)
+        self.assertIn('mymodule.AnotherType', resp)
+        self.assertIn('mymodule.MyType', resp)
+
+        resp = app.get('/_dozer/?floor=10')
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<input name="floor" value="10"/>', resp)
+        self.assertIn('mymodule.AnotherType', resp)
+        self.assertNotIn('mymodule.MyType', resp)
+
+    def test_dozer_filter(self):
+        app = self.make_test_app()
+        app.app.history['mymodule.AnotherType'] = [10, 20, 30, 40, 50]
+        resp = app.get('/_dozer/?filter=type')
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<input name="filter" value="type"/>', resp)
+        self.assertIn('mymodule.AnotherType', resp)
+        self.assertIn('mymodule.MyType', resp)
+
+        resp = app.get('/_dozer/?filter=another')
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<input name="filter" value="another"/>', resp)
+        self.assertIn('mymodule.AnotherType', resp)
+        self.assertNotIn('mymodule.MyType', resp)
