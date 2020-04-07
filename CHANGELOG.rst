@@ -9,6 +9,8 @@ Dozer Changelog
   (https://github.com/mgedmin/dozer/issues/2)
 - Add UI input to filter type charts by a regular expression
 - Display traceback on 500 Internal Server Error
+- Aggregate dynamically-created types with the same ``__name__`` and
+  ``__module__`` (`issue 9 <https://github.com/mgedmin/dozer/pull/9>`_).
 
 
 0.7 (April 23, 2019)
