@@ -157,6 +157,16 @@ class MyType(object):
     __module__ = 'mymodule'
 
 
+class MyFaultyType(object):
+    __module__ = 'mymodule'
+
+    foo = 42
+
+    @property
+    def bar(self):
+        raise KeyError
+
+
 class TestEntireStack(unittest.TestCase):
 
     def make_wsgi_app(self):
@@ -214,6 +224,14 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/_dozer/trace/mymodule.MyType/1234')
         self.assertEqual(resp.status_int, 200)
         self.assertIn('<div id="output">', resp)
+
+    def test_dozer_trace_one_raising_property(self):
+        app = self.make_test_app()
+        obj = MyFaultyType()  # keep a reference so it's not gc'ed
+        resp = app.get('/_dozer/trace/mymodule.MyFaultyType/{}'.format(id(obj)))
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<p class="attr"><b>bar:</b> KeyError()</p>', resp)
+        self.assertIn('<p class="attr"><b>foo:</b> 42</p>', resp)
 
     def test_dozer_trace_one_not_empty(self):
         app = self.make_test_app()
@@ -283,3 +301,16 @@ class TestEntireStack(unittest.TestCase):
         self.assertIn('<input name="filter" value="another"/>', resp)
         self.assertIn('mymodule.AnotherType', resp)
         self.assertNotIn('mymodule.MyType', resp)
+
+    def test_dozer_filter_broken_re_500_with_traceback(self):
+        app = self.make_test_app()
+        resp = app.get('/_dozer/?filter=(', status=500)
+        self.assertEqual(resp.status_int, 500)
+        self.assertIn('500 Internal Server Error', resp)
+        self.assertIn('Traceback (most recent call last)', resp)
+        try:
+            self.assertIn(
+                'error: missing ), unterminated subpattern at position 0', resp
+            )
+        except AssertionError:
+            self.assertIn('error: unbalanced parenthesis', resp)  # py2
