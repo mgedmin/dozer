@@ -290,7 +290,10 @@ class Dozer(object):
                     # Attributes
                     rows.append('<div class="obj"><h3>Attributes</h3>')
                     for k in dir(obj):
-                        v = getattr(obj, k, AttributeError)
+                        try:
+                            v = getattr(obj, k, AttributeError)
+                        except Exception as ex:
+                            v = ex
                         if type(v) not in method_types:
                             rows.append('<p class="attr"><b>%s:</b> %s</p>' %
                                         (k, get_repr(v)))
