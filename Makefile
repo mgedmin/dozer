@@ -11,8 +11,8 @@ CHANGELOG_DATE_FORMAT = %B %e, %Y
 all: bin/pytest bin/tox bin/coverage local-install
 
 .PHONY: test check
-test check: bin/tox local-install
-	bin/tox -p auto
+test check:
+	tox -p auto
 
 .PHONY: coverage
 coverage: bin/pytest bin/coverage local-install
