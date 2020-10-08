@@ -10,12 +10,8 @@ CHANGELOG_DATE_FORMAT = %B %e, %Y
 .PHONY: all
 all: bin/pytest bin/tox bin/coverage local-install
 
-.PHONY: test
-test: bin/pytest local-install
-	bin/pytest
-
-.PHONY: check
-check: bin/tox local-install
+.PHONY: test check
+test check: bin/tox local-install
 	bin/tox -p auto
 
 .PHONY: coverage

@@ -5,6 +5,7 @@ Dozer Changelog
 ----------------
 
 - Add support for Python 3.8.
+- Drop support for Python 3.5.
 - Add UI input for existing "floor" query string parameter
   (https://github.com/mgedmin/dozer/issues/2)
 - Add UI input to filter type charts by a regular expression
