@@ -1,26 +1,25 @@
-# Which Python interpreter do you want to use
-PYTHON = python
+PYTHON = python3
 
-# Used by make release
+# Used by release.mk
 FILE_WITH_VERSION = setup.py
 FILE_WITH_CHANGELOG = CHANGELOG.rst
 CHANGELOG_DATE_FORMAT = %B %e, %Y
 
 
 .PHONY: all
-all: bin/pytest bin/tox bin/coverage local-install
+all: bin/pytest bin/tox bin/coverage local-install  ##: set up a local virtualenv (default target)
 
-.PHONY: test check
-test check:
+.PHONY: test
+test:                           ##: run tests
 	tox -p auto
 
 .PHONY: coverage
-coverage: bin/pytest bin/coverage local-install
+coverage: bin/pytest bin/coverage local-install  ##: measure test coverage
 	bin/coverage run -m pytest
 	bin/coverage report -m --fail-under=100
 
 .PHONY: clean
-clean:
+clean:                          ##: remove build artifacts
 	rm -rf .venv bin
 	find -name '*.pyc' -delete
 
