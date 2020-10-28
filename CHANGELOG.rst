@@ -4,7 +4,7 @@ Dozer Changelog
 0.8 (unreleased)
 ----------------
 
-- Add support for Python 3.8.
+- Add support for Python 3.8 and 3.9.
 - Drop support for Python 3.5.
 - Add UI input for existing "floor" query string parameter
   (https://github.com/mgedmin/dozer/issues/2)
