@@ -39,6 +39,8 @@ from webob import exc, static
 
 from dozer import reftree
 
+from dozer.util import monotonicity, sort_dict_by_val
+
 try:
     unicode
 except NameError: # pragma: nocover
@@ -60,6 +62,11 @@ method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
                 type(cgi.FieldStorage.getfirst),    # 'instancemethod'
                 ]
 
+
+sort_keys = {
+    "monotonicity": monotonicity
+}
+
 def url(req, path):
     if path.startswith('/'):
         path = path[1:]
@@ -78,6 +85,14 @@ def template(req, name, **params):
     with open(os.path.join(localDir, 'media', name)) as f:
         return unicode(f.read() % p)
 
+
+def get_sort_key(sortby):
+    if len(sortby) < 1:
+        return None, False
+    if sortby[0] == '-':
+        return sort_keys.get(sortby[1:], None), True
+    else:
+        return sort_keys.get(sortby, None), False
 
 class Dozer(object):
     """Sets up a page that displays object information to help
@@ -192,11 +207,18 @@ class Dozer(object):
     def index(self, req):
         floor = req.GET.get('floor', 0) or 0
         filtertext = req.GET.get('filter', '')
+        sortby = req.GET.get('sortby', '')
         filterre = re.compile(filtertext, re.IGNORECASE) if filtertext else None
         rows = []
         typenames = sorted(self.history)
-        for typename in typenames:
-            hist = self.history[typename]
+        
+        sort_key, reversed = get_sort_key(sortby)
+        if sort_key is not None:
+            sorted_history = sort_dict_by_val(self.history, sort_key, reversed)
+        else:
+            sorted_history = self.history.items()
+
+        for typename, hist in sorted_history:
             maxhist = max(hist)
             if (
                 maxhist > int(floor)

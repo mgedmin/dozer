@@ -37,6 +37,12 @@
                 <input name="floor" value="%(floor)s"/>
                 <label>Filter</label>
                 <input name="filter" value="%(filter)s"/>
+                <label>SortBy</label>
+                <select name="sortby">
+                    <option value="monotonicity">monotonicity</option>
+                    <option value="-monotonicity">-monotonicity</option>
+                    <option value="none"></option>
+                </select>
                 <button type="submit">Submit</button>
             </fieldset>
         </form>

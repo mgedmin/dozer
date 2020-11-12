@@ -1,6 +1,6 @@
 import unittest
 
-from dozer.util import asbool
+from dozer.util import asbool, monotonicity, sort_dict_by_val
 
 
 class TestGlobals(unittest.TestCase):
@@ -27,3 +27,28 @@ class TestGlobals(unittest.TestCase):
         self.assertFalse(asbool(False))
         self.assertFalse(asbool(0))
         self.assertRaises(ValueError, asbool, 'maybe')
+
+    def test_cumulative_derivative(self):
+        array_1 = [1, 2, 1, 2, 3]
+        array_2 = [0, 0, 0, 0, 0]
+        array_empty = []
+        self.assertAlmostEqual(0.6, monotonicity(array_1))
+        self.assertEquals(0, monotonicity(array_2))
+        self.assertEquals(0, monotonicity(array_empty))
+
+    def test_sort_dict_by_val(self):
+        d = {
+            'a':(5,9),
+            'b':(4,2),
+            'c':(6,8)
+        }
+        key1 = lambda x: x[0]
+        key2 = lambda x: x[1]
+
+        s1 = sort_dict_by_val(d, key1)
+        s2 = sort_dict_by_val(d, key2)
+
+        self.assertEqual(s1[0][0], 'b')
+        self.assertEqual(s1[1][0], 'a')
+        self.assertEqual(s2[0][0], 'b')
+        self.assertEqual(s2[1][0], 'c')
