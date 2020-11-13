@@ -33,8 +33,8 @@ class TestGlobals(unittest.TestCase):
         array_2 = [0, 0, 0, 0, 0]
         array_empty = []
         self.assertAlmostEqual(0.6, monotonicity(array_1))
-        self.assertEquals(0, monotonicity(array_2))
-        self.assertEquals(0, monotonicity(array_empty))
+        self.assertEqual(0, monotonicity(array_2))
+        self.assertEqual(0, monotonicity(array_empty))
 
     def test_sort_dict_by_val(self):
         d = {
