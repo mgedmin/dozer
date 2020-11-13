@@ -8,6 +8,9 @@ from webob import Request
 from dozer.leak import Dozer
 from dozer.leak import ReferrerTree
 from dozer.leak import url
+from dozer.leak import get_sort_key
+
+from dozer.util import monotonicity
 
 
 class DozerForTests(Dozer):
@@ -41,6 +44,13 @@ class TestDozer(unittest.TestCase):
         req = Request(dict(PATH_INFO=subpath))
         req.base_path = base_path
         return req
+
+    def test_get_sortkey(self):
+        self.assertEqual((monotonicity, False), get_sort_key("monotonicity"))
+        self.assertEqual((monotonicity, True), get_sort_key("-monotonicity"))
+        k, rev = get_sort_key("")
+        self.assertFalse(rev)
+        self.assertIsNone(k)
 
     def test_url(self):
         req = self.make_request('/somewhere')

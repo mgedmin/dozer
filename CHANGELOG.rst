@@ -9,6 +9,7 @@ Dozer Changelog
 - Add UI input for existing "floor" query string parameter
   (https://github.com/mgedmin/dozer/issues/2)
 - Add UI input to filter type charts by a regular expression
+- Add sorting option: monotonicity
 - Display traceback on 500 Internal Server Error
 - Aggregate dynamically-created types with the same ``__name__`` and
   ``__module__`` (`issue 9 <https://github.com/mgedmin/dozer/pull/9>`_).

@@ -4,6 +4,7 @@
 <head>
     <title>Dozer: Types</title>
     <link href="%(maincss)s" rel="stylesheet" type="text/css" />
+    <script src="%(jquery)s"></script>
 
 <style type='text/css'>
 
@@ -37,6 +38,12 @@
                 <input name="floor" value="%(floor)s"/>
                 <label>Filter</label>
                 <input name="filter" value="%(filter)s"/>
+                <label>SortBy</label>
+                <select name="sortby" id="sortby" selection="%(sortby)s">
+                    <option value=""></option>
+                    <option value="monotonicity">monotonicity</option>
+                    <option value="-monotonicity">-monotonicity</option>
+                </select>
                 <button type="submit">Submit</button>
             </fieldset>
         </form>
@@ -48,4 +55,14 @@
 </div>
 
 </body>
+<script>
+    $(document).ready(function(){
+        let selection = $("#sortby").attr("selection");
+        $("#sortby > option").each(function() {
+            if ($(this).val() == selection) {
+                $(this).attr("selected", true)
+            }
+        })
+    })
+</script>
 </html>
