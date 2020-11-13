@@ -1,4 +1,5 @@
 import unittest
+from operator import itemgetter
 
 from dozer.util import asbool, monotonicity, sort_dict_by_val
 
@@ -42,8 +43,8 @@ class TestGlobals(unittest.TestCase):
             'b': (4, 2),
             'c': (6, 8)
         }
-        key1 = lambda x: x[0]
-        key2 = lambda x: x[1]
+        key1 = itemgetter(0)
+        key2 = itemgetter(1)
 
         s1 = sort_dict_by_val(d, key1)
         s2 = sort_dict_by_val(d, key2)

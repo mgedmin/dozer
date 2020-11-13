@@ -50,10 +50,15 @@ except NameError: # pragma: nocover
 
 localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
+
 def get_repr(obj, limit=250):
     return escape(reftree.get_repr(obj, limit))
 
-class _(object): pass
+
+class _(object):
+    pass
+
+
 dictproxy = type(_.__dict__)
 
 method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
@@ -66,6 +71,7 @@ method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
 sort_keys = {
     "monotonicity": monotonicity
 }
+
 
 def url(req, path):
     if path.startswith('/'):
@@ -129,7 +135,7 @@ class Dozer(object):
         req = Request(environ)
         req.base_path = req.application_url + self.path
         if (req.path_info.startswith(self.path+'/')
-            or req.path_info == self.path):
+                or req.path_info == self.path):
             req.script_name += self.path
             req.path_info = req.path_info[len(self.path):]
             try:
@@ -212,7 +218,6 @@ class Dozer(object):
         filterre = re.compile(filtertext, re.IGNORECASE) if filtertext else None
         rows = []
         typenames = sorted(self.history)
-        
         sort_key, reversed = get_sort_key(sortby)
         if sort_key is not None:
             sorted_history = sort_dict_by_val(self.history, sort_key, reversed)
@@ -252,7 +257,8 @@ class Dozer(object):
         """Return a sparkline chart of the given type."""
         if Image is None or ImageDraw is None:
             # Cannot render
-            return Response('Cannot render; PIL/Pillow is not installed', status='404 Not Found')
+            return Response('Cannot render; PIL/Pillow is not installed',
+                            status='404 Not Found')
         typename = req.path_info_pop()
         data = self.history[typename]
         height = 20.0
@@ -284,9 +290,9 @@ class Dozer(object):
             rows = self.trace_one(req, typename, objid)
 
         res = Response()
-        res.text =template(req, "trace.html", output="\n".join(rows),
-                        typename=escape(typename),
-                        objid=str(objid or ''))
+        res.text = template(req, "trace.html", output="\n".join(rows),
+                            typename=escape(typename),
+                            objid=str(objid or ''))
         return res
     trace.exposed = True
 
@@ -384,7 +390,6 @@ class Dozer(object):
     tree.exposed = True
 
 
-
 class ReferrerTree(reftree.Tree):
 
     ignore_modules = True
@@ -404,7 +409,7 @@ class ReferrerTree(reftree.Tree):
         for ref in refiter:
             # Exclude all frames that are from this module or reftree.
             if (isinstance(ref, FrameType)
-                and ref.f_code.co_filename in (thisfile, self.filename)):
+                    and ref.f_code.co_filename in (thisfile, self.filename)):
                 continue
 
             # Exclude all functions and classes from this module or reftree.

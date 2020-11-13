@@ -52,21 +52,30 @@ def repr_dict(obj):
     return "dict of len %s: {%s}" % (len(obj), ", ".join(
         "%s: %s" % (repr(k), repr(v)) for k, v in sorted(obj.items())))
 
+
 def repr_set(obj):
     return "set of len %s: set([%s])" % (len(obj), ", ".join(
         map(repr, sorted(obj))))
 
+
 def _repr_container(obj):
     return "%s of len %s: %r" % (type(obj).__name__, len(obj), obj)
+
+
 repr_list = _repr_container
 repr_tuple = _repr_container
 
+
 def repr_str(obj):
     return "%s of len %s: %r" % (type(obj).__name__, len(obj), obj)
+
+
 repr_unicode = repr_str
+
 
 def repr_frame(obj):
     return "frame from %s line %s" % (obj.f_code.co_filename, obj.f_lineno)
+
 
 def get_repr(obj, limit=250):
     typename = getattr(type(obj), "__name__", None)
@@ -74,7 +83,7 @@ def get_repr(obj, limit=250):
 
     try:
         result = handler(obj)
-    except:
+    except Exception:
         result = "unrepresentable object: %r" % sys.exc_info()[1]
 
     if len(result) > limit:
@@ -133,7 +142,6 @@ class ReferrerTree(Tree):
                 yield parent
 
 
-
 class CircularReferents(Tree):
 
     def walk(self, maxresults=100, maxdepth=None):
@@ -172,9 +180,9 @@ class CircularReferents(Tree):
 
             refrepr = get_repr(ref)
             if id(ref) == id(self.obj):
-                yield trail + [refrepr,]
+                yield trail + [refrepr]
 
-            for child in self._gen(ref, depth + 1, trail + [refrepr,]):
+            for child in self._gen(ref, depth + 1, trail + [refrepr]):
                 yield child
 
     def print_tree(self, maxresults=100, maxdepth=None):
@@ -194,4 +202,3 @@ def count_objects():
     d = [(v, k) for k, v in d.items()]
     d.sort(key=itemgetter(0))
     return d
-

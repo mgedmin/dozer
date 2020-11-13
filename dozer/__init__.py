@@ -31,4 +31,3 @@ def logview_filter_factory(global_conf, **kwargs):
 
 def logview_filter_app_factory(app, global_conf, **kwargs):
     return Logview(app, global_conf, **kwargs)
-

@@ -156,7 +156,6 @@ class Profiler(object):
         return res
     delete.exposed = True
 
-
     def render(self, name, **vars):
         tmpl = self.mako.get_template(name)
         return tmpl.render(**vars).encode('ascii', 'xmlcharrefreplace')
@@ -251,6 +250,7 @@ def setup_time(t):
     t = '%0.2f' % t
     return t
 
+
 def color(w):
     # color scheme borrowed from
     # https://github.com/jrfonseca/gprof2dot
@@ -266,6 +266,7 @@ def color(w):
     else: # pragma: nocover -- because our lmax is <= .5!
         m2 = l + s - l * s
     m1 = l * 2 - m2
+
     def h2rgb(m1, m2, h):
         if h < 0:
             h += 1.0
@@ -279,6 +280,7 @@ def color(w):
             return m1 + (m2 - m1) * (2/3.0 - h) * 6
         else:
             return m1
+
     r = h2rgb(m1, m2, h + 1/3.0)
     g = h2rgb(m1, m2, h)
     b = h2rgb(m1, m2, h - 1/3.0)
@@ -316,7 +318,8 @@ def write_dot_graph(data, tree, filename, cutoff=0.2):
         else:
             t = tree[label(code)]['cost']
             c = color(float(t) / highest)
-            f.write('\t"%s" [label="%s\\n%sms",color="%s",fontcolor="white"]\n' % (entry_name, code.co_name, t, c))
+            f.write('\t"%s" [label="%s\\n%sms",color="%s",fontcolor="white"]\n'
+                    % (entry_name, code.co_name, t, c))
         if entry.calls:
             for subentry in entry.calls:
                 subcode = subentry.code
@@ -324,7 +327,7 @@ def write_dot_graph(data, tree, filename, cutoff=0.2):
                 if isinstance(subcode, str) or skip:
                     continue
                 sub_name = graphlabel(subcode)
-                f.write('\t"%s" -> "%s" [label="%s"]\n' % \
+                f.write('\t"%s" -> "%s" [label="%s"]\n' %
                     (entry_name, sub_name, subentry.callcount))
     f.write('}\n')
     f.close()

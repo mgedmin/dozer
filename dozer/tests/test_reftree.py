@@ -32,7 +32,6 @@ class TestTree(unittest.TestCase):
                              "    23456    ref2\n")
 
 
-
 class MyObj(object):
 
     def __init__(self, **kw):
@@ -149,4 +148,3 @@ class TestCircularReferents(unittest.TestCase):
                 '''["dict of len 3: {'a': a, 'b': b, 'name': 'obj'}", 'b','''
                 ''' "dict of len 2: {'name': 'b', 'obj': obj}", 'obj']\n'''
                 '''2 paths stopped because max depth reached\n''')
-

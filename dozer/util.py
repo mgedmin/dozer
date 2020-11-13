@@ -35,6 +35,7 @@ def monotonicity(objs):
             dec_cnt += 1
     return inc_cnt / (inc_cnt + dec_cnt)
 
+
 def sort_dict_by_val(d, sort_key, reversed=False):
     # Sort a dictionary on its key
     return sorted(d.items(), key=lambda x: sort_key(x[1]), reverse=reversed)

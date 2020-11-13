@@ -54,4 +54,3 @@ class TestFactories(unittest.TestCase):
         app = object()
         wrapped_app = factory(app, global_conf, **kwargs)
         self.assertIsInstance(wrapped_app, expect)
-

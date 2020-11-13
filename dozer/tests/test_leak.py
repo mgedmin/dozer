@@ -16,8 +16,10 @@ from dozer.util import monotonicity
 class DozerForTests(Dozer):
     def __init__(self, app=None, *args, **kw):
         super(DozerForTests, self).__init__(app, *args, **kw)
+
     def _start_thread(self):
         pass
+
     def _maybe_warn_about_PIL(self):
         pass
 
