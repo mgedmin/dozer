@@ -6,6 +6,12 @@ python:
   - 3.7
   - 3.8
   - 3.9
+jobs:
+  include:
+    - name: flake8
+      install: pip install tox
+      script: tox -e flake8
+      after_success:
 install:
   - pip install coverage coveralls -e .[test]
 script:
