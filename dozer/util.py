@@ -26,13 +26,13 @@ def monotonicity(objs):
     # Large monotonicity indicates that number of objects
     # has been increased for a while, where leakage is likely to happen
 
-    if len(objs) == 0:
-        return 0
-    der = [0 for _ in range(len(objs))]
+    inc_cnt = 0.0
+    dec_cnt = 1.0
     for i in range(len(objs) - 1):
-        der[i+1] = objs[i+1] - objs[i]
-    inc_cnt = len(list(filter(lambda x: x>0, der))) + 0.0
-    dec_cnt = len(list(filter(lambda x: x<=0, der))) + 0.0
+        if objs[i+1] > objs[i]:
+            inc_cnt += 1
+        else:
+            dec_cnt += 1
     return inc_cnt / (inc_cnt + dec_cnt)
 
 def sort_dict_by_val(d, sort_key, reversed=False):

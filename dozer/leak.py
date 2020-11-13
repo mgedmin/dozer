@@ -94,6 +94,7 @@ def get_sort_key(sortby):
     else:
         return sort_keys.get(sortby, None), False
 
+
 class Dozer(object):
     """Sets up a page that displays object information to help
     troubleshoot memory leaks"""
@@ -216,7 +217,7 @@ class Dozer(object):
         if sort_key is not None:
             sorted_history = sort_dict_by_val(self.history, sort_key, reversed)
         else:
-            sorted_history = self.history.items()
+            sorted_history = sorted(self.history.items())
 
         for typename, hist in sorted_history:
             maxhist = max(hist)

@@ -38,9 +38,9 @@ class TestGlobals(unittest.TestCase):
 
     def test_sort_dict_by_val(self):
         d = {
-            'a':(5,9),
-            'b':(4,2),
-            'c':(6,8)
+            'a': (5, 9),
+            'b': (4, 2),
+            'c': (6, 8)
         }
         key1 = lambda x: x[0]
         key2 = lambda x: x[1]
