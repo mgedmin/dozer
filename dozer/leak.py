@@ -242,6 +242,8 @@ class Dozer(object):
             output="\n".join(rows),
             floor=floor,
             filter=escape(filtertext),
+            sortby=sortby,
+            jquery=url(req, "media/javascript/jquery-1.2.6.min.js")
         )
         return res
     index.exposed = True
