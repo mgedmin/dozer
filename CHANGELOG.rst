@@ -1,6 +1,12 @@
 Dozer Changelog
 ===============
 
+0.9 (unreleased)
+----------------
+
+- Nothing changed yet.
+
+
 0.8 (November 13, 2020)
 -----------------------
 

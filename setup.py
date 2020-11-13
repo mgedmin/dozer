@@ -8,7 +8,7 @@ def read(filename):
         return f.read()
 
 
-version = '0.8'
+version = '0.9.dev0'
 
 tests_require = ['pytest', 'mock', 'WebTest', 'Pillow']
 
@@ -17,6 +17,7 @@ setup(
     version=version,
     description="WSGI Middleware version of the CherryPy memory leak debugger",
     long_description=read('README.rst') + '\n\n' + read('CHANGELOG.rst'),
+    long_description_content_type='text/x-rst',
     keywords='web wsgi memory profiler',
     license='Public Domain',
     author='Ben Bangert',
