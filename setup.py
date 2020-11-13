@@ -8,7 +8,7 @@ def read(filename):
         return f.read()
 
 
-version = '0.8.dev0'
+version = '0.8'
 
 tests_require = ['pytest', 'mock', 'WebTest', 'Pillow']
 
