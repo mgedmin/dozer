@@ -10,7 +10,7 @@ except ImportError:
 from mock import patch
 
 from dozer.reftree import Tree, ReferentTree, ReferrerTree, CircularReferents
-from dozer.reftree import get_repr, count_objects
+from dozer.reftree import get_repr, count_objects, repr_dict, repr_set
 
 
 class TestTree(unittest.TestCase):
@@ -47,6 +47,12 @@ class Unrepresentable(object):
 
 
 class TestGlobals(unittest.TestCase):
+
+    def test_repr_dict_unsortable(self):
+        repr_dict({int: 'int', str: 'str'})
+
+    def test_repr_set_unsortable(self):
+        repr_set({int, str})
 
     def test_get_repr_unrepresentable(self):
         # repr(Exception('foo')) is "Exception('foo',)" on Python < 3.7

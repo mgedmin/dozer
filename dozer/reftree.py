@@ -48,14 +48,21 @@ class Tree(object):
             print("%9d %s %s" % (refid, " " * (depth * 2), rep))
 
 
+def try_sorted(thing):
+    try:
+        return sorted(thing)
+    except TypeError:
+        return thing
+
+
 def repr_dict(obj):
     return "dict of len %s: {%s}" % (len(obj), ", ".join(
-        "%s: %s" % (repr(k), repr(v)) for k, v in sorted(obj.items())))
+        "%s: %s" % (repr(k), repr(v)) for k, v in try_sorted(obj.items())))
 
 
 def repr_set(obj):
     return "set of len %s: set([%s])" % (len(obj), ", ".join(
-        map(repr, sorted(obj))))
+        map(repr, try_sorted(obj))))
 
 
 def _repr_container(obj):
@@ -83,8 +90,8 @@ def get_repr(obj, limit=250):
 
     try:
         result = handler(obj)
-    except Exception:
-        result = "unrepresentable object: %r" % sys.exc_info()[1]
+    except Exception as e:
+        result = "unrepresentable object: %r" % e
 
     if len(result) > limit:
         result = result[:limit] + "..."
