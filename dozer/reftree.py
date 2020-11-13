@@ -51,7 +51,7 @@ class Tree(object):
 def try_sorted(thing):
     try:
         return sorted(thing)
-    except TypeError:
+    except TypeError:  # pragma: PY3
         return thing
 
 
