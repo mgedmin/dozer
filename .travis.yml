@@ -16,6 +16,7 @@ install:
   - pip install coverage coveralls -e .[test]
 script:
   - coverage run -m pytest
+  - coverage report -m --fail-under=100
 after_success:
   - coveralls
 notifications:
