@@ -131,7 +131,7 @@ class ReferrerTree(Tree):
 
             if id(ref) in self._ignore:
                 continue
-            elif id(ref) in self.seen:
+            elif id(ref) in self.seen:  # pragma: nocover
                 yield depth, id(ref), "!" + get_repr(ref)
                 continue
             else:

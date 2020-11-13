@@ -40,6 +40,15 @@ class EvilProxyClass(object):
         return self.obj.__name__
 
 
+class MyObj(object):
+
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+    def __repr__(self):
+        return getattr(self, 'name', 'unnamed-MyObj')
+
+
 class TestDozer(unittest.TestCase):
 
     def make_request(self, subpath='/', base_path='/_dozer'):
@@ -121,11 +130,27 @@ class TestDozer(unittest.TestCase):
         evil_proxy = EvilProxyClass(object) # keep a reference to it
         dozer.trace_one(None, 'no-such-module.No-Such-Type', id(evil_proxy))
 
+    def test_trace_one_shows_referers(self):
+        dozer = DozerForTests()
+        a = MyObj(name='the-thing')
+        b = MyObj(name='the-referrer', has=a)
+        req = self.make_request('/blah/blah')
+        rows = dozer.trace_one(req, '{0.__module__}.{0.__name__}'.format(MyObj), id(a))
+        self.assertIn('the-referrer', '\n'.join(rows))
+
     def test_tree_handles_types_with_broken_module(self):
         dozer = DozerForTests()
         evil_proxy = EvilProxyClass(object) # keep a reference to it
         req = self.make_request('/nosuchtype/%d' % id(evil_proxy))
         dozer.tree(req)
+
+    def test_tree_shows_referers(self):
+        dozer = DozerForTests()
+        a = MyObj(name='the-thing')
+        b = MyObj(name='the-referrer', has=a)
+        req = self.make_request('/{0.__module__}.{0.__name__}/{1}'.format(type(a), id(a)))
+        resp = dozer.tree(req)
+        self.assertIn('the-referrer', resp.text)
 
 
 class TestReferrerTree(unittest.TestCase):
@@ -136,10 +161,10 @@ class TestReferrerTree(unittest.TestCase):
         req.base_path = '/_dozer'
         return req
 
-    def make_tree(self):
+    def make_tree(self, maxdepth=10):
         req = self.make_request()
         tree = ReferrerTree(None, req)
-        tree.maxdepth = 10
+        tree.maxdepth = maxdepth
         tree.seen = {}
         return tree
 
@@ -155,6 +180,13 @@ class TestReferrerTree(unittest.TestCase):
     def test_gen_skips_itself(self):
         tree = self.make_tree()
         list(tree._gen(ReferrerTree))
+
+    def test_gen_maxdepth(self):
+        tree = self.make_tree(maxdepth=1)
+        obj = object()
+        ref = [obj]
+        res = list(tree._gen(obj))
+        self.assertIn((1, 0, "---- Max depth reached ----"), res)
 
 
 def hello_world(environ, start_response):
@@ -284,6 +316,12 @@ class TestEntireStack(unittest.TestCase):
         app = self.make_test_app()
         resp = app.get('/_dozer/dowse', status=403)
 
+    def test_dozer_sortby(self):
+        app = self.make_test_app()
+        app.app.history['mymodule.AnotherType'] = [10, 20, 30, 40, 50]
+        resp = app.get('/_dozer/?sortby=-monotonicity')
+        self.assertEqual(resp.status_int, 200)
+
     def test_dozer_floor(self):
         app = self.make_test_app()
         app.app.history['mymodule.AnotherType'] = [10, 20, 30, 40, 50]
@@ -324,5 +362,5 @@ class TestEntireStack(unittest.TestCase):
             self.assertIn(
                 'error: missing ), unterminated subpattern at position 0', resp
             )
-        except AssertionError:
+        except AssertionError:  # pragma: PY2
             self.assertIn('error: unbalanced parenthesis', resp)  # py2

@@ -206,7 +206,7 @@ class Profiler(object):
                 if e.errno == errno.EEXIST:
                     # file already exists, try again with a slightly different
                     # timestamp hopefully
-                    pass
+                    pass  # pragma: nocover
                 else:
                     raise
             else:

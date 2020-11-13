@@ -1,5 +1,7 @@
 [run]
 source = dozer
+plugins =
+    coverage_python_version
 
 [report]
 exclude_lines =
