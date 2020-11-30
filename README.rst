@@ -1,8 +1,8 @@
 Dozer
 =====
 
-.. image:: https://travis-ci.com/mgedmin/dozer.svg?branch=master
-    :target: https://travis-ci.com/mgedmin/dozer
+.. image:: https://github.com/mgedmin/dozer/workflows/build/badge.svg?branch=master
+    :target: https://github.com/mgedmin/dozer/actions
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/dozer?branch=master&svg=true
     :target: https://ci.appveyor.com/project/mgedmin/dozer
