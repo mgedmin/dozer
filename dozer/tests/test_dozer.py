@@ -3,10 +3,16 @@ import tempfile
 import unittest
 
 from dozer import (
-    Dozer, Logview, Profiler,
-    profile_filter_factory, dozer_filter_factory, logview_filter_factory,
-    profile_filter_app_factory, dozer_filter_app_factory,
-    logview_filter_app_factory)
+    Dozer,
+    Logview,
+    Profiler,
+    dozer_filter_app_factory,
+    dozer_filter_factory,
+    logview_filter_app_factory,
+    logview_filter_factory,
+    profile_filter_app_factory,
+    profile_filter_factory,
+)
 
 
 class TestFactories(unittest.TestCase):

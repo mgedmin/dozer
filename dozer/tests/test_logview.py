@@ -1,6 +1,6 @@
-import unittest
-import traceback
 import logging
+import traceback
+import unittest
 
 import webtest
 from mock import patch

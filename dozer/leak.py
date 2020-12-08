@@ -11,6 +11,7 @@ import warnings
 from io import BytesIO
 from types import FrameType, ModuleType
 
+
 try:
     # Python 3.x
     from html import escape
@@ -34,12 +35,11 @@ except ImportError:
         ImageDraw = None
 
 from pkg_resources import resource_filename
-from webob import Request, Response
-from webob import exc, static
+from webob import Request, Response, exc, static
 
 from dozer import reftree
-
 from dozer.util import monotonicity, sort_dict_by_val
+
 
 try:
     unicode

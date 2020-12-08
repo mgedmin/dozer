@@ -1,11 +1,12 @@
 import os
-import sys
+import pickle
 import shutil
+import sys
 import tempfile
 import textwrap
 import unittest
-import pickle
 from collections import namedtuple
+
 
 try:
     from cStringIO import StringIO
@@ -22,8 +23,14 @@ except ImportError:
 import webtest
 from mock import patch
 
-from dozer.profile import Profiler, label, graphlabel, setup_time, color
-from dozer.profile import write_dot_graph
+from dozer.profile import (
+    Profiler,
+    color,
+    graphlabel,
+    label,
+    setup_time,
+    write_dot_graph,
+)
 
 
 skip_on_windows = unittest.skipIf(sys.platform == 'win32',

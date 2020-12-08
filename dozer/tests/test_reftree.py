@@ -1,6 +1,7 @@
 import gc
 import unittest
 
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -9,8 +10,16 @@ except ImportError:
 
 from mock import patch
 
-from dozer.reftree import Tree, ReferentTree, ReferrerTree, CircularReferents
-from dozer.reftree import get_repr, count_objects, repr_dict, repr_set
+from dozer.reftree import (
+    CircularReferents,
+    ReferentTree,
+    ReferrerTree,
+    Tree,
+    count_objects,
+    get_repr,
+    repr_dict,
+    repr_set,
+)
 
 
 class TestTree(unittest.TestCase):

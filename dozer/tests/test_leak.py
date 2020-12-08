@@ -5,11 +5,7 @@ import webtest
 from mock import patch
 from webob import Request
 
-from dozer.leak import Dozer
-from dozer.leak import ReferrerTree
-from dozer.leak import url
-from dozer.leak import get_sort_key
-
+from dozer.leak import Dozer, ReferrerTree, get_sort_key, url
 from dozer.util import monotonicity
 
 

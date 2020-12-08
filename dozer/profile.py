@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from operator import itemgetter
 
+
 try:
     import cPickle
 except ImportError:
@@ -23,10 +24,9 @@ except ImportError:
     # Python 3.x
     import _thread as thread
 
-from pkg_resources import resource_filename
 from mako.lookup import TemplateLookup
-from webob import Request, Response
-from webob import exc, static
+from pkg_resources import resource_filename
+from webob import Request, Response, exc, static
 
 
 here_dir = os.path.dirname(os.path.abspath(__file__))

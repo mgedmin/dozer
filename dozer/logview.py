@@ -11,6 +11,7 @@ from webob import Request
 
 from dozer.util import asbool
 
+
 try:
     import thread
 except ImportError:
