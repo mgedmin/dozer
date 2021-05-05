@@ -121,7 +121,7 @@ class Dozer(object):
 
     def _start_thread(self):
         self.runthread = threading.Thread(name='Dozer', target=self.start)
-        self.runthread.setDaemon(True)
+        self.runthread.daemon = True
         self.runthread.start()
 
     def _maybe_warn_about_PIL(self):
