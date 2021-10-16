@@ -4,7 +4,7 @@ Dozer Changelog
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add support for Python 3.10.
 
 
 0.8 (November 13, 2020)
