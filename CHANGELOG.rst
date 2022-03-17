@@ -5,6 +5,7 @@ Dozer Changelog
 ----------------
 
 - Add support for Python 3.10.
+- Drop support for Python 3.6.
 
 
 0.8 (November 13, 2020)
