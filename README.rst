@@ -37,14 +37,23 @@ Profiling requests
 
 Usage::
 
+    from tempfile import mkdtemp
     from dozer import Profiler
 
     # my_wsgi_app is a WSGI application
-    wsgi_app = Profiler(my_wsgi_app)
+    wsgi_app = Profiler(my_wsgi_app, profile_path=mkdtemp(prefix='dozer-'))
 
 Assuming you're serving your application on the localhost at port 5000,
 you can then load up ``http://localhost:5000/_profiler`` to view the
 list of recorded request profiles.
+
+The profiles are stored in the directory specified via ``profile_path``.  If
+you want to keep seeing older profiles after restarting the web app, specify a
+fixed directory instead of generating a fresh empty new one with
+tempfile.mkdtemp.  Make sure the directory is not world-writable, as the
+profiles are stored as `insecure Python pickles, which allow arbitrary command
+execution during load
+<https://docs.python.org/3/library/pickle.html#module-pickle>`_.
 
 Here's a blog post by Marius Gedminas that contains `a longer description
 of Dozer's profiler <https://mg.pov.lt/blog/profiling-with-dozer.html>`_.
