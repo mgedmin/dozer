@@ -11,7 +11,7 @@ Dozer
     :target: https://coveralls.io/r/mgedmin/dozer
 
 Dozer was originally a WSGI middleware version of Robert Brewer's
-`Dowser CherryPy tool <http://www.aminus.net/wiki/Dowser>`_ that
+Dowser CherryPy tool that
 displays information as collected by the gc module to assist in
 tracking down memory leaks.  It now also has middleware for profiling
 and for looking at logged messages.
