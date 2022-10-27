@@ -131,7 +131,7 @@ class ReferrerTree(Tree):
         self.ignore(refs, refiter)
         for ref in refiter:
             # Exclude all frames that are from this module.
-            if isinstance(ref, FrameType):
+            if isinstance(ref, FrameType):  # pragma: nocover on Python 3.11
                 if ref.f_code.co_filename == self.filename:
                     continue
 

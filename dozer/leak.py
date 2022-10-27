@@ -410,7 +410,7 @@ class ReferrerTree(reftree.Tree):
             # Exclude all frames that are from this module or reftree.
             if (isinstance(ref, FrameType)
                     and ref.f_code.co_filename in (thisfile, self.filename)):
-                continue
+                continue # pragma: nocover -- on Python 3.11 this is never hit?
 
             # Exclude all functions and classes from this module or reftree.
             mod = str(getattr(ref, "__module__", ""))
