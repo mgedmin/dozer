@@ -1,14 +1,18 @@
 version: build-{build}-{branch}
 
+# https://www.appveyor.com/docs/lang/python/
+image:
+  - Visual Studio 2019
+
 environment:
   matrix:
     # https://www.appveyor.com/docs/installed-software#python lists available
     # versions
-    - PYTHON: "C:\\Python37"
-    - PYTHON: "C:\\Python38"
-    - PYTHON: "C:\\Python39"
-    - PYTHON: "C:\\Python310"
-    - PYTHON: "C:\\Python311"
+    - PYTHON: "C:\\\\Python37-x64"
+    - PYTHON: "C:\\\\Python38-x64"
+    - PYTHON: "C:\\\\Python39-x64"
+    - PYTHON: "C:\\\\Python310-x64"
+    - PYTHON: "C:\\\\Python311-x64"
 
 init:
   - "echo %PYTHON%"
