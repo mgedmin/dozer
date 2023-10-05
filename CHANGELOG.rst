@@ -4,7 +4,7 @@ Dozer Changelog
 0.9 (unreleased)
 ----------------
 
-- Add support for Python 3.10 and 3.11.
+- Add support for Python 3.10, 3.10, and 3.12.
 - Drop support for Python 2.7 and 3.6.
 
 
