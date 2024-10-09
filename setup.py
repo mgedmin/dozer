@@ -28,6 +28,7 @@ setup(
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
+    python_requires=">=3.8",
     install_requires=[
         "WebOb>=1.2", "Mako", "setuptools",
     ],
