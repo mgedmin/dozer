@@ -10,8 +10,6 @@ def read(filename):
 
 version = '0.9.dev0'
 
-tests_require = ['pytest', 'mock', 'WebTest', 'Pillow']
-
 setup(
     name="Dozer",
     version=version,
@@ -33,7 +31,7 @@ setup(
         "WebOb>=1.2", "Mako", "setuptools",
     ],
     extras_require={
-        'test': tests_require,
+        'test': ['pytest', 'mock', 'WebTest', 'Pillow'],
     },
     classifiers=[
         "Development Status :: 3 - Alpha",
