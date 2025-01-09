@@ -1,7 +1,7 @@
 Dozer
 =====
 
-.. image:: https://github.com/mgedmin/dozer/workflows/build/badge.svg?branch=master
+.. image:: https://github.com/mgedmin/dozer/actions/workflows/build.yml/badge.svg?branch=master
     :target: https://github.com/mgedmin/dozer/actions
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/dozer?branch=master&svg=true
