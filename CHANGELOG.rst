@@ -4,8 +4,8 @@ Dozer Changelog
 0.9 (unreleased)
 ----------------
 
-- Add support for Python 3.10, 3.11, 3.12, and 3.13.
-- Drop support for Python 2.7, 3.6 and 3.7.
+- Add support for Python 3.10, 3.11, 3.12, 3.13, and 3.14.
+- Drop support for Python 2.7, 3.6, 3.7, 3.8, and 3.9.
 - Stop using the cgi module (which wasn't really being used).
 - Possibly fix a bug where unbound methods were not being filtered out properly
   in memory leak reports.
