@@ -7,7 +7,7 @@ def read(filename):
     return pathlib.Path(__file__).parent.joinpath(filename).read_text()
 
 
-version = '0.9'
+version = '0.10.dev0'
 
 setup(
     name="Dozer",

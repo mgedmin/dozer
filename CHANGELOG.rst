@@ -1,6 +1,12 @@
 Dozer Changelog
 ===============
 
+0.10 (unreleased)
+-----------------
+
+- Nothing changed yet.
+
+
 0.9 (November  7, 2025)
 -----------------------
 
