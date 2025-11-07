@@ -37,6 +37,12 @@ class EvilProxyClass(object):
 
 
 class MyObj(object):
+    # Oof.  ReferrerTree ignores all objects that have a __module__ containing
+    # 'dozer'.  In Python 3.12 and older, gc.get_referrers() would find the
+    # __dict__ of MyObj that was a plain dict with no __module__, but in 3.13
+    # gc.get_referrers() returns the instance directly.  The instance has a
+    # __module__ (inherited from its class), and thus gets filtered out.
+    __module__ = None
 
     def __init__(self, **kw):
         self.__dict__.update(kw)
@@ -354,9 +360,8 @@ class TestEntireStack(unittest.TestCase):
         self.assertEqual(resp.status_int, 500)
         self.assertIn('500 Internal Server Error', resp)
         self.assertIn('Traceback (most recent call last)', resp)
-        try:
-            self.assertIn(
-                'error: missing ), unterminated subpattern at position 0', resp
-            )
-        except AssertionError:  # pragma: PY2
-            self.assertIn('error: unbalanced parenthesis', resp)  # py2
+        self.assertIn(
+            # Python 3.12 and older raise re.error: ...
+            # Python 3.13 raises re.PatternError: ...
+            'rror: missing ), unterminated subpattern at position 0', resp
+        )

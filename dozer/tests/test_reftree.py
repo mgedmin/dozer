@@ -92,8 +92,15 @@ class TestReferentTree(unittest.TestCase):
         obj = MyObj(name='a', ref=ref, other=other, again=other)
         tree.ignore(ref)
         res = list(tree._gen(obj))
-        self.assertIn((1, id(other), 'c'), res)
-        self.assertIn((1, id(other), '!c'), res)
+        # ref is found either at depth 0 or depth 1, depending on Python
+        # version, because Pyton 3.13 optimizes __dict__ away and a direct
+        # reference
+        self.assertTrue(
+            (0, id(other), 'c') in res or (1, id(other), 'c') in res
+        )
+        self.assertTrue(
+            (0, id(other), '!c') in res or (1, id(other), '!c') in res
+        )
 
 
 class TestReferrerTree(unittest.TestCase):
@@ -109,7 +116,10 @@ class TestReferrerTree(unittest.TestCase):
         obj = MyObj()
         ref = MyObj(name='a', obj=obj)
         res = list(tree._gen(obj))
-        self.assertIn((1, id(ref), 'a'), res)
+        # ref is found either at depth 0 or depth 1, depending on Python
+        # version, because Pyton 3.13 optimizes __dict__ away and a direct
+        # reference
+        self.assertTrue((0, id(ref), 'a') in res or (1, id(ref), 'a') in res)
 
     def test_gen_maxdepth(self):
         tree = self.make_tree(maxdepth=1)
@@ -139,7 +149,12 @@ class TestCircularReferents(unittest.TestCase):
         tree = self.make_tree(obj)
         res = list(tree.walk())
         self.assertEqual(len(res), 1) # one cycle
-        self.assertEqual(len(res[0]), 4) # MyObj -> __dict__ -> MyObj -> __dict__
+        # Python 3.11 introduced lazy object namespaces where obj.__dict__
+        # gets created only on access, so the cycle might be MyObj -> MyObj
+        # or it might be MyObj -> __dict__ -> MyObj -> __dict__, depending
+        # on Python version and on whether MyObj.__dict__ was ever accessed.
+        # Python 3.13 never actually treats the __dict__ as a separate object.
+        self.assertIn(len(res[0]), (2, 4))
 
     def test_walk_maxresults(self):
         obj = self.make_cycle()
@@ -158,8 +173,15 @@ class TestCircularReferents(unittest.TestCase):
         tree = self.make_tree(obj)
         with patch('sys.stdout', StringIO()) as stdout:
             tree.print_tree(maxdepth=5)
-            self.assertEqual(
-                stdout.getvalue(),
+        self.assertIn(
+            stdout.getvalue(),
+            (
+                # Python 3.10--3.12: each __dict__ shown separately
                 '''["dict of len 3: {'a': a, 'b': b, 'name': 'obj'}", 'b','''
                 ''' "dict of len 2: {'name': 'b', 'obj': obj}", 'obj']\n'''
-                '''2 paths stopped because max depth reached\n''')
+                '''2 paths stopped because max depth reached\n''',
+                # Python 3.13: the __dict__s are optimized away
+                '''['b', 'obj']\n'''
+                '''9 paths stopped because max depth reached\n''',
+            ),
+        )

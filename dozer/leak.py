@@ -1,4 +1,3 @@
-import cgi
 import collections
 import gc
 import os
@@ -7,6 +6,7 @@ import sys
 import threading
 import time
 import traceback
+import types
 import warnings
 from io import BytesIO
 from types import FrameType, ModuleType
@@ -61,11 +61,14 @@ class _(object):
 
 dictproxy = type(_.__dict__)
 
-method_types = [type(tuple.__le__),                 # 'wrapper_descriptor'
-                type([1].__le__),                   # 'method-wrapper'
-                type(sys.getsizeof),                # 'builtin_function_or_method'
-                type(cgi.FieldStorage.getfirst),    # 'instancemethod'
-                ]
+method_types = [
+    types.BuiltinFunctionType,      # 'builtin_function_or_method'
+    types.BuiltinMethodType,        # 'builtin_function_or_method'
+    types.MethodWrapperType,        # 'method-wrapper'
+    types.WrapperDescriptorType,    # 'wrapper_descriptor'
+    types.MethodType,               # 'method' aka bound method
+    types.FunctionType,             # 'function' and also unbound method
+]
 
 
 sort_keys = {
