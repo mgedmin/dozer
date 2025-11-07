@@ -1,8 +1,8 @@
 import gc
 import unittest
+from unittest.mock import patch
 
 import webtest
-from mock import patch
 from webob import Request
 
 from dozer.leak import Dozer, ReferrerTree, get_sort_key, url

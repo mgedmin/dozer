@@ -30,7 +30,7 @@ setup(
         "WebOb>=1.2", "Mako",
     ],
     extras_require={
-        'test': ['pytest', 'mock', 'WebTest', 'Pillow'],
+        'test': ['pytest', 'WebTest', 'Pillow'],
     },
     classifiers=[
         "Development Status :: 3 - Alpha",

@@ -1,3 +1,4 @@
+import builtins
 import os
 import pickle
 import shutil
@@ -6,22 +7,10 @@ import tempfile
 import textwrap
 import unittest
 from collections import namedtuple
-
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    # Python 3.x
-    from io import StringIO
-
-try:
-    import __builtin__ as builtins
-except ImportError:
-    # Python 3.x
-    import builtins
+from io import StringIO
+from unittest.mock import patch
 
 import webtest
-from mock import patch
 
 from dozer.profile import (
     Profiler,

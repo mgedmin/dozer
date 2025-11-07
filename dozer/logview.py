@@ -3,8 +3,8 @@ import logging
 import pathlib
 import re
 import sys
-import time
 import threading
+import time
 import traceback
 
 from mako.lookup import TemplateLookup

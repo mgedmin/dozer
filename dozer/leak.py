@@ -11,6 +11,7 @@ import warnings
 from html import escape
 from io import BytesIO
 from types import FrameType, GeneratorType, ModuleType
+
 from webob import Request, Response, exc, static
 
 from dozer import reftree

@@ -3,7 +3,6 @@ import traceback
 import unittest
 
 import webtest
-from mock import patch
 
 from dozer.logview import Logview, RequestHandler
 
