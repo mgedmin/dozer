@@ -1,32 +1,16 @@
 import itertools
 import logging
+import pathlib
 import re
 import sys
 import time
+import threading
 import traceback
-import pathlib
 
 from mako.lookup import TemplateLookup
 from webob import Request
 
 from dozer.util import asbool
-
-
-try:
-    import thread
-except ImportError:
-    # Python 3.x
-    try:
-        import _thread as thread
-    except ImportError:
-        # I've no idea.  Maybe Jython?
-        thread = None
-
-try:
-    unicode
-except NameError:
-    # Python 3.x
-    unicode = str
 
 
 here_dir = pathlib.Path(__file__).parent.resolve()
@@ -117,10 +101,7 @@ class Logview(object):
         return getattr(mod, fn)
 
     def __call__(self, environ, start_response):
-        if thread:
-            tok = thread.get_ident()
-        else:
-            tok = None
+        tok = threading.get_ident()
 
         req = Request(environ)
         start = time.time()

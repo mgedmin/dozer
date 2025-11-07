@@ -89,11 +89,6 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/image.png')
         self.assertEqual(resp.body, b'[image data]')
 
-    def test_call_without_threading(self):
-        app = self.make_test_app()
-        with patch('dozer.logview.thread', None):
-            app.get('/')
-
     def test_call_shows_exception_tracebacks(self):
         app = self.make_test_app()
         resp = app.get('/error')

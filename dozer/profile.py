@@ -1,29 +1,13 @@
+import cProfile
 import errno
 import os
-import re
-import time
 import pathlib
+import pickle
+import re
+import threading
+import time
 from datetime import datetime
 from operator import itemgetter
-
-
-try:
-    import cPickle
-except ImportError:
-    # Python 3.x
-    import pickle as cPickle
-
-try:
-    import cProfile
-except ImportError:
-    # Python 3.x
-    import profile as cProfile
-
-try:
-    import thread
-except ImportError:
-    # Python 3.x
-    import _thread as thread
 
 from mako.lookup import TemplateLookup
 from webob import Request, Response, exc, static
@@ -88,7 +72,7 @@ class Profiler(object):
         dir_name = self.profile_path or ''
         fname = os.path.join(dir_name, profile_id) + '.pkl'
         with open(fname, 'rb') as f:
-            data = cPickle.load(f)
+            data = pickle.load(f)
         top = [x for x in data['profile'].values() if not x.get('callers')]
         res = Response()
         res.body = self.render('/show_profile.mako', time=data['time'],
@@ -108,7 +92,7 @@ class Profiler(object):
                 modified = os.stat(path).st_mtime
                 try:
                     with open(path, 'rb') as f:
-                        data = cPickle.load(f)
+                        data = pickle.load(f)
                 except Exception as e:
                     errors.append((modified, '%s: %s' % (e.__class__.__name__, e), profile_file[:-4]))
                 else:
@@ -191,7 +175,7 @@ class Profiler(object):
                        'QUERY_STRING', 'CONTENT_TYPE', 'CONTENT_LENGTH',
                        'SERVER_NAME', 'SERVER_PORT', 'SERVER_PROTOCOL']:
                 safe_environ[k] = v
-        safe_environ['thread_id'] = str(thread.get_ident())
+        safe_environ['thread_id'] = str(threading.get_ident())
         profile_run = dict(time=datetime.now(), profile=tree,
                            environ=safe_environ)
         dir_name = self.profile_path or ''
@@ -213,7 +197,7 @@ class Profiler(object):
                 break
 
         with os.fdopen(fd, 'wb') as f:
-            cPickle.dump(profile_run, f)
+            pickle.dump(profile_run, f)
         write_dot_graph(results, tree, os.path.join(dir_name, fname_base+'.gv'),
                         cutoff=self.dot_graph_cutoff)
         del results, tree, profile_run

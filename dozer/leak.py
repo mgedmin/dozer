@@ -1,5 +1,6 @@
 import collections
 import gc
+import pathlib
 import re
 import sys
 import threading
@@ -7,33 +8,9 @@ import time
 import traceback
 import types
 import warnings
-import pathlib
+from html import escape
 from io import BytesIO
 from types import FrameType, GeneratorType, ModuleType
-
-
-try:
-    # Python 3.x
-    from html import escape
-except ImportError:
-    # Python 2.x
-    from cgi import escape
-
-try:
-    from PIL import Image
-except ImportError:
-    try:
-        import Image
-    except ImportError:
-        Image = None
-try:
-    from PIL import ImageDraw
-except ImportError:
-    try:
-        import ImageDraw
-    except ImportError:
-        ImageDraw = None
-
 from webob import Request, Response, exc, static
 
 from dozer import reftree
@@ -41,10 +18,9 @@ from dozer.util import monotonicity, sort_dict_by_val
 
 
 try:
-    unicode
-except NameError: # pragma: nocover
-    # Python 3.x
-    unicode = str
+    from PIL import Image, ImageDraw
+except ImportError:
+    Image = ImageDraw = None
 
 
 localDir = pathlib.Path(__file__).parent.resolve()
@@ -54,12 +30,6 @@ def get_repr(obj, limit=250):
     return escape(reftree.get_repr(obj, limit))
 
 
-class _(object):
-    pass
-
-
-dictproxy = type(_.__dict__)
-
 method_types = [
     types.BuiltinFunctionType,      # 'builtin_function_or_method'
     types.BuiltinMethodType,        # 'builtin_function_or_method'
@@ -67,6 +37,7 @@ method_types = [
     types.WrapperDescriptorType,    # 'wrapper_descriptor'
     types.MethodType,               # 'method' aka bound method
     types.FunctionType,             # 'function' and also unbound method
+    # should GeneratorType and AsyncGeneratorType also be here?
 ]
 
 
@@ -86,9 +57,10 @@ def url(req, path):
 
 
 def template(req, name, **params):
-    p = {'maincss': url(req, "/media/css/main.css"),
-         'home': url(req, "/index"),
-         }
+    p = {
+        'maincss': url(req, "/media/css/main.css"),
+        'home': url(req, "/index"),
+    }
     p.update(params)
     return localDir.joinpath('media', name).read_text() % p
 
