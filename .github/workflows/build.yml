@@ -64,6 +64,18 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           file: coverage.xml
+          parallel: true
+          flag-name: run-py${{ matrix.python-version }}
+
+  finish:
+    needs: build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
 
   lint:
     name: ${{ matrix.toxenv }}
