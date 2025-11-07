@@ -7,7 +7,7 @@ def read(filename):
     return pathlib.Path(__file__).parent.joinpath(filename).read_text()
 
 
-version = '0.9.dev0'
+version = '0.9'
 
 setup(
     name="Dozer",
@@ -16,7 +16,7 @@ setup(
     long_description=read('README.rst') + '\n\n' + read('CHANGELOG.rst'),
     long_description_content_type='text/x-rst',
     keywords='web wsgi memory profiler',
-    license='Public Domain',
+    license='CC-PDM-1.0',  # i.e. Public Domain
     author='Ben Bangert',
     author_email='ben@groovie.org',
     maintainer='Marius Gedminas',
@@ -35,7 +35,6 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: Public Domain",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",

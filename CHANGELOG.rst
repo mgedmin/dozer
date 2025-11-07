@@ -1,8 +1,8 @@
 Dozer Changelog
 ===============
 
-0.9 (unreleased)
-----------------
+0.9 (November  7, 2025)
+-----------------------
 
 - Add support for Python 3.10, 3.11, 3.12, 3.13, and 3.14.
 - Drop support for Python 2.7, 3.6, 3.7, 3.8, and 3.9.
