@@ -1,10 +1,10 @@
 import itertools
 import logging
-import os
 import re
 import sys
 import time
 import traceback
+import pathlib
 
 from mako.lookup import TemplateLookup
 from webob import Request
@@ -29,7 +29,7 @@ except NameError:
     unicode = str
 
 
-here_dir = os.path.dirname(os.path.abspath(__file__))
+here_dir = pathlib.Path(__file__).parent.resolve()
 
 
 class Logview(object):
@@ -57,7 +57,7 @@ class Logview(object):
         if config is None:
             config = {}
         self.app = app
-        tmpl_dir = os.path.join(here_dir, 'templates')
+        tmpl_dir = here_dir.joinpath('templates')
         self.mako = TemplateLookup(directories=[tmpl_dir],
                                    default_filters=['h'])
 

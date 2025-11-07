@@ -2,6 +2,7 @@ import errno
 import os
 import re
 import time
+import pathlib
 from datetime import datetime
 from operator import itemgetter
 
@@ -25,11 +26,10 @@ except ImportError:
     import _thread as thread
 
 from mako.lookup import TemplateLookup
-from pkg_resources import resource_filename
 from webob import Request, Response, exc, static
 
 
-here_dir = os.path.dirname(os.path.abspath(__file__))
+here_dir = pathlib.Path(__file__).parent.resolve()
 
 DEFAULT_IGNORED_PATHS = [r'/favicon\.ico$', r'^/error/document']
 
@@ -48,7 +48,7 @@ class Profiler(object):
         self.dot_graph_cutoff = float(dot_graph_cutoff)
         self.profile_path = profile_path
         self.ignored_paths = list(map(re.compile, ignored_paths))
-        tmpl_dir = os.path.join(here_dir, 'templates')
+        tmpl_dir = here_dir.joinpath('templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
 
     def __call__(self, environ, start_response):
@@ -76,7 +76,7 @@ class Profiler(object):
 
     def media(self, req):
         """Static path where images and other files live"""
-        path = resource_filename('dozer', 'media')
+        path = here_dir.joinpath('media')
         app = static.DirectoryApp(path)
         return app
     media.exposed = True

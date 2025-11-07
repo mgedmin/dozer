@@ -1,11 +1,10 @@
-import os
+import pathlib
 
 from setuptools import find_packages, setup
 
 
 def read(filename):
-    with open(os.path.join(os.path.dirname(__file__), filename)) as f:
-        return f.read()
+    return pathlib.Path(__file__).parent.joinpath(filename).read_text()
 
 
 version = '0.9.dev0'
@@ -23,12 +22,12 @@ setup(
     maintainer='Marius Gedminas',
     maintainer_email='marius@gedmin.as',
     url='https://github.com/mgedmin/dozer',
-    packages=find_packages(exclude=['ez_setup']),
+    packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
     python_requires=">=3.10",
     install_requires=[
-        "WebOb>=1.2", "Mako", "setuptools",
+        "WebOb>=1.2", "Mako",
     ],
     extras_require={
         'test': ['pytest', 'mock', 'WebTest', 'Pillow'],

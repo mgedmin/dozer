@@ -1,6 +1,5 @@
 import collections
 import gc
-import os
 import re
 import sys
 import threading
@@ -8,6 +7,7 @@ import time
 import traceback
 import types
 import warnings
+import pathlib
 from io import BytesIO
 from types import FrameType, GeneratorType, ModuleType
 
@@ -34,7 +34,6 @@ except ImportError:
     except ImportError:
         ImageDraw = None
 
-from pkg_resources import resource_filename
 from webob import Request, Response, exc, static
 
 from dozer import reftree
@@ -48,7 +47,7 @@ except NameError: # pragma: nocover
     unicode = str
 
 
-localDir = os.path.join(os.getcwd(), os.path.dirname(__file__))
+localDir = pathlib.Path(__file__).parent.resolve()
 
 
 def get_repr(obj, limit=250):
@@ -91,8 +90,7 @@ def template(req, name, **params):
          'home': url(req, "/index"),
          }
     p.update(params)
-    with open(os.path.join(localDir, 'media', name)) as f:
-        return unicode(f.read() % p)
+    return localDir.joinpath('media', name).read_text() % p
 
 
 def get_sort_key(sortby):
@@ -172,7 +170,7 @@ class Dozer(object):
 
     def media(self, req):
         """Static path where images and other files live"""
-        path = resource_filename('dozer', 'media')
+        path = localDir.joinpath('media')
         return static.DirectoryApp(path)
     media.exposed = True
 
