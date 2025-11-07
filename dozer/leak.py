@@ -9,7 +9,7 @@ import traceback
 import types
 import warnings
 from io import BytesIO
-from types import FrameType, ModuleType
+from types import FrameType, GeneratorType, ModuleType
 
 
 try:
@@ -414,6 +414,9 @@ class ReferrerTree(reftree.Tree):
             if (isinstance(ref, FrameType)
                     and ref.f_code.co_filename in (thisfile, self.filename)):
                 continue # pragma: nocover -- on Python 3.11 this is never hit?
+            if (isinstance(ref, GeneratorType)
+                    and ref.gi_code.co_filename in (thisfile, self.filename)):
+                continue # pragma: nocover -- this is only hit on Python 3.14
 
             # Exclude all functions and classes from this module or reftree.
             mod = str(getattr(ref, "__module__", ""))
