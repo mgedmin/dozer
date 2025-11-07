@@ -92,8 +92,15 @@ class TestReferentTree(unittest.TestCase):
         obj = MyObj(name='a', ref=ref, other=other, again=other)
         tree.ignore(ref)
         res = list(tree._gen(obj))
-        self.assertIn((1, id(other), 'c'), res)
-        self.assertIn((1, id(other), '!c'), res)
+        # ref is found either at depth 0 or depth 1, depending on Python
+        # version, because Pyton 3.13 optimizes __dict__ away and a direct
+        # reference
+        self.assertTrue(
+            (0, id(other), 'c') in res or (1, id(other), 'c') in res
+        )
+        self.assertTrue(
+            (0, id(other), '!c') in res or (1, id(other), '!c') in res
+        )
 
 
 class TestReferrerTree(unittest.TestCase):
@@ -109,7 +116,10 @@ class TestReferrerTree(unittest.TestCase):
         obj = MyObj()
         ref = MyObj(name='a', obj=obj)
         res = list(tree._gen(obj))
-        self.assertIn((1, id(ref), 'a'), res)
+        # ref is found either at depth 0 or depth 1, depending on Python
+        # version, because Pyton 3.13 optimizes __dict__ away and a direct
+        # reference
+        self.assertTrue((0, id(ref), 'a') in res or (1, id(ref), 'a') in res)
 
     def test_gen_maxdepth(self):
         tree = self.make_tree(maxdepth=1)
