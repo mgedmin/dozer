@@ -142,7 +142,7 @@ class Logview(object):
     def splice(self, body, logbar):
         assert isinstance(body, bytes)
         assert isinstance(logbar, bytes)
-        parts = re.split(b'(<body[^>]*>)', body, 1)
+        parts = re.split(b'(<body[^>]*>)', body, maxsplit=1)
         # parts = ['preamble', '<body ...>', 'text'] or just ['text']
         # we want to insert our logbar after <body> (if it exists) and
         # in front of text
