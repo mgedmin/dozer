@@ -6,7 +6,6 @@ include LICENSE
 include Makefile
 include tox.ini
 include .coveragerc
-include .travis.yml
 include .gitignore
 
 # added by check_manifest.py
