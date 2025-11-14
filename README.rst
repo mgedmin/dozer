@@ -4,9 +4,6 @@ Dozer
 .. image:: https://github.com/mgedmin/dozer/actions/workflows/build.yml/badge.svg?branch=master
     :target: https://github.com/mgedmin/dozer/actions
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/dozer?branch=master&svg=true
-    :target: https://ci.appveyor.com/project/mgedmin/dozer
-
 .. image:: https://coveralls.io/repos/mgedmin/dozer/badge.svg?branch=master
     :target: https://coveralls.io/r/mgedmin/dozer
 
