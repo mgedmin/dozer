@@ -63,6 +63,7 @@ jobs:
           file: coverage.xml
           parallel: true
           flag-name: run-py${{ matrix.python-version }}-on-${{ matrix.os }}
+        continue-on-error: true  # coveralls is unreliable
 
   finish:
     needs: build
