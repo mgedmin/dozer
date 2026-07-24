@@ -59,11 +59,11 @@ jobs:
 
       - name: Report to coveralls
         uses: coverallsapp/github-action@v2
+        continue-on-error: true  # coveralls is unreliable
         with:
           file: coverage.xml
           parallel: true
           flag-name: run-py${{ matrix.python-version }}-on-${{ matrix.os }}
-        continue-on-error: true  # coveralls is unreliable
 
   finish:
     needs: build
@@ -72,6 +72,7 @@ jobs:
     steps:
       - name: Close parallel build
         uses: coverallsapp/github-action@v2
+        continue-on-error: true  # coveralls is unreliable
         with:
           parallel-finished: true
 
