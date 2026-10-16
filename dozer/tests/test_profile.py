@@ -67,7 +67,7 @@ class TestGlobals(unittest.TestCase):
         with patch.object(builtins, 'open', lambda *a: StringIO()):
             data = [profile_entry(code=code, totaltime=1, calls=[])]
             tree = {'somefunc sourcefile.py:2': dict(cost=0)}
-            write_dot_graph(data, tree, 'filename.gv')
+            write_dot_graph(data, tree, 'filename.gv', cutoff=0)
 
 
 class AppIter(list):
