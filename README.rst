@@ -72,3 +72,30 @@ produced by the thread that generated this response.
 
 Here's a blog post by Marius Gedminas that contains `a longer description
 of Dozer's logview <https://mg.pov.lt/blog/capturing-logs-with-dozer.html>`_.
+
+
+Securing the debug pages
+------------------------
+
+The ``/_dozer`` and ``/_profiler`` pages show potentially sensitive
+information: request URLs, object reprs, recorded profiles.  If your
+application is served by a WSGI server without a fronting web server
+that could require authentication, you can protect these pages with
+HTTP Basic authentication::
+
+    from dozer import Dozer, Profiler
+
+    wsgi_app = Dozer(my_wsgi_app, basic_auth=('username', 'password'))
+    wsgi_app = Profiler(wsgi_app, profile_path=mkdtemp(prefix='dozer-'),
+                        basic_auth=('username', 'password'))
+
+All requests to the debug pages that don't carry the correct
+credentials get a 401 response, and your browser asks for a username
+and password.  Applications pass through unaffected.
+
+When configuring the middleware via PasteDeploy you can use a
+``username:password`` string instead::
+
+    [filter:dozer]
+    use = egg:Dozer#dozer
+    basic_auth = username:password

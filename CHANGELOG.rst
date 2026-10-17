@@ -5,6 +5,8 @@ Dozer Changelog
 -----------------
 
 - Add support for Python 3.15.
+- Add optional HTTP Basic authentication for the Dozer and Profiler debug
+  pages (https://github.com/mgedmin/dozer/issues/5).
 
 
 0.9 (November  7, 2025)

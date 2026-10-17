@@ -15,7 +15,13 @@ from types import FrameType, GeneratorType, ModuleType
 from webob import Request, Response, exc, static
 
 from dozer import reftree
-from dozer.util import monotonicity, sort_dict_by_val
+from dozer.util import (
+    check_basic_auth,
+    monotonicity,
+    parse_basic_auth,
+    sort_dict_by_val,
+    unauthorized,
+)
 
 
 try:
@@ -77,17 +83,22 @@ def get_sort_key(sortby):
 
 class Dozer(object):
     """Sets up a page that displays object information to help
-    troubleshoot memory leaks"""
+    troubleshoot memory leaks
+
+    The page can be protected with HTTP Basic authentication by passing
+    basic_auth=('username', 'password') or basic_auth='username:password'.
+    """
     period = 5
     maxhistory = 300
 
     def __init__(self, app, global_conf=None, media_paths=None, path='/_dozer',
-                 **kwargs):
+                 basic_auth=None, **kwargs):
         self.app = app
         self.media_paths = media_paths or {}
         if path.endswith('/'):
             path = path[:-1]
         self.path = path
+        self.basic_auth = parse_basic_auth(basic_auth) if basic_auth else None
         self.history = {}
         self.samples = 0
         self._start_thread()
@@ -110,6 +121,10 @@ class Dozer(object):
         req.base_path = req.application_url + self.path
         if (req.path_info.startswith(self.path+'/')
                 or req.path_info == self.path):
+            if (self.basic_auth
+                    and not check_basic_auth(req.headers.get('Authorization'),
+                                             self.basic_auth)):
+                return unauthorized()(environ, start_response)
             req.script_name += self.path
             req.path_info = req.path_info[len(self.path):]
             try:

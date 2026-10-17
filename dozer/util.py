@@ -1,3 +1,69 @@
+import base64
+import binascii
+import hmac
+
+from webob import exc
+
+
+def parse_basic_auth(basic_auth):
+    """Normalize a basic_auth configuration value to (username, password).
+
+    Accepts a (username, password) pair or a 'username:password' string
+    (the form used in PasteDeploy configuration files).
+    """
+    if isinstance(basic_auth, str):
+        username, sep, password = basic_auth.partition(':')
+        if not sep:
+            raise ValueError(
+                "basic_auth must be a (username, password) pair or a "
+                "'username:password' string")
+        return (username, password)
+    try:
+        username, password = basic_auth
+    except (TypeError, ValueError):
+        raise ValueError(
+            "basic_auth must be a (username, password) pair or a "
+            "'username:password' string")
+    return (username, password)
+
+
+def check_basic_auth(authorization, credentials):
+    """Check an HTTP Authorization header against some credentials.
+
+    Returns True if the header carries valid HTTP Basic authentication
+    data matching the given (username, password) pair.
+    """
+    if not authorization:
+        return False
+    try:
+        scheme, token = authorization.split(None, 1)
+    except ValueError:
+        return False
+    if scheme.lower() != 'basic':
+        return False
+    token += '=' * (-len(token) % 4)  # tolerate unpadded base64
+    try:
+        userpass = base64.b64decode(token, validate=True)
+    except binascii.Error:
+        return False
+    username, sep, password = userpass.decode(
+        'utf-8', 'replace').partition(':')
+    if not sep:
+        return False
+    expected_user, expected_password = credentials
+    return (hmac.compare_digest(username.encode('utf-8'),
+                                expected_user.encode('utf-8'))
+            and hmac.compare_digest(password.encode('utf-8'),
+                                    expected_password.encode('utf-8')))
+
+
+def unauthorized():
+    """Build a 401 response that asks for HTTP Basic authentication."""
+    return exc.HTTPUnauthorized(
+        'Authentication required',
+        headers=[('WWW-Authenticate', 'Basic realm="Dozer"')])
+
+
 def asbool(obj):
     # Copied from paste.util.converters
     # (c) 2005 Ian Bicking and contributors; written for Paste
