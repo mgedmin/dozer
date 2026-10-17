@@ -12,6 +12,8 @@ from operator import itemgetter
 from mako.lookup import TemplateLookup
 from webob import Request, Response, exc, static
 
+from dozer.util import check_basic_auth, parse_basic_auth, unauthorized
+
 
 here_dir = pathlib.Path(__file__).parent.resolve()
 
@@ -21,9 +23,14 @@ DEFAULT_IGNORED_PATHS = [r'/favicon\.ico$', r'^/error/document']
 class Profiler(object):
     def __init__(self, app, global_conf=None, profile_path=None,
                  ignored_paths=DEFAULT_IGNORED_PATHS,
-                 dot_graph_cutoff=0.2, **kwargs):
+                 dot_graph_cutoff=0.2, basic_auth=None, **kwargs):
         """Profiles an application and saves the pickled version to a
         file
+
+        ''basic_auth''
+            If given, the profiler pages are only shown to clients that
+            send valid HTTP Basic authentication credentials, e.g. a
+            (username, password) pair or a 'username:password' string.
         """
         assert profile_path, "need profile_path"
         assert os.path.isdir(profile_path), "%r: no such directory" % profile_path
@@ -32,6 +39,7 @@ class Profiler(object):
         self.dot_graph_cutoff = float(dot_graph_cutoff)
         self.profile_path = profile_path
         self.ignored_paths = list(map(re.compile, ignored_paths))
+        self.basic_auth = parse_basic_auth(basic_auth) if basic_auth else None
         tmpl_dir = here_dir.joinpath('templates')
         self.mako = TemplateLookup(directories=[tmpl_dir])
 
@@ -42,6 +50,10 @@ class Profiler(object):
         req = Request(environ)
         req.base_path = req.application_url + '/_profiler'
         if req.path_info_peek() == '_profiler':
+            if (self.basic_auth
+                    and not check_basic_auth(req.headers.get('Authorization'),
+                                             self.basic_auth)):
+                return unauthorized()(environ, start_response)
             return self.profiler(req)(environ, start_response)
         for regex in self.ignored_paths:
             if regex.match(environ['PATH_INFO']) is not None:

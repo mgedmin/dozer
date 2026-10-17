@@ -1,3 +1,4 @@
+import base64
 import gc
 import unittest
 from unittest.mock import patch
@@ -7,6 +8,12 @@ from webob import Request
 
 from dozer.leak import Dozer, ReferrerTree, get_sort_key, url
 from dozer.util import monotonicity
+
+
+def basic_auth_headers(username, password):
+    token = base64.b64encode(
+        ('%s:%s' % (username, password)).encode()).decode()
+    return {'Authorization': 'Basic %s' % token}
 
 
 class DozerForTests(Dozer):
@@ -365,3 +372,41 @@ class TestEntireStack(unittest.TestCase):
             # Python 3.13 raises re.PatternError: ...
             'rror: missing ), unterminated subpattern at position 0', resp
         )
+
+
+class TestBasicAuth(unittest.TestCase):
+
+    def make_secure_test_app(self, **kw):
+        kw.setdefault('basic_auth', ('admin', 'secret'))
+        dozer = DozerForTests(hello_world, **kw)
+        dozer.history['mymodule.MyType'] = [1, 2, 3, 4, 5]
+        return webtest.TestApp(dozer)
+
+    def test_dozer_basic_auth_required(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/_dozer', status=401)
+        self.assertEqual(resp.headers['WWW-Authenticate'],
+                         'Basic realm="Dozer"')
+
+    def test_dozer_basic_auth_wrong_password(self):
+        app = self.make_secure_test_app()
+        app.get('/_dozer', headers=basic_auth_headers('admin', 'wrong'),
+                status=401)
+
+    def test_dozer_basic_auth_success(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/_dozer',
+                       headers=basic_auth_headers('admin', 'secret'))
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<div id="output">', resp)
+
+    def test_dozer_basic_auth_string_config(self):
+        app = self.make_secure_test_app(basic_auth='admin:secret')
+        resp = app.get('/_dozer',
+                       headers=basic_auth_headers('admin', 'secret'))
+        self.assertEqual(resp.status_int, 200)
+
+    def test_dozer_basic_auth_does_not_protect_application(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/')
+        self.assertIn('hello, world!', resp)

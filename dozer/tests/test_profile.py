@@ -1,3 +1,4 @@
+import base64
 import builtins
 import os
 import pickle
@@ -20,6 +21,12 @@ from dozer.profile import (
     setup_time,
     write_dot_graph,
 )
+
+
+def basic_auth_headers(username, password):
+    token = base64.b64encode(
+        ('%s:%s' % (username, password)).encode()).decode()
+    return {'Authorization': 'Basic %s' % token}
 
 
 skip_on_windows = unittest.skipIf(sys.platform == 'win32',
@@ -222,3 +229,41 @@ class TestEntireStack(unittest.TestCase):
         resp = app.get('/_profiler/delete', status=302)
         self.assertEqual(os.listdir(self.tmpdir), [])
         self.assertEqual(resp.location, 'http://localhost/_profiler/showall')
+
+
+class TestBasicAuth(unittest.TestCase):
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp('dozer-tests-')
+
+    def tearDown(self):
+        os.chmod(self.tmpdir, 0o700)
+        shutil.rmtree(self.tmpdir)
+
+    def make_secure_test_app(self, **kw):
+        kw.setdefault('basic_auth', ('admin', 'secret'))
+        profiler = Profiler(hello_world, profile_path=self.tmpdir, **kw)
+        return webtest.TestApp(profiler)
+
+    def test_profiler_basic_auth_required(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/_profiler', status=401)
+        self.assertEqual(resp.headers['WWW-Authenticate'],
+                         'Basic realm="Dozer"')
+
+    def test_profiler_basic_auth_wrong_password(self):
+        app = self.make_secure_test_app()
+        app.get('/_profiler', headers=basic_auth_headers('admin', 'wrong'),
+                status=401)
+
+    def test_profiler_basic_auth_success(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/_profiler',
+                       headers=basic_auth_headers('admin', 'secret'))
+        self.assertEqual(resp.status_int, 200)
+        self.assertIn('<table id="profile-list">', resp)
+
+    def test_profiler_basic_auth_does_not_protect_application(self):
+        app = self.make_secure_test_app()
+        resp = app.get('/')
+        self.assertIn('hello, world!', resp)
